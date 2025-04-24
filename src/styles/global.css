@@ -118,3 +118,28 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Animacja paska postępu dla komponentu ProgressIndicator */
+@keyframes progress {
+  0% { width: 5%; }
+  50% { width: 70%; }
+  100% { width: 90%; }
+}
+
+.animate-progress {
+  animation: progress 20s ease-in-out forwards;
+}
+
+/* Style dla fiszek */
+.flashcard-flip {
+  perspective: 1000px;
+}
+
+.flashcard-inner {
+  transition: transform 0.6s;
+  transform-style: preserve-3d;
+}
+
+.flashcard-flipped .flashcard-inner {
+  transform: rotateY(180deg);
+}
