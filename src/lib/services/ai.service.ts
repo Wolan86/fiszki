@@ -1,4 +1,5 @@
 import type { FlashcardDto } from "../../types";
+import { OpenRouterService } from "../openrouter.services";
 
 type GeneratedFlashcard = Pick<FlashcardDto, "front_content" | "back_content" | "accepted" | "creation_type" | "generation_time_ms">;
 
@@ -17,39 +18,27 @@ export async function generateFlashcardsFromText(
 ): Promise<GeneratedFlashcard[]> {
   // Simulate API delay
   const startTime = performance.now();
-  await new Promise((resolve) => setTimeout(resolve, 1000));
-  const generationTime = Math.round(performance.now() - startTime);
   
-  // Check if OpenRouter API key is configured
-  if (!import.meta.env.OPENROUTER_API_KEY) {
-    throw new Error("AI_SERVICE_UNAVAILABLE: OpenRouter API key not configured");
-  }
-  
-  // Mock implementation that generates simple flashcards based on text length
-  // In a real implementation, this would call the OpenRouter API
   try {
-    const words = text.split(/\s+/);
+    // Initialize OpenRouter service - it will handle API key validation
+    const openRouter = new OpenRouterService();
     
-    // Generate basic mock flashcards
-    // Actual implementation would use AI models to generate meaningful flashcards
-    const flashcards = Array.from({ length: Math.min(count, 10) }, (_, i) => {
-      const startIndex = (i * words.length / count) % words.length;
-      const excerpt = words
-        .slice(startIndex, startIndex + Math.min(5, words.length))
-        .join(" ");
-      
-      return {
-        front_content: `Question about: ${excerpt}...`,
-        back_content: `Answer about: ${excerpt}...`,
-        accepted: false,
-        creation_type: "ai_generated" as const,
-        generation_time_ms: generationTime
-      };
-    });
+    // Use the service's flashcard generation feature
+    // If API key is missing, the service constructor will throw an appropriate error
+    const generatedFlashcards = await openRouter.generateFlashcards(text, count);
     
-    return flashcards;
+    const generationTime = Math.round(performance.now() - startTime);
+    
+    // Map the generated flashcards to our expected format
+    return generatedFlashcards.map(card => ({
+      front_content: card.front_content,
+      back_content: card.back_content,
+      accepted: false,
+      creation_type: "ai_generated" as const,
+      generation_time_ms: generationTime
+    }));
   } catch (error) {
     console.error("Error in AI flashcard generation:", error);
-    throw new Error(`AI_GENERATION_FAILED: ${error instanceof Error ? error.message : String(error)}`);
+    throw new Error(`AI_SERVICE_UNAVAILABLE: ${error instanceof Error ? error.message : String(error)}`);
   }
 } 
