@@ -225,6 +225,19 @@ Poniższe funkcjonalności NIE wchodzą w zakres MVP:
 - Aktualnie wybrana sekcja jest wyraźnie oznaczona
 - Nawigacja działa płynnie i bez opóźnień
 
+## US-015: Bezpieczny dostęp i uwierzytelnianie
+**Tytuł:** Bezpieczny dostęp
+**Opis:** Jako użytkownik chcę mieć możliwość rejestracji i logowania się do systemu w sposób zapewniający bezpieczeństwo moich danych.
+**Kryteria akceptacji:**
+  - Logowanie i rejestracja odbywają się na dedykowanych stronach.
+  - Logowanie wymaga podania adresu email i hasła.
+  - Rejestracja wymaga podania adresu email, hasła i potwierdzenia hasła.
+  - Użytkownik NIE MOŻE korzystać z zadnej funcjonalnosci bez logowania się do systemu.
+  - Użytkownik może logować się do systemu poprzez przycisk w prawym górnym rogu.
+  - Użytkownik może się wylogować z systemu poprzez przycisk w prawym górnym rogu w głównym @Layout.astro.
+  - Nie korzystamy z zewnętrznych serwisów logowania (np. Google, GitHub).
+  - Odzyskiwanie hasła powinno być możliwe.
+
 ## 6. Metryki sukcesu
 
 ### 6.1 Metryki ilościowe

@@ -1,0 +1,28 @@
+---
+import Layout from '@/layouts/Layout.astro';
+import { TestButton } from '@/components/TestButton';
+---
+
+<Layout title="Test Client | Fiszki">
+  <div class="container mx-auto py-16 px-4">
+    <div class="max-w-md mx-auto">
+      <h1 class="text-3xl font-bold text-center mb-8">Test Client Component</h1>
+      
+      <div class="space-y-4">
+        <p>This page tests if client:load directive is working properly with event handlers.</p>
+        
+        <TestButton 
+          client:load 
+          onClick={() => {
+            console.log("onClick handler called from Astro component");
+            alert("Button clicked successfully!");
+          }} 
+        />
+      </div>
+    </div>
+  </div>
+</Layout>
+
+<script>
+  console.log("Page script loaded");
+</script> 

@@ -43,6 +43,19 @@ Fiszki AI uses OpenAI's o3-mini model to generate high-quality educational flash
 - **GitHub Actions**: For CI/CD pipelines
 - **DigitalOcean**: For application hosting via docker
 
+### Testing
+- **Unit & Integration Testing**: 
+  - **Vitest**: Fast unit testing framework compatible with Vite for testing React components, hooks and utility functions
+  - **Testing Library**: For testing React components with focus on user interactions and behavior
+- **E2E Testing**:
+  - **Playwright**: For comprehensive browser-based end-to-end testing across Chrome, Firefox, and Safari
+- **Component Testing**:
+  - **Storybook**: For isolated visual testing of UI components
+- **Accessibility Testing**:
+  - **axe-core**: For automated accessibility testing against WCAG 2.1 AA standards
+- **Performance Testing**: 
+  - **Lighthouse**: For measuring performance, SEO, and accessibility metrics
+
 ## Getting Started Locally
 
 ### Prerequisites
