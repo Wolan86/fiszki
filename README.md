@@ -10,6 +10,7 @@
 - [Project Scope](#project-scope)
 - [Project Status](#project-status)
 - [License](#license)
+- [E2E Testing with Playwright](#e2e-testing-with-playwright)
 
 ## Project Description
 
@@ -150,6 +151,46 @@ The project is currently in MVP development stage. The timeline for development 
 ## License
 
 This project is currently not licensed. Please add a license that meets your requirements.
+
+## E2E Testing with Playwright
+
+This project uses Playwright for End-to-End testing. The tests are located in the `e2e` directory.
+
+### Running Tests
+
+- `npm run test:e2e` - Run E2E tests in headless mode
+- `npm run test:e2e:ui` - Run E2E tests with Playwright Test UI
+- `npm run test:e2e:debug` - Run E2E tests in debug mode
+
+### Page Object Model (POM)
+
+We follow the Page Object Model pattern for our E2E tests:
+
+- `e2e/page-objects/BasePage.ts` - Base page for common methods
+- `e2e/page-objects/CreatorPage.ts` - Page object for the flashcard creator
+- `e2e/page-objects/FlashcardComponent.ts` - Component object for a single flashcard
+
+### Test Data
+
+Tests use predefined samples to ensure consistency across test runs.
+
+### Selectors
+
+We use `data-test-id` attributes for selecting elements in tests:
+
+```typescript
+// Example of a selector in POM
+get sourceTextInput() {
+  return this.page.getByTestId('source-text-textarea');
+}
+```
+
+### Writing Tests
+
+When writing new tests, follow the AAA pattern:
+- Arrange: Set up the test environment and data
+- Act: Perform actions
+- Assert: Verify the expected outcomes
 
 ---
 

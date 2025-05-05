@@ -20,10 +20,10 @@ export const FlashcardList: React.FC<FlashcardListProps> = ({
   }
 
   return (
-    <div className="space-y-4 my-6">
-      <h2 className="text-xl font-semibold mb-4">Wygenerowane fiszki</h2>
+    <div className="space-y-4 my-6" data-testid="flashcard-list-container">
+      <h2 className="text-xl font-semibold">Wygenerowane fiszki</h2>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6" data-testid="flashcard-grid">
         {flashcards.map(flashcard => (
           <FlashcardItem
             key={flashcard.id}
@@ -31,6 +31,7 @@ export const FlashcardList: React.FC<FlashcardListProps> = ({
             onAccept={() => onAccept(flashcard.id)}
             onReject={() => onReject(flashcard.id)}
             onRegenerate={() => onRegenerate(flashcard.id)}
+            data-testid={`flashcard-item-${flashcard.id}`}
           />
         ))}
       </div>

@@ -72,17 +72,18 @@ export const SourceTextForm: React.FC<SourceTextFormProps> = ({
   };
   
   return (
-    <Card className="p-6">
+    <Card className="p-6" data-testid="source-text-card">
       <div className="space-y-4">
-        <div className="flex justify-between items-center mb-2">
+        <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-semibold">Tekst źródłowy</h2>
-          <span className="text-sm text-neutral-500">{getSaveStatus()}</span>
+          <span className="text-sm text-neutral-500" data-testid="save-status">{getSaveStatus()}</span>
         </div>
         
         <WordCounter
           currentCount={wordCount}
           minCount={MIN_WORD_COUNT}
           maxCount={MAX_WORD_COUNT}
+          data-testid="word-counter"
         />
         
         <SourceTextInput
@@ -91,13 +92,15 @@ export const SourceTextForm: React.FC<SourceTextFormProps> = ({
           onBlur={handleSave}
           isValid={isValid}
           errors={errors}
+          data-testid="source-text-input"
         />
         
         <div className="pt-4 flex justify-end">
           <GenerateButton
             onClick={handleGenerateRequest}
-            disabled={!canGenerate && !isValid}
+            disabled={!isValid || isSaving}
             isLoading={isSaving}
+            data-testid="generate-button"
           />
         </div>
       </div>

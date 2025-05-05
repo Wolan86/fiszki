@@ -36,11 +36,12 @@ export const SourceTextInput: React.FC<SourceTextInputProps> = ({
           placeholder={placeholder}
           aria-invalid={!isValid}
           aria-describedby="source-text-error"
+          data-testid="source-text-textarea"
         />
       </div>
       
       {errors.length > 0 && (
-        <div id="source-text-error" className="text-sm text-red-500 mt-1">
+        <div id="source-text-error" className="text-sm text-red-500 mt-1" data-testid="source-text-errors">
           {errors.map((error, index) => (
             <div key={index}>{error}</div>
           ))}

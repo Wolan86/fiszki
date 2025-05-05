@@ -9,7 +9,7 @@ interface GenerationStatsProps {
 export const GenerationStats: React.FC<GenerationStatsProps> = ({ stats }) => {
   return (
     <Card className="p-4 bg-neutral-50 border-neutral-200">
-      <div className="text-sm text-neutral-600">
+      <div className="text-sm text-neutral-600" data-testid="generation-stats">
         <div className="flex justify-between items-center">
           <span>Czas generowania:</span>
           <span className="font-medium">{stats.formattedTime}</span>

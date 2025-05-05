@@ -59,22 +59,25 @@ export const CreatorView: React.FC = () => {
   };
   
   return (
-    <div className="container mx-auto py-8 px-4 max-w-5xl">
+    <div className="container mx-auto py-8 px-4 max-w-5xl" data-testid="flashcard-creator-view">
       <PageHeader
         title="Kreator fiszek"
         description="Wprowadź tekst źródłowy i wygeneruj fiszki edukacyjne przy pomocy sztucznej inteligencji."
+        
       />
       
       <SourceTextForm
         onTextSaved={handleTextSaved}
         onGenerateRequest={handleGenerateRequest}
+        data-testid="source-text-form"
       />
       
       {error && (
-        <div className="mt-6">
+        <div className="mt-6" data-testid="flashcard-generation-error">
           <ErrorMessage
             error={error}
             onRetry={handleRetryGeneration}
+            data-testid="generation-error-message"
           />
         </div>
       )}
@@ -82,6 +85,7 @@ export const CreatorView: React.FC = () => {
       <ProgressIndicator
         isGenerating={isGenerating}
         progressText="Trwa generowanie fiszek edukacyjnych na podstawie tekstu źródłowego..."
+        data-testid="flashcard-generation-progress"
       />
       
       {generationStats && flashcards.length > 0 && (
@@ -91,6 +95,7 @@ export const CreatorView: React.FC = () => {
           onAccept={handleAcceptFlashcard}
           onReject={handleRejectFlashcard}
           onRegenerate={handleRegenerateFlashcard}
+          data-testid="generated-flashcards-container"
         />
       )}
     </div>

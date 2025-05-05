@@ -30,24 +30,26 @@ export const FlashcardContent: React.FC<FlashcardContentProps> = ({
           e.preventDefault();
         }
       }}
+      data-testid="flashcard-content"
+      data-flipped={isFlipped}
     >
-      <div className="absolute top-2 right-2 text-xs text-neutral-400">
+      <div className="absolute top-2 right-2 text-xs text-neutral-400" data-testid="flashcard-side-indicator">
         {isFlipped ? "Odpowiedź" : "Pytanie"}
       </div>
       
       <div className="text-center">
         {isFlipped ? (
-          <div className="prose">
+          <div className="prose" data-testid="flashcard-back-content">
             <p className="text-lg">{backContent}</p>
           </div>
         ) : (
-          <div className="prose">
+          <div className="prose" data-testid="flashcard-front-content">
             <p className="text-lg font-medium">{frontContent}</p>
           </div>
         )}
       </div>
       
-      <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 text-xs text-neutral-400">
+      <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 text-xs text-neutral-400" data-testid="flashcard-flip-hint">
         {isFlipped ? "Kliknij aby odwrócić" : "Kliknij aby zobaczyć odpowiedź"}
       </div>
     </div>

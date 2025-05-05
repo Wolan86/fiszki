@@ -24,12 +24,13 @@ export const FlashcardItem: React.FC<FlashcardItemProps> = ({
   };
   
   return (
-    <Card className="overflow-hidden mb-6 transform transition-all duration-300 hover:shadow-md">
+    <Card className="overflow-hidden mb-6 transform transition-all duration-300 hover:shadow-md" data-testid={`flashcard-${flashcard.id}`}>
       <FlashcardContent
         frontContent={flashcard.front_content}
         backContent={flashcard.back_content}
         isFlipped={isFlipped}
         onFlip={handleFlip}
+        data-testid={`flashcard-content-${flashcard.id}`}
       />
       
       {flashcard.showActions && (
@@ -40,6 +41,7 @@ export const FlashcardItem: React.FC<FlashcardItemProps> = ({
           isRegenerating={flashcard.isRegenerating}
           isAccepted={flashcard.accepted === true}
           isRejected={flashcard.accepted === false}
+          data-testid={`flashcard-actions-${flashcard.id}`}
         />
       )}
     </Card>

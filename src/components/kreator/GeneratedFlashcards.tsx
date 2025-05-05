@@ -23,14 +23,20 @@ export const GeneratedFlashcards: React.FC<GeneratedFlashcardsProps> = ({
   }
 
   return (
-    <div className="space-y-6">
-      <GenerationStats stats={stats} />
+    <div className="space-y-6" data-testid="generated-flashcards-result">
+      <div className="flex justify-between items-center">
+        <GenerationStats stats={stats} />
+        <div className="flex space-x-2">
+          {/* Buttons for saving, downloading, etc. could go here */}
+        </div>
+      </div>
       
       <FlashcardList
         flashcards={flashcards}
         onAccept={onAccept}
         onReject={onReject}
         onRegenerate={onRegenerate}
+        data-testid="flashcard-list"
       />
     </div>
   );

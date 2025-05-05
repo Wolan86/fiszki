@@ -72,7 +72,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <form className="space-y-4">
+        <form className="space-y-4" data-testid="login-form">
           {error && (
             <Alert variant="destructive">
               <AlertCircle className="h-4 w-4" />
@@ -91,6 +91,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
               onBlur={handleBlur}
               disabled={isLoading}
               aria-invalid={!!validationErrors.email}
+              data-testid="email-input"
             />
             {validationErrors.email && (
               <p className="text-sm text-red-500 mt-1">{validationErrors.email}</p>
@@ -116,6 +117,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
               onBlur={handleBlur}
               disabled={isLoading}
               aria-invalid={!!validationErrors.password}
+              data-testid="password-input"
             />
             {validationErrors.password && (
               <p className="text-sm text-red-500 mt-1">{validationErrors.password}</p>
@@ -126,6 +128,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
             type="submit"
             className="w-full"
             disabled={isLoading}
+            data-testid="login-button"
           >
             {isLoading ? "Logowanie..." : "Zaloguj się"}
           </Button>

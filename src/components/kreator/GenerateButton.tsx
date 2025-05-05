@@ -18,6 +18,7 @@ export const GenerateButton: React.FC<GenerateButtonProps> = ({
       disabled={disabled || isLoading}
       className="px-6 py-2"
       variant="default"
+      data-testid="generate-button"
     >
       {isLoading ? (
         <>

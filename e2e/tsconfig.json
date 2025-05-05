@@ -1,0 +1,13 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "../dist-e2e",
+    "sourceMap": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["../src/*"]
+    },
+    "types": ["@playwright/test", "node"]
+  },
+  "include": ["./**/*.ts"]
+} 
