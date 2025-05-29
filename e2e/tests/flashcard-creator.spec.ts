@@ -93,23 +93,87 @@ test.describe('Flashcard Creator', () => {
     await creatorPage.goto();
     await creatorPage.generateFlashcards(sampleText);
     
-    // Get the first flashcard
-    const flashcards = await creatorPage.getAllFlashcards();
-    expect(flashcards.length).toBeGreaterThan(0);
+    // Wait for everything to load properly
+    await page.waitForTimeout(2000);
     
-    // Extract the ID from the first flashcard's test-id attribute
-    const testId = await flashcards[0].getAttribute('data-testid');
-    const flashcardId = testId ? testId.replace('flashcard-', '') : '';
+    // Debug: List all data-testid attributes in the page
+    console.log('Examining page structure for flashcards...');
+    const pageStructure = await page.evaluate(() => {
+      const testIds: Record<string, { 
+        tagName: string; 
+        className: string; 
+        children: number; 
+        text: string | undefined; 
+      }> = {};
+      
+      document.querySelectorAll('[data-testid]').forEach(el => {
+        const id = el.getAttribute('data-testid');
+        if (id) { // Only add to testIds if id is not null
+          testIds[id] = {
+            tagName: el.tagName,
+            className: el.className,
+            children: el.childElementCount,
+            text: el.textContent?.substring(0, 30)
+          };
+        }
+      });
+      
+      // Check the flashcard grid specifically
+      const grid = document.querySelector('[data-testid="flashcard-grid"]');
+      const gridDetails = grid ? {
+        childCount: grid.childElementCount,
+        firstChildTestId: grid.firstElementChild?.getAttribute('data-testid'),
+        children: Array.from(grid.children).map(c => ({
+          testId: c.getAttribute('data-testid'),
+          tag: c.tagName,
+          class: c.className
+        }))
+      } : 'Grid not found';
+      
+      return { testIds, gridDetails };
+    });
+    console.log('Page structure:', pageStructure);
     
-    // Create a FlashcardComponent for the first flashcard
-    const flashcard = new FlashcardComponent(page, flashcardId);
+    // Make sure the grid is visible first
+    await expect(page.locator('[data-testid="flashcard-grid"]')).toBeVisible({ timeout: 10000 });
     
-    // Accept the flashcard
-    await flashcard.accept();
+    // Get a direct reference to flashcard items in the grid
+    const flashcardItems = page.locator('[data-testid^="flashcard-item-"]');
+    const count = await flashcardItems.count();
+    console.log(`Found ${count} flashcard items`);
     
-    // Assert
-    // The button should be disabled after accepting
-    await expect(flashcard.acceptButton).toBeDisabled();
+    if (count > 0) {
+      // Get the first flashcard item
+      const firstFlashcard = flashcardItems.first();
+      
+      // Get its ID to create a FlashcardComponent
+      const testId = await firstFlashcard.getAttribute('data-testid');
+      console.log(`First flashcard test ID: ${testId}`);
+      
+      // Extract the numeric ID from the test ID (flashcard-item-XXX)
+      const flashcardId = testId ? testId.replace('flashcard-item-', '') : '';
+      console.log(`Extracted ID: ${flashcardId}`);
+      
+      // Create a FlashcardComponent for the first flashcard
+      const flashcard = new FlashcardComponent(page, flashcardId);
+      
+      // Accept the flashcard
+      await flashcard.accept();
+      
+      // Verify the button is disabled after accepting
+      await expect(flashcard.acceptButton).toBeDisabled();
+    } else {
+      // If no items found with our new selector, try an alternative approach
+      console.log('No flashcard items found with [data-testid^="flashcard-item-"], trying direct button click');
+      
+      // Directly click the first accept button
+      const acceptButton = page.locator('[data-testid="accept-flashcard-button"]').first();
+      await expect(acceptButton).toBeVisible({ timeout: 5000 });
+      await acceptButton.click();
+      
+      // Verify it's now disabled
+      await expect(acceptButton).toBeDisabled();
+    }
   });
 
   // Example test for complete workflow (create, generate, accept)

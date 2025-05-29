@@ -2,11 +2,28 @@ import { z } from 'zod';
 import type { SupabaseClient } from '../../db/supabase.client';
 import type { CreateSourceTextCommand, SourceTextDto } from '../../types';
 
+// Helper function to count words in a string
+const countWords = (text: string): number => {
+  return text.trim() ? text.trim().split(/\s+/).length : 0;
+};
+
 // Validation schema for create source text command
 const createSourceTextSchema = z.object({
   content: z.string()
-    .min(1000, 'Content must be between 1000 and 10000 characters')
-    .max(10000, 'Content must be between 1000 and 10000 characters')
+    .refine(
+      (text) => {
+        const wordCount = countWords(text);
+        return wordCount >= 1000;
+      },
+      { message: 'Content must be between 1000 and 10000 words' }
+    )
+    .refine(
+      (text) => {
+        const wordCount = countWords(text);
+        return wordCount <= 10000;
+      },
+      { message: 'Content must be between 1000 and 10000 words' }
+    )
 });
 
 /**

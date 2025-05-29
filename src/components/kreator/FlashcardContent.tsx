@@ -5,13 +5,15 @@ interface FlashcardContentProps {
   backContent: string;
   isFlipped: boolean;
   onFlip: () => void;
+  "data-testid"?: string;
 }
 
 export const FlashcardContent: React.FC<FlashcardContentProps> = ({
   frontContent,
   backContent,
   isFlipped,
-  onFlip
+  onFlip,
+  "data-testid": dataTestId = "flashcard-content"
 }) => {
   return (
     <div 
@@ -30,7 +32,7 @@ export const FlashcardContent: React.FC<FlashcardContentProps> = ({
           e.preventDefault();
         }
       }}
-      data-testid="flashcard-content"
+      data-testid={dataTestId}
       data-flipped={isFlipped}
     >
       <div className="absolute top-2 right-2 text-xs text-neutral-400" data-testid="flashcard-side-indicator">

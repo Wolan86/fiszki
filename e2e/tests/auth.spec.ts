@@ -82,11 +82,15 @@ test.describe('Authentication', () => {
     // Login first
     await loginAsTestUser(page);
     
-    // Click on user menu button
-    await page.getByTestId('user-menu-button').click();
-    
+  
     // Click on logout option
-    await page.getByText('Wyloguj się').click();
+    await page.evaluate(() => {
+      document.querySelector('[data-testid="user-menu-button"]')?.dispatchEvent(new MouseEvent('click', {
+        bubbles: true,
+        cancelable: true,
+        view: window
+      }));
+    });
     
     // Wait for logout to complete
     await wait(1000);

@@ -2,26 +2,38 @@ import type { APIContext } from 'astro';
 import { SourceTextService } from '../../lib/services/source-text.service';
 import type { CreateSourceTextCommand, ApiErrorResponse } from '../../types';
 import { DEFAULT_USER_ID } from '../../db/supabase.client';
+import { createSupabaseServerInstance } from '../../db/supabase.client';
 
 export const prerender = false;
 
 // POST handler for creating a new source text
-export async function POST({ request, locals }: APIContext) {
-  // Check if user is authenticated
-  const { supabase } = locals;
+export async function POST({ request, locals, cookies }: APIContext) {
+  // Create server instance with cookie context
+  const supabase = createSupabaseServerInstance({
+    cookies,
+    headers: request.headers,
+  });
   
-//   // Get authenticated user
-//   const { data: { session } } = await supabase.auth.getSession();
-//   if (!session?.user) {
-//     const errorResponse: ApiErrorResponse = {
-//       message: 'Unauthorized',
-//       code: 'UNAUTHORIZED'
-//     };
-//     return new Response(JSON.stringify(errorResponse), {
-//       status: 401,
-//       headers: { 'Content-Type': 'application/json' }
-//     });
-//   }
+  // Get authenticated user
+  const { data: { session } } = await supabase.auth.getSession();
+  
+  // Debug authentication
+  console.log("Auth Session Check:", {
+    hasSession: !!session,
+    hasUser: !!session?.user,
+    userId: session?.user?.id || 'none'
+  });
+  
+  if (!session?.user) {
+    const errorResponse: ApiErrorResponse = {
+      message: 'Unauthorized',
+      code: 'UNAUTHORIZED'
+    };
+    return new Response(JSON.stringify(errorResponse), {
+      status: 401,
+      headers: { 'Content-Type': 'application/json' }
+    });
+  }
   
   try {
     // Parse request body
@@ -29,7 +41,7 @@ export async function POST({ request, locals }: APIContext) {
     
     // Create service instance and process the request
     const sourceTextService = new SourceTextService(supabase);
-    const result = await sourceTextService.createSourceText(command, DEFAULT_USER_ID);
+    const result = await sourceTextService.createSourceText(command, session.user.id);
     
     // Return success response
     return new Response(JSON.stringify(result), {

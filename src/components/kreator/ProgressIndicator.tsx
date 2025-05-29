@@ -4,16 +4,18 @@ import { Card } from "@/components/ui/card";
 interface ProgressIndicatorProps {
   isGenerating: boolean;
   progressText?: string;
+  "data-testid"?: string;
 }
 
 export const ProgressIndicator: React.FC<ProgressIndicatorProps> = ({
   isGenerating,
-  progressText = "Generowanie fiszek. Proszę czekać..."
+  progressText = "Generowanie fiszek. Proszę czekać...",
+  "data-testid": dataTestId
 }) => {
   if (!isGenerating) return null;
 
   return (
-    <Card className="p-6 my-6 border border-neutral-200">
+    <Card className="p-6 my-6 border border-neutral-200" data-testid={dataTestId}>
       <div className="flex flex-col items-center justify-center space-y-4">
         <div className="relative w-16 h-16">
           {/* Pulsujące okręgi */}

@@ -12,26 +12,52 @@
 #### Create a new source text
 - **Method**: POST
 - **Path**: `/api/source-texts`
-- **Description**: Creates a new source text
+- **Description**: Creates a new source text and optionally generates flashcards from it
 - **Request Body**:
   ```json
   {
-    "content": "string (1000-10000 characters)"
+    "content": "string (1000-10000 characters)",
+    "generate_flashcards": "boolean (optional, default: false)",
+    "flashcard_count": "number (optional, default: 5, only used if generate_flashcards is true)"
   }
   ```
 - **Response**:
   ```json
   {
-    "id": "uuid",
-    "user_id": "uuid",
-    "content": "string",
-    "created_at": "timestamp"
+    "source_text": {
+      "id": "uuid",
+      "user_id": "uuid",
+      "content": "string",
+      "created_at": "timestamp"
+    },
+    "flashcards": [
+      {
+        "id": "uuid",
+        "user_id": "uuid",
+        "source_text_id": "uuid",
+        "front_content": "string",
+        "back_content": "string",
+        "creation_type": "ai_generated",
+        "accepted": false,
+        "generation_time_ms": "number",
+        "created_at": "timestamp",
+        "updated_at": "timestamp"
+      }
+    ],
+    "generation_stats": {
+      "requested_count": "number",
+      "generated_count": "number",
+      "total_time_ms": "number"
+    }
   }
   ```
+  **Note**: If `generate_flashcards` is false, the `flashcards` array will be empty and `generation_stats` will be null.
 - **Success Codes**: 201 Created
 - **Error Codes**: 
   - 400 Bad Request (validation errors)
   - 401 Unauthorized
+  - 422 Unprocessable Entity (AI generation failed, if flashcard generation was requested)
+  - 503 Service Unavailable (AI service unavailable, if flashcard generation was requested)
 
 #### Get all source texts
 - **Method**: GET
@@ -116,47 +142,6 @@
 - **Error Codes**: 
   - 401 Unauthorized
   - 404 Not Found
-
-#### Generate flashcards from a source text
-- **Method**: POST
-- **Path**: `/api/source-texts/{id}/generate-flashcards`
-- **Description**: Generates AI flashcards from a source text
-- **Request Body**:
-  ```json
-  {
-    "count": "number (optional, default: 5)"
-  }
-  ```
-- **Response**:
-  ```json
-  {
-    "flashcards": [
-      {
-        "id": "uuid",
-        "user_id": "uuid",
-        "source_text_id": "uuid",
-        "front_content": "string",
-        "back_content": "string",
-        "creation_type": "ai_generated",
-        "accepted": false,
-        "generation_time_ms": "number",
-        "created_at": "timestamp",
-        "updated_at": "timestamp"
-      }
-    ],
-    "generation_stats": {
-      "requested_count": "number",
-      "generated_count": "number",
-      "total_time_ms": "number"
-    }
-  }
-  ```
-- **Success Codes**: 200 OK
-- **Error Codes**: 
-  - 401 Unauthorized
-  - 404 Not Found
-  - 422 Unprocessable Entity (AI generation failed)
-  - 503 Service Unavailable (AI service unavailable)
 
 ### 2.2 Flashcards
 
@@ -377,10 +362,13 @@
 - **Validation**:
   - Content must be between 1000 and 10000 characters
   - User must be authenticated
+  - If generate_flashcards is true, flashcard_count must be a positive number (default: 5)
 - **Business Logic**:
   - Source texts are tied to a single user
   - Source texts can have multiple associated flashcards
   - Deleting a source text doesn't delete associated flashcards (they will have source_text_id set to NULL)
+  - When generate_flashcards is true, flashcards are created immediately after source text creation
+  - AI generation during source text creation should be atomic - if flashcard generation fails, the source text creation should still succeed
 
 ### Flashcards
 - **Validation**:
@@ -398,10 +386,13 @@
 
 ### AI Generation
 - **Validation**:
-  - Source text must exist and belong to the requesting user
+  - Source text content must be valid (1000-10000 characters)
   - User must be authenticated
+  - flashcard_count must be a positive number if provided
 - **Business Logic**:
-  - AI generation should produce at least 5 flashcards per source text
+  - AI generation can occur during source text creation (via generate_flashcards flag) or via flashcard regeneration
+  - AI generation should produce the requested number of flashcards (default: 5)
   - AI generation should complete within 30 seconds
   - Generation time is tracked and stored for performance monitoring
   - AI regeneration should produce a new flashcard distinct from the one being replaced
+  - If AI generation fails during source text creation, the source text should still be saved successfully

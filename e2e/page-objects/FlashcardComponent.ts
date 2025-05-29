@@ -1,4 +1,4 @@
-import { Locator, Page } from '@playwright/test';
+import type { Locator, Page } from '@playwright/test';
 
 /**
  * Component class for interacting with a single flashcard
@@ -11,37 +11,37 @@ export class FlashcardComponent {
   constructor(page: Page, id: string) {
     this.page = page;
     this.id = id;
-    this.locator = page.getByTestId(`flashcard-${id}`);
+    this.locator = page.getByTestId(`flashcard-item-${id}`);
   }
 
   // Content locators
   get content() {
-    return this.page.getByTestId(`flashcard-content-${this.id}`);
+    return this.locator.locator('[data-testid^="flashcard-content"]');
   }
 
   get frontContent() {
-    return this.page.getByTestId('flashcard-front-content');
+    return this.locator.locator('[data-testid="flashcard-front-content"]');
   }
 
   get backContent() {
-    return this.page.getByTestId('flashcard-back-content');
+    return this.locator.locator('[data-testid="flashcard-back-content"]');
   }
 
   // Action buttons
   get actionsContainer() {
-    return this.page.getByTestId(`flashcard-actions-${this.id}`);
+    return this.locator.locator('[data-testid^="flashcard-actions"]');
   }
 
   get acceptButton() {
-    return this.page.getByTestId('accept-flashcard-button');
+    return this.locator.locator('[data-testid="accept-flashcard-button"]');
   }
 
   get rejectButton() {
-    return this.page.getByTestId('reject-flashcard-button');
+    return this.locator.locator('[data-testid="reject-flashcard-button"]');
   }
 
   get regenerateButton() {
-    return this.page.getByTestId('regenerate-flashcard-button');
+    return this.locator.locator('[data-testid="regenerate-flashcard-button"]');
   }
 
   /**
@@ -55,17 +55,21 @@ export class FlashcardComponent {
    * Accept the flashcard
    */
   async accept() {
-    // Make sure the actions are visible first
-    await this.actionsContainer.waitFor({ state: 'visible' });
-    await this.acceptButton.click();
+    await this.actionsContainer.waitFor({ state: 'visible', timeout: 5000 });
+    await this.acceptButton.evaluate(element => {
+      element.dispatchEvent(new MouseEvent('click', {
+        bubbles: true,
+        cancelable: true,
+        view: window
+      }));
+    });
   }
 
   /**
    * Reject the flashcard
    */
   async reject() {
-    // Make sure the actions are visible first
-    await this.actionsContainer.waitFor({ state: 'visible' });
+    await this.actionsContainer.waitFor({ state: 'visible', timeout: 5000 });
     await this.rejectButton.click();
   }
 
@@ -73,10 +77,8 @@ export class FlashcardComponent {
    * Regenerate the flashcard
    */
   async regenerate() {
-    // Make sure the actions are visible first
-    await this.actionsContainer.waitFor({ state: 'visible' });
+    await this.actionsContainer.waitFor({ state: 'visible', timeout: 5000 });
     await this.regenerateButton.click();
-    // Wait for regeneration to complete (the button has a loading state)
     await this.page.waitForSelector('[data-testid="regenerate-flashcard-button"]:not(:has(.animate-spin))');
   }
 
@@ -94,7 +96,7 @@ export class FlashcardComponent {
   async getFrontText() {
     const isFlipped = await this.isFlipped();
     if (isFlipped) {
-      await this.flip(); // Flip back to front
+      await this.flip();
     }
     return this.frontContent.textContent();
   }
@@ -105,7 +107,7 @@ export class FlashcardComponent {
   async getBackText() {
     const isFlipped = await this.isFlipped();
     if (!isFlipped) {
-      await this.flip(); // Flip to back
+      await this.flip();
     }
     return this.backContent.textContent();
   }

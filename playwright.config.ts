@@ -2,9 +2,20 @@ import { defineConfig, devices } from '@playwright/test';
 import dotenv from 'dotenv';
 import fs from 'fs';
 import path from 'path';
+import { fileURLToPath } from 'url';
 
-// Load test-specific variables
-dotenv.config({ path: '.env.test', override: true });
+// Get directory path in ES modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Load test-specific variables - use process.env extension approach for better UI mode compatibility
+const envFile = path.resolve(__dirname, '.env.test');
+if (fs.existsSync(envFile)) {
+  const envConfig = dotenv.parse(fs.readFileSync(envFile));
+  Object.entries(envConfig).forEach(([key, value]) => {
+    process.env[key] = value;
+  });
+}
 
 // Define storage state file path
 const storageStatePath = './e2e/auth/storageState.json';

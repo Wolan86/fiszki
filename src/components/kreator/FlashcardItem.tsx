@@ -9,13 +9,15 @@ interface FlashcardItemProps {
   onAccept: () => void;
   onReject: () => void;
   onRegenerate: () => void;
+  "data-testid"?: string;
 }
 
 export const FlashcardItem: React.FC<FlashcardItemProps> = ({
   flashcard,
   onAccept,
   onReject,
-  onRegenerate
+  onRegenerate,
+  "data-testid": dataTestId
 }) => {
   const [isFlipped, setIsFlipped] = useState<boolean>(flashcard.isFlipped);
   
@@ -23,8 +25,11 @@ export const FlashcardItem: React.FC<FlashcardItemProps> = ({
     setIsFlipped(prev => !prev);
   };
   
+  // Use the provided testId if available, otherwise fall back to the standard format
+  const testId = dataTestId || `flashcard-${flashcard.id}`;
+  
   return (
-    <Card className="overflow-hidden mb-6 transform transition-all duration-300 hover:shadow-md" data-testid={`flashcard-${flashcard.id}`}>
+    <Card className="overflow-hidden mb-6 transform transition-all duration-300 hover:shadow-md" data-testid={testId}>
       <FlashcardContent
         frontContent={flashcard.front_content}
         backContent={flashcard.back_content}

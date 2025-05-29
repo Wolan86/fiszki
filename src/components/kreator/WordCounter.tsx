@@ -4,12 +4,14 @@ interface WordCounterProps {
   currentCount: number;
   minCount: number;
   maxCount: number;
+  "data-testid"?: string;
 }
 
 export const WordCounter: React.FC<WordCounterProps> = ({
   currentCount,
   minCount,
-  maxCount
+  maxCount,
+  "data-testid": dataTestId
 }) => {
   // Obliczanie procentu wypełnienia
   const percentFilled = Math.min((currentCount / minCount) * 100, 100);
@@ -34,7 +36,7 @@ export const WordCounter: React.FC<WordCounterProps> = ({
   };
   
   return (
-    <div className="space-y-1 mb-4">
+    <div className="space-y-1 mb-4" data-testid={dataTestId}>
       <div className="flex justify-between items-center text-sm">
         <span>Liczba słów:</span>
         <span className={getStateColor()}>

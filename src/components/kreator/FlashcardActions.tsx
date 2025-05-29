@@ -10,6 +10,7 @@ interface FlashcardActionsProps {
   isRegenerating: boolean;
   isAccepted?: boolean;
   isRejected?: boolean;
+  "data-testid"?: string;
 }
 
 export const FlashcardActions: React.FC<FlashcardActionsProps> = ({
@@ -18,10 +19,11 @@ export const FlashcardActions: React.FC<FlashcardActionsProps> = ({
   onRegenerate,
   isRegenerating,
   isAccepted = false,
-  isRejected = false
+  isRejected = false,
+  "data-testid": dataTestId = "flashcard-actions"
 }) => {
   return (
-    <div className="flex justify-center space-x-2 p-3 bg-neutral-50 border-t border-neutral-200" data-testid="flashcard-actions">
+    <div className="flex justify-center space-x-2 p-3 bg-neutral-50 border-t border-neutral-200" data-testid={dataTestId}>
       <Button
         variant="ghost"
         size="sm"

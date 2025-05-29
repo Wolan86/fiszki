@@ -18,6 +18,12 @@ const PUBLIC_PATHS = [
 
 export const onRequest = defineMiddleware(
   async ({ locals, cookies, url, request, redirect }, next) => {
+    // Debug
+    const isApiRoute = url.pathname.startsWith('/api/');
+    if (isApiRoute) {
+      console.log(`Auth Middleware for API route: ${url.pathname}`);
+    }
+    
     // Dodajemy supabaseClient do kontekstu dla wszystkich ścieżek
     locals.supabase = supabaseClient;
 

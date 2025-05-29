@@ -2,7 +2,7 @@ import { type APIContext } from "astro";
 import { z } from "zod";
 import { getSourceTextById } from "../../../../lib/services/source-text.service";
 import type { ApiErrorResponse, GenerateFlashcardsResponse } from "../../../../types";
-import { DEFAULT_USER_ID } from "@/db/supabase.client";
+import { DEFAULT_USER_ID, createSupabaseServerInstance } from "@/db/supabase.client";
 import { saveGeneratedFlashcards } from "@/lib/services/flashcard.service";
 import { generateFlashcardsFromText } from "@/lib/services/ai.service";
 
@@ -13,23 +13,28 @@ const generateFlashcardsSchema = z.object({
   count: z.number().int().positive().optional().default(5)
 });
 
-export async function POST({ params, request, locals }: APIContext): Promise<Response> {
+export async function POST({ params, request, locals, cookies }: APIContext): Promise<Response> {
   // Start timing for statistics
   const startTime = performance.now();
-  const { supabase } = locals;
   
-//   // Get authenticated user
-//   const { data: { session } } = await supabase.auth.getSession();
-//   if (!session?.user) {
-//     const errorResponse: ApiErrorResponse = {
-//       message: 'Unauthorized',
-//       code: 'UNAUTHORIZED'
-//     };
-//     return new Response(JSON.stringify(errorResponse), {
-//       status: 401,
-//       headers: { 'Content-Type': 'application/json' }
-//     });
-//   }
+  // Create server instance with cookie context
+  const supabase = createSupabaseServerInstance({
+    cookies,
+    headers: request.headers,
+  });
+  
+  // Get authenticated user
+  const { data: { session } } = await supabase.auth.getSession();
+  if (!session?.user) {
+    const errorResponse: ApiErrorResponse = {
+      message: 'Unauthorized',
+      code: 'UNAUTHORIZED'
+    };
+    return new Response(JSON.stringify(errorResponse), {
+      status: 401,
+      headers: { 'Content-Type': 'application/json' }
+    });
+  }
   // Validate source text ID
   const { id } = params;
   if (!id || typeof id !== "string") {
@@ -77,7 +82,7 @@ export async function POST({ params, request, locals }: APIContext): Promise<Res
     }
     
     // Check if source text belongs to the user
-    if (sourceText.user_id !== DEFAULT_USER_ID) {
+    if (sourceText.user_id !== session.user.id) {
       const errorResponse: ApiErrorResponse = {
         message: "Nie masz dostępu do tego tekstu źródłowego",
         code: "ACCESS_DENIED"
@@ -96,7 +101,7 @@ export async function POST({ params, request, locals }: APIContext): Promise<Res
       supabase,
       generatedFlashcards,
       sourceText.id,
-      DEFAULT_USER_ID
+      session.user.id
     );
     
     // Calculate total processing time

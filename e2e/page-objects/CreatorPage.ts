@@ -88,8 +88,6 @@ export class CreatorPage extends BasePage {
       const chunkSize = 500; // Process in smaller chunks
       for (let i = 0; i < text.length; i += chunkSize) {
         const chunk = text.substring(i, i + chunkSize);
-        await this.sourceTextInput.press('Control+a'); // Select all existing text
-        await this.sourceTextInput.press('Delete'); // Clear it
         await this.sourceTextInput.type(chunk, { delay: 0 }); // Type with no delay between keystrokes
         
         // Short pause between chunks to allow processing
@@ -112,7 +110,13 @@ export class CreatorPage extends BasePage {
    * Click the generate button to generate flashcards
    */
   async clickGenerateButton() {
-    await this.generateButton.click();
+    await this.generateButton.evaluate(element => {
+      element.dispatchEvent(new MouseEvent('click', {
+        bubbles: true,
+        cancelable: true,
+        view: window
+      }));
+    });
   }
 
   /**
@@ -140,9 +144,12 @@ export class CreatorPage extends BasePage {
    */
   async getAllFlashcards() {
     // Wait for the flashcard grid to be visible
-    await this.flashcardGrid.waitFor({ state: 'visible' });
-    // Get all flashcards
-    return this.page.locator('[data-testid^="flashcard-"]').all();
+    await this.flashcardGrid.waitFor({ state: 'visible', timeout: 10000 });
+    
+    console.log('Looking for flashcard items with data-testid pattern flashcard-item-*');
+    
+    // Use the more specific selector for flashcard items
+    return this.page.locator('[data-testid^="flashcard-item-"]').all();
   }
 
   /**
