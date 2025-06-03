@@ -12,6 +12,19 @@ export type FlashcardCreationType = Database["public"]["Enums"]["flashcard_creat
 // Create Source Text Command
 export type CreateSourceTextCommand = {
   content: string;
+  generate_flashcards?: boolean;
+  flashcard_count?: number;
+};
+
+// Create Source Text Response (when flashcards are generated)
+export type CreateSourceTextResponse = {
+  source_text: SourceTextDto;
+  flashcards?: UnsavedFlashcardDto[];
+  generation_stats?: {
+    requested_count: number;
+    generated_count: number;
+    total_time_ms: number;
+  };
 };
 
 // Source Text Response DTO
@@ -61,6 +74,20 @@ export type CreateFlashcardCommand = {
 
 // Flashcard Response DTO
 export type FlashcardDto = Flashcard;
+
+// Unsaved Flashcard DTO (for generated but not yet saved flashcards)
+export type UnsavedFlashcardDto = {
+  id: string; // temporary ID
+  front_content: string;
+  back_content: string;
+  accepted: boolean | null;
+  source_text_id: string | null;
+  creation_type: FlashcardCreationType | null;
+  user_id: string;
+  created_at: string;
+  updated_at: string;
+  generation_time_ms: number | null;
+};
 
 // Update Flashcard Command
 export type UpdateFlashcardCommand = {

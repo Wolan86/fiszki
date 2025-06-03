@@ -4,22 +4,22 @@ import { SourceTextInput } from "./SourceTextInput";
 import { WordCounter } from "./WordCounter";
 import { GenerateButton } from "./GenerateButton";
 import { useSourceText } from "./hooks/useSourceText";
-import type { SourceTextDto } from "@/types";
+import type { SourceTextDto, CreateSourceTextResponse } from "@/types";
 
 interface SourceTextFormProps {
   onTextSaved: (sourceText: SourceTextDto) => void;
-  onGenerateRequest: (sourceTextId: string) => void;
+  onFlashcardsGenerated: (response: CreateSourceTextResponse) => void;
 }
 
 export const SourceTextForm: React.FC<SourceTextFormProps> = ({
   onTextSaved,
-  onGenerateRequest
+  onFlashcardsGenerated
 }) => {
   const MIN_WORD_COUNT = 1000;
   const MAX_WORD_COUNT = 10000;
   
   const [sourceTextId, setSourceTextId] = useState<string | null>(null);
-  const [canGenerate, setCanGenerate] = useState<boolean>(false);
+  const [isGenerating, setIsGenerating] = useState<boolean>(false);
   
   const {
     content,
@@ -29,20 +29,22 @@ export const SourceTextForm: React.FC<SourceTextFormProps> = ({
     isSaving,
     lastSaved,
     errors,
-    saveSourceText
+    saveSourceText,
+    saveSourceTextAndGenerateFlashcards
   } = useSourceText({
     minWordCount: MIN_WORD_COUNT,
     maxWordCount: MAX_WORD_COUNT,
     autosaveDelay: 2000
   });
   
-  // Sprawdzenie, czy możemy generować fiszki (tekst jest zapisany i poprawny)
-  useEffect(() => {
-    setCanGenerate(isValid && sourceTextId !== null && !isSaving);
-  }, [isValid, sourceTextId, isSaving]);
-  
   // Obsługa ręcznego zapisu tekstu
   const handleSave = async () => {
+    // Nie zapisujemy podczas generowania fiszek
+    if (isGenerating) {
+      console.log("Skipping manual save during flashcard generation");
+      return;
+    }
+    
     const savedText = await saveSourceText();
     if (savedText) {
       setSourceTextId(savedText.id);
@@ -50,23 +52,36 @@ export const SourceTextForm: React.FC<SourceTextFormProps> = ({
     }
   };
   
-  // Obsługa żądania generowania fiszek
-  const handleGenerateRequest = () => {
-    if (sourceTextId && canGenerate) {
-      onGenerateRequest(sourceTextId);
-    } else if (isValid && !sourceTextId) {
-      // Jeśli tekst jest poprawny, ale nie został jeszcze zapisany, zapisz go najpierw
-      handleSave().then(() => {
-        if (sourceTextId) {
-          onGenerateRequest(sourceTextId);
-        }
-      });
+  // Obsługa żądania generowania fiszek - teraz wszystko w jednym calu
+  const handleGenerateRequest = async () => {
+    // Check validation directly instead of relying on isValid state
+    const currentWordCount = content.trim().split(/\s+/).length;
+    const hasValidLength = currentWordCount >= MIN_WORD_COUNT && currentWordCount <= MAX_WORD_COUNT;
+    const hasContent = content.trim().length > 0;
+    
+    if (!hasValidLength || !hasContent) {
+      return;
+    }
+    
+    try {
+      setIsGenerating(true);
+      const response = await saveSourceTextAndGenerateFlashcards(5); // Default 5 flashcards
+      
+      if (response) {
+        setSourceTextId(response.source_text.id);
+        onTextSaved(response.source_text);
+        onFlashcardsGenerated(response);
+      }
+    } catch (error) {
+      console.error("Error generating flashcards:", error);
+    } finally {
+      setIsGenerating(false);
     }
   };
   
   // Informacja o statusie zapisywania
   const getSaveStatus = () => {
-    if (isSaving) return "Zapisywanie...";
+    if (isSaving || isGenerating) return isGenerating ? "Generowanie fiszek..." : "Zapisywanie...";
     if (lastSaved) return `Ostatnio zapisano: ${lastSaved.toLocaleTimeString()}`;
     return "Niezapisany";
   };
@@ -89,7 +104,7 @@ export const SourceTextForm: React.FC<SourceTextFormProps> = ({
         <SourceTextInput
           value={content}
           onChange={setContent}
-          onBlur={handleSave}
+          onBlur={() => {}}
           isValid={isValid}
           errors={errors}
           data-testid="source-text-input"
@@ -98,8 +113,8 @@ export const SourceTextForm: React.FC<SourceTextFormProps> = ({
         <div className="pt-4 flex justify-end">
           <GenerateButton
             onClick={handleGenerateRequest}
-            disabled={!isValid || isSaving}
-            isLoading={isSaving}
+            disabled={!isValid || isSaving || isGenerating}
+            isLoading={isGenerating}
             data-testid="generate-button"
           />
         </div>

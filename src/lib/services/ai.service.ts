@@ -33,7 +33,7 @@ export async function generateFlashcardsFromText(
     return generatedFlashcards.map(card => ({
       front_content: card.front_content,
       back_content: card.back_content,
-      accepted: false,
+      accepted: null,
       creation_type: "ai_generated" as const,
       generation_time_ms: generationTime
     }));

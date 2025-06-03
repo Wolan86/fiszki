@@ -1,9 +1,36 @@
+import { z } from 'zod';
 import type { SupabaseClient } from "@supabase/supabase-js";
-import type { FlashcardDto } from "../../types";
+import type { FlashcardDto, CreateFlashcardCommand, UpdateFlashcardCommand } from "../../types";
 import type { Database } from "../../db/database.types";
 
 type DbClient = SupabaseClient<Database>;
 type FlashcardInput = Pick<FlashcardDto, "front_content" | "back_content" | "accepted" | "creation_type" | "generation_time_ms">;
+
+// Validation schema for create flashcard command
+export const createFlashcardSchema = z.object({
+  front_content: z.string()
+    .min(1, "Front content is required and cannot be empty")
+    .max(2000, "Front content cannot exceed 2000 characters"),
+  back_content: z.string()
+    .min(1, "Back content is required and cannot be empty")
+    .max(2000, "Back content cannot exceed 2000 characters"),
+  source_text_id: z.string()
+    .uuid("Invalid source_text_id format")
+    .optional()
+});
+
+// Validation schema for update flashcard command
+export const updateFlashcardSchema = z.object({
+  front_content: z.string()
+    .min(1, "Front content is required and cannot be empty")
+    .max(2000, "Front content cannot exceed 2000 characters")
+    .optional(),
+  back_content: z.string()
+    .min(1, "Back content is required and cannot be empty")
+    .max(2000, "Back content cannot exceed 2000 characters")
+    .optional(),
+  accepted: z.boolean().optional()
+});
 
 /**
  * Saves AI-generated flashcards to the database
@@ -39,4 +66,125 @@ export async function saveGeneratedFlashcards(
   }
   
   return data || [];
+}
+
+/**
+ * Creates a new flashcard manually by the user
+ * 
+ * @param supabase Supabase client instance
+ * @param command Command with flashcard data
+ * @param userId ID of the user creating the flashcard
+ * @returns Created flashcard with complete data
+ */
+export async function createFlashcard(
+  supabase: DbClient,
+  command: CreateFlashcardCommand,
+  userId: string
+): Promise<FlashcardDto> {
+  // Validate source_text_id if provided
+  if (command.source_text_id) {
+    const { data: sourceText, error: sourceTextError } = await supabase
+      .from("source_texts")
+      .select("id")
+      .eq("id", command.source_text_id)
+      .eq("user_id", userId)
+      .single();
+
+    if (sourceTextError || !sourceText) {
+      throw new Error("SOURCE_TEXT_NOT_FOUND");
+    }
+  }
+
+  // Prepare flashcard for insertion
+  const flashcardToInsert = {
+    front_content: command.front_content,
+    back_content: command.back_content,
+    source_text_id: command.source_text_id || null,
+    user_id: userId,
+    creation_type: "manual" as const,
+    accepted: true,
+    generation_time_ms: null
+  };
+
+  // Insert flashcard into the database
+  const { data, error } = await supabase
+    .from("flashcards")
+    .insert([flashcardToInsert])
+    .select("*")
+    .single();
+
+  if (error) {
+    console.error("Error creating flashcard:", error);
+    throw new Error(`DATABASE_ERROR: ${error.message}`);
+  }
+
+  if (!data) {
+    throw new Error("DATABASE_ERROR: No data returned from insert");
+  }
+
+  return data;
+}
+
+/**
+ * Updates an existing flashcard
+ * 
+ * @param supabase Supabase client instance
+ * @param flashcardId ID of the flashcard to update
+ * @param command Command with update data
+ * @param userId ID of the user updating the flashcard
+ * @returns Updated flashcard with complete data
+ */
+export async function updateFlashcard(
+  supabase: DbClient,
+  flashcardId: string,
+  command: UpdateFlashcardCommand,
+  userId: string
+): Promise<FlashcardDto> {
+  // Check if flashcard exists and belongs to user
+  const { data: existingFlashcard, error: fetchError } = await supabase
+    .from("flashcards")
+    .select("id")
+    .eq("id", flashcardId)
+    .eq("user_id", userId)
+    .single();
+
+  if (fetchError || !existingFlashcard) {
+    throw new Error("FLASHCARD_NOT_FOUND");
+  }
+
+  // Prepare update object (only include fields that are being updated)
+  const updateData: Partial<FlashcardDto> = {};
+  
+  if (command.front_content !== undefined) {
+    updateData.front_content = command.front_content;
+  }
+  if (command.back_content !== undefined) {
+    updateData.back_content = command.back_content;
+  }
+  if (command.accepted !== undefined) {
+    updateData.accepted = command.accepted;
+  }
+
+  // Add updated_at timestamp
+  updateData.updated_at = new Date().toISOString();
+
+  // Update flashcard in the database
+  const { data, error } = await supabase
+    .from("flashcards")
+    .update(updateData)
+    .eq("id", flashcardId)
+    .eq("user_id", userId)
+    .select("*")
+    .single();
+
+  if (error) {
+    console.error("Error updating flashcard:", error);
+    throw new Error(`DATABASE_ERROR: ${error.message}`);
+  }
+
+  if (!data) {
+    throw new Error("DATABASE_ERROR: No data returned from update");
+  }
+
+  return data;
 } 

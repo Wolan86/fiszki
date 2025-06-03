@@ -7,13 +7,21 @@ interface FlashcardListProps {
   onAccept: (id: string) => void;
   onReject: (id: string) => void;
   onRegenerate: (id: string) => void;
+  onSave?: (id: string) => void;
+  onEdit?: (id: string, frontContent: string, backContent: string) => void;
+  showSaveButtons?: boolean;
+  savingFlashcardIds?: string[];
 }
 
 export const FlashcardList: React.FC<FlashcardListProps> = ({
   flashcards,
   onAccept,
   onReject,
-  onRegenerate
+  onRegenerate,
+  onSave,
+  onEdit,
+  showSaveButtons = false,
+  savingFlashcardIds = []
 }) => {
   if (flashcards.length === 0) {
     return null;
@@ -31,6 +39,10 @@ export const FlashcardList: React.FC<FlashcardListProps> = ({
             onAccept={() => onAccept(flashcard.id)}
             onReject={() => onReject(flashcard.id)}
             onRegenerate={() => onRegenerate(flashcard.id)}
+            onSave={onSave ? () => onSave(flashcard.id) : undefined}
+            onEdit={onEdit ? (id, frontContent, backContent) => onEdit(id, frontContent, backContent) : undefined}
+            showSaveButton={showSaveButtons && flashcard.accepted === true}
+            isSaving={savingFlashcardIds.includes(flashcard.id)}
             data-testid={`flashcard-item-${flashcard.id}`}
           />
         ))}

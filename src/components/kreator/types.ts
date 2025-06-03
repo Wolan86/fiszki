@@ -1,4 +1,4 @@
-import type { CreateSourceTextCommand, FlashcardDto, SourceTextDto, UpdateFlashcardCommand } from "@/types";
+import type { CreateSourceTextCommand, CreateSourceTextResponse, FlashcardDto, SourceTextDto, UpdateFlashcardCommand, UnsavedFlashcardDto, FlashcardCreationType } from "@/types";
 
 export interface SourceTextFormViewModel {
   content: string;
@@ -11,10 +11,23 @@ export interface SourceTextFormViewModel {
   errors: string[];
 }
 
-export interface FlashcardViewModel extends FlashcardDto {
+export interface FlashcardViewModel {
+  id: string;
+  front_content: string;
+  back_content: string;
+  accepted: boolean | null;
+  source_text_id: string | null;
+  creation_type: FlashcardCreationType | null;
+  user_id: string;
+  created_at: string;
+  updated_at: string;
+  generation_time_ms: number | null;
   isFlipped: boolean;
   isRegenerating: boolean;
   showActions: boolean;
+  isEditing: boolean;
+  editableFrontContent: string;
+  editableBackContent: string;
 }
 
 export interface GenerationStatsViewModel {
@@ -40,6 +53,7 @@ export interface UseSourceTextResult {
   lastSaved: Date | null;
   errors: string[];
   saveSourceText: () => Promise<SourceTextDto | null>;
+  saveSourceTextAndGenerateFlashcards: (flashcardCount?: number) => Promise<CreateSourceTextResponse | null>;
   reset: () => void;
 }
 
@@ -52,9 +66,12 @@ export interface UseFlashcardGenerationResult {
   isGenerating: boolean;
   generationStats: GenerationStatsViewModel | null;
   error: ApiErrorResponse | null;
-  generateFlashcards: (sourceTextId: string, options?: UseFlashcardGenerationOptions) => Promise<void>;
+  savingFlashcardIds: string[];
+  loadFlashcardsFromResponse: (response: CreateSourceTextResponse) => void;
   updateFlashcard: (id: string, update: UpdateFlashcardCommand) => Promise<void>;
   regenerateFlashcard: (id: string) => Promise<void>;
+  saveFlashcard: (id: string) => Promise<void>;
+  editFlashcard: (id: string, frontContent: string, backContent: string) => void;
   reset: () => void;
 }
 

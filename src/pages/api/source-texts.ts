@@ -1,13 +1,15 @@
 import type { APIContext } from 'astro';
 import { SourceTextService } from '../../lib/services/source-text.service';
-import type { CreateSourceTextCommand, ApiErrorResponse } from '../../types';
-import { DEFAULT_USER_ID } from '../../db/supabase.client';
+import type { CreateSourceTextCommand, CreateSourceTextResponse, ApiErrorResponse } from '../../types';
 import { createSupabaseServerInstance } from '../../db/supabase.client';
+import { generateFlashcardsFromText } from '../../lib/services/ai.service';
 
 export const prerender = false;
 
 // POST handler for creating a new source text
 export async function POST({ request, locals, cookies }: APIContext) {
+  const startTime = performance.now();
+  
   // Create server instance with cookie context
   const supabase = createSupabaseServerInstance({
     cookies,
@@ -39,12 +41,75 @@ export async function POST({ request, locals, cookies }: APIContext) {
     // Parse request body
     const command: CreateSourceTextCommand = await request.json();
     
-    // Create service instance and process the request
+    // Create service instance and create the source text
     const sourceTextService = new SourceTextService(supabase);
-    const result = await sourceTextService.createSourceText(command, session.user.id);
+    const sourceText = await sourceTextService.createSourceText(command, session.user.id);
+    
+    // Prepare response
+    const response: CreateSourceTextResponse = {
+      source_text: sourceText
+    };
+    
+    // Jeśli żądano generowania fiszek, wygeneruj je
+    if (command.generate_flashcards && command.flashcard_count) {
+      const generationStartTime = performance.now();
+      
+      try {
+        const generatedFlashcards = await generateFlashcardsFromText(
+          command.content, 
+          command.flashcard_count
+        );
+        
+        const generationEndTime = performance.now();
+        const generationTime = generationEndTime - generationStartTime;
+        
+        // Przygotuj UnsavedFlashcardDto objects (nie zapisuj do bazy)
+        const unsavedFlashcards = generatedFlashcards.map((card, index) => ({
+          id: `temp-${Date.now()}-${index}`,
+          front_content: card.front_content,
+          back_content: card.back_content,
+          accepted: null,
+          source_text_id: sourceText.id,
+          creation_type: 'ai_generated' as const,
+          user_id: session.user.id,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+          generation_time_ms: Math.round(generationTime / generatedFlashcards.length)
+        }));
+        
+        const totalTime = performance.now() - startTime;
+        
+        const response: CreateSourceTextResponse = {
+          source_text: sourceText,
+          flashcards: unsavedFlashcards,
+          generation_stats: {
+            requested_count: command.flashcard_count,
+            generated_count: unsavedFlashcards.length,
+            total_time_ms: Math.round(totalTime)
+          }
+        };
+        
+        return new Response(JSON.stringify(response), {
+          status: 201,
+          headers: { 'Content-Type': 'application/json' }
+        });
+      } catch (error) {
+        console.error('Error generating flashcards:', error);
+        
+        // Zwróć source text bez fiszek w przypadku błędu generowania
+        const response: CreateSourceTextResponse = {
+          source_text: sourceText
+        };
+        
+        return new Response(JSON.stringify(response), {
+          status: 201,
+          headers: { 'Content-Type': 'application/json' }
+        });
+      }
+    }
     
     // Return success response
-    return new Response(JSON.stringify(result), {
+    return new Response(JSON.stringify(response), {
       status: 201,
       headers: { 'Content-Type': 'application/json' }
     });
@@ -73,6 +138,18 @@ export async function POST({ request, locals, cookies }: APIContext) {
       return new Response(JSON.stringify(errorResponse), {
         status: 500,
         headers: { 'Content-Type': 'application/json' }
+      });
+    }
+    
+    // Handle AI service errors for flashcard generation
+    if (error instanceof Error && error.message.includes("AI_SERVICE_UNAVAILABLE")) {
+      const errorResponse: ApiErrorResponse = {
+        message: "Usługa generowania fiszek jest obecnie niedostępna, ale tekst źródłowy został zapisany",
+        code: "AI_SERVICE_UNAVAILABLE"
+      };
+      return new Response(JSON.stringify(errorResponse), {
+        status: 503,
+        headers: { "Content-Type": "application/json" }
       });
     }
     

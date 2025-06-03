@@ -1,23 +1,18 @@
 # Test info
 
 - Name: Flashcard Creator >> should complete the entire flashcard creation workflow
-- Location: C:\Users\wolan\projects\fiszki\e2e\tests\flashcard-creator.spec.ts:116:3
+- Location: C:\Users\wolan\projects\fiszki\e2e\tests\flashcard-creator.spec.ts:180:3
 
 # Error details
 
 ```
-Error: expect(locator).toContainText(expected)
-
-Locator: getByTestId('save-status')
-Expected string: "Ostatnio zapisano"
-Received string: "Niezapisany"
+TimeoutError: locator.getAttribute: Timeout 15000ms exceeded.
 Call log:
-  - expect.toContainText with timeout 15000ms
-  - waiting for getByTestId('save-status')
-    13 × locator resolved to <span data-testid="save-status" class="text-sm text-neutral-500">Niezapisany</span>
-       - unexpected value "Niezapisany"
+  - waiting for getByTestId('flashcard-item-item-10974c88-0cbb-4a10-a35c-56143075961a').locator('[data-testid^="flashcard-content"]')
 
-    at C:\Users\wolan\projects\fiszki\e2e\tests\flashcard-creator.spec.ts:124:42
+    at FlashcardComponent.isFlipped (C:\Users\wolan\projects\fiszki\e2e\page-objects\FlashcardComponent.ts:89:40)
+    at FlashcardComponent.getFrontText (C:\Users\wolan\projects\fiszki\e2e\page-objects\FlashcardComponent.ts:97:34)
+    at C:\Users\wolan\projects\fiszki\e2e\tests\flashcard-creator.spec.ts:205:41
 ```
 
 # Page snapshot
@@ -41,155 +36,198 @@ Call log:
   - heading "Kreator fiszek" [level=1]
   - paragraph: Wprowadź tekst źródłowy i wygeneruj fiszki edukacyjne przy pomocy sztucznej inteligencji.
   - heading "Tekst źródłowy" [level=2]
-  - text: "Niezapisany Liczba słów: 78 / 1000-10000"
+  - text: "Ostatnio zapisano: 9:59:12 PM Liczba słów: 3150 / 1000-10000"
   - progressbar
-  - paragraph: Wymagane minimum 1000 słów (brakuje 922)
-  - textbox "Wprowadź tekst źródłowy (minimum 1000 słów)...": ing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do .
-  - text: Wprowadź co najmniej 1000 słów
-  - button "Generuj fiszki" [disabled]:
+  - textbox "Wprowadź tekst źródłowy (minimum 1000 słów)...": lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do . lorem ipsum dolor sit amet consectetur adipiscing elit sed do lorem ipsum dolor sit amet consectetur adipiscing elit sed do .
+  - button "Generuj fiszki":
     - img
     - text: Generuj fiszki
+  - text: "Czas generowania: 5.9 sekund Wygenerowano: 5 z 5 fiszek"
+  - heading "Wygenerowane fiszki" [level=2]
+  - button "Kliknij aby pokazać tył fiszki":
+    - text: Pytanie
+    - paragraph: What is the primary theme of the text?
+    - text: Kliknij aby zobaczyć odpowiedź
+  - button "Akceptuj":
+    - img
+    - text: Akceptuj
+  - button "Odrzuć":
+    - img
+    - text: Odrzuć
+  - button "Regeneruj":
+    - img
+    - text: Regeneruj
+  - button "Kliknij aby pokazać tył fiszki":
+    - text: Pytanie
+    - paragraph: What is 'lorem ipsum' commonly used for?
+    - text: Kliknij aby zobaczyć odpowiedź
+  - button "Akceptuj":
+    - img
+    - text: Akceptuj
+  - button "Odrzuć":
+    - img
+    - text: Odrzuć
+  - button "Regeneruj":
+    - img
+    - text: Regeneruj
+  - button "Kliknij aby pokazać tył fiszki":
+    - text: Pytanie
+    - paragraph: What does 'consectetur adipiscing elit' imply in the context of the text?
+    - text: Kliknij aby zobaczyć odpowiedź
+  - button "Akceptuj":
+    - img
+    - text: Akceptuj
+  - button "Odrzuć":
+    - img
+    - text: Odrzuć
+  - button "Regeneruj":
+    - img
+    - text: Regeneruj
+  - button "Kliknij aby pokazać tył fiszki":
+    - text: Pytanie
+    - paragraph: How does the repetition in the text affect its purpose?
+    - text: Kliknij aby zobaczyć odpowiedź
+  - button "Akceptuj":
+    - img
+    - text: Akceptuj
+  - button "Odrzuć":
+    - img
+    - text: Odrzuć
+  - button "Regeneruj":
+    - img
+    - text: Regeneruj
+  - button "Kliknij aby pokazać tył fiszki":
+    - text: Pytanie
+    - paragraph: Why is 'lorem ipsum' preferred over traditional English text?
+    - text: Kliknij aby zobaczyć odpowiedź
+  - button "Akceptuj":
+    - img
+    - text: Akceptuj
+  - button "Odrzuć":
+    - img
+    - text: Odrzuć
+  - button "Regeneruj":
+    - img
+    - text: Regeneruj
 - contentinfo: © 2025 Fiszki. Wszystkie prawa zastrzeżone.
 ```
 
 # Test source
 
 ```ts
-   24 |     await creatorPage.sourceTextInput.fill(sampleText);
-   25 |     
-   26 |     // Assert
-   27 |     const inputValue = await creatorPage.sourceTextInput.inputValue();
-   28 |     expect(inputValue).toBe(sampleText);
-   29 |   });
-   30 |   
-   31 |   // New test for validation and happy path
-   32 |   test('should validate minimum word count then allow generation when requirements met', async ({ page }) => {
-   33 |     // Arrange
-   34 |     const creatorPage = new CreatorPage(page);
-   35 |     const insufficientText = generateSampleText(50); // Less than 1000 words
-   36 |     const sufficientText = generateSampleText(1000); // Exactly 1000 words
-   37 |     
-   38 |     // Act - Step 1: Enter insufficient text
-   39 |     await creatorPage.goto();
-   40 |     
-   41 |     // Enter text manually to avoid the validation in enterSourceText method
-   42 |     await creatorPage.sourceTextInput.waitFor({ state: 'visible' });
-   43 |     await creatorPage.sourceTextInput.fill(insufficientText);
-   44 |     await creatorPage.sourceTextInput.blur();
-   45 |     await page.waitForTimeout(1000); // Wait for validation
-   46 |     
-   47 |     // Assert - Button should be disabled with insufficient text
-   48 |     await expect(creatorPage.generateButton).toBeDisabled();
-   49 |     await expect(creatorPage.wordCounter).toContainText(/\d+ \/ 1000/); // Should show count below 1000
-   50 |     
-   51 |     // Act - Step 2: Enter sufficient text 
-   52 |     await creatorPage.sourceTextInput.fill(sufficientText);
-   53 |     await creatorPage.sourceTextInput.blur();
-   54 |     await page.waitForTimeout(1000); // Wait for validation
-   55 |     
-   56 |     // Assert - Button should be enabled with sufficient text
-   57 |     await expect(creatorPage.generateButton).toBeEnabled();
-   58 |     await expect(creatorPage.wordCounter).toContainText(/\d+ \/ 1000/); // Should show count at least 1000
-   59 |     
-   60 |     // Act - Step 3: Generate flashcards (happy path)
-   61 |     await creatorPage.clickGenerateButton();
-   62 |     await creatorPage.waitForFlashcardsGeneration();
-   63 |     
-   64 |     // Assert - Flashcards should be generated
-   65 |     const flashcards = await creatorPage.getAllFlashcards();
-   66 |     expect(flashcards.length).toBeGreaterThan(0);
-   67 |     await expect(creatorPage.flashcardList).toBeVisible();
-   68 |   });
-   69 |   
-   70 |   // Example test for flashcard generation
-   71 |   test('should generate flashcards from source text', async ({ page }) => {
-   72 |     // Arrange
-   73 |     const creatorPage = new CreatorPage(page);
-   74 |     const sampleText = generateSampleText(1500);
-   75 |     
-   76 |     // Act
-   77 |     await creatorPage.goto();
-   78 |     await creatorPage.generateFlashcards(sampleText);
-   79 |     
-   80 |     // Assert
-   81 |     const flashcards = await creatorPage.getAllFlashcards();
-   82 |     expect(flashcards.length).toBeGreaterThan(0);
-   83 |     await expect(creatorPage.flashcardList).toBeVisible();
-   84 |   });
-   85 |   
-   86 |   // Example test for accepting flashcards
-   87 |   test('should allow accepting flashcards', async ({ page }) => {
-   88 |     // Arrange
-   89 |     const creatorPage = new CreatorPage(page);
-   90 |     const sampleText = generateSampleText(2000);
-   91 |     
-   92 |     // Act
-   93 |     await creatorPage.goto();
-   94 |     await creatorPage.generateFlashcards(sampleText);
-   95 |     
-   96 |     // Get the first flashcard
-   97 |     const flashcards = await creatorPage.getAllFlashcards();
-   98 |     expect(flashcards.length).toBeGreaterThan(0);
-   99 |     
-  100 |     // Extract the ID from the first flashcard's test-id attribute
-  101 |     const testId = await flashcards[0].getAttribute('data-testid');
-  102 |     const flashcardId = testId ? testId.replace('flashcard-', '') : '';
-  103 |     
-  104 |     // Create a FlashcardComponent for the first flashcard
-  105 |     const flashcard = new FlashcardComponent(page, flashcardId);
-  106 |     
-  107 |     // Accept the flashcard
-  108 |     await flashcard.accept();
-  109 |     
-  110 |     // Assert
-  111 |     // The button should be disabled after accepting
-  112 |     await expect(flashcard.acceptButton).toBeDisabled();
-  113 |   });
-  114 |
-  115 |   // Example test for complete workflow (create, generate, accept)
-  116 |   test('should complete the entire flashcard creation workflow', async ({ page }) => {
-  117 |     // Arrange
-  118 |     const creatorPage = new CreatorPage(page);
-  119 |     const sampleText = generateSampleText(3000);
-  120 |     
-  121 |     // Act & Assert - Step 1: Open creator and enter text
-  122 |     await creatorPage.goto();
-  123 |     await creatorPage.enterSourceText(sampleText);
-> 124 |     await expect(creatorPage.saveStatus).toContainText('Ostatnio zapisano');
-      |                                          ^ Error: expect(locator).toContainText(expected)
-  125 |     
-  126 |     // Act & Assert - Step 2: Generate flashcards
-  127 |     await creatorPage.clickGenerateButton();
-  128 |     await creatorPage.waitForFlashcardsGeneration();
-  129 |     await expect(creatorPage.flashcardList).toBeVisible();
-  130 |     
-  131 |     // Act & Assert - Step 3: Accept all flashcards
-  132 |     const flashcards = await creatorPage.getAllFlashcards();
-  133 |     expect(flashcards.length).toBeGreaterThan(0);
-  134 |     
-  135 |     for (let i = 0; i < flashcards.length; i++) {
-  136 |       const testId = await flashcards[i].getAttribute('data-testid');
-  137 |       const flashcardId = testId ? testId.replace('flashcard-', '') : '';
-  138 |       const flashcard = new FlashcardComponent(page, flashcardId);
-  139 |       
-  140 |       // Check front and back content
-  141 |       const frontText = await flashcard.getFrontText();
-  142 |       expect(frontText).not.toBeNull();
-  143 |       expect(frontText).not.toBe('');
-  144 |       
-  145 |       const backText = await flashcard.getBackText();
-  146 |       expect(backText).not.toBeNull();
-  147 |       expect(backText).not.toBe('');
-  148 |       
-  149 |       // Accept the flashcard
-  150 |       await flashcard.accept();
-  151 |       await expect(flashcard.acceptButton).toBeDisabled();
-  152 |       
-  153 |       // Wait a bit between actions to avoid race conditions
-  154 |       if (i < flashcards.length - 1) {
-  155 |         await wait(300);
-  156 |       }
-  157 |     }
-  158 |   });
-  159 | }); 
+   1 | import type { Locator, Page } from '@playwright/test';
+   2 |
+   3 | /**
+   4 |  * Component class for interacting with a single flashcard
+   5 |  */
+   6 | export class FlashcardComponent {
+   7 |   readonly page: Page;
+   8 |   readonly locator: Locator;
+   9 |   readonly id: string;
+   10 |
+   11 |   constructor(page: Page, id: string) {
+   12 |     this.page = page;
+   13 |     this.id = id;
+   14 |     this.locator = page.getByTestId(`flashcard-item-${id}`);
+   15 |   }
+   16 |
+   17 |   // Content locators
+   18 |   get content() {
+   19 |     return this.locator.locator('[data-testid^="flashcard-content"]');
+   20 |   }
+   21 |
+   22 |   get frontContent() {
+   23 |     return this.locator.locator('[data-testid="flashcard-front-content"]');
+   24 |   }
+   25 |
+   26 |   get backContent() {
+   27 |     return this.locator.locator('[data-testid="flashcard-back-content"]');
+   28 |   }
+   29 |
+   30 |   // Action buttons
+   31 |   get actionsContainer() {
+   32 |     return this.locator.locator('[data-testid^="flashcard-actions"]');
+   33 |   }
+   34 |
+   35 |   get acceptButton() {
+   36 |     return this.locator.locator('[data-testid="accept-flashcard-button"]');
+   37 |   }
+   38 |
+   39 |   get rejectButton() {
+   40 |     return this.locator.locator('[data-testid="reject-flashcard-button"]');
+   41 |   }
+   42 |
+   43 |   get regenerateButton() {
+   44 |     return this.locator.locator('[data-testid="regenerate-flashcard-button"]');
+   45 |   }
+   46 |
+   47 |   /**
+   48 |    * Flip the flashcard to see the back side
+   49 |    */
+   50 |   async flip() {
+   51 |     await this.content.click();
+   52 |   }
+   53 |
+   54 |   /**
+   55 |    * Accept the flashcard
+   56 |    */
+   57 |   async accept() {
+   58 |     await this.actionsContainer.waitFor({ state: 'visible', timeout: 5000 });
+   59 |     await this.acceptButton.evaluate(element => {
+   60 |       element.dispatchEvent(new MouseEvent('click', {
+   61 |         bubbles: true,
+   62 |         cancelable: true,
+   63 |         view: window
+   64 |       }));
+   65 |     });
+   66 |   }
+   67 |
+   68 |   /**
+   69 |    * Reject the flashcard
+   70 |    */
+   71 |   async reject() {
+   72 |     await this.actionsContainer.waitFor({ state: 'visible', timeout: 5000 });
+   73 |     await this.rejectButton.click();
+   74 |   }
+   75 |
+   76 |   /**
+   77 |    * Regenerate the flashcard
+   78 |    */
+   79 |   async regenerate() {
+   80 |     await this.actionsContainer.waitFor({ state: 'visible', timeout: 5000 });
+   81 |     await this.regenerateButton.click();
+   82 |     await this.page.waitForSelector('[data-testid="regenerate-flashcard-button"]:not(:has(.animate-spin))');
+   83 |   }
+   84 |
+   85 |   /**
+   86 |    * Check if the flashcard is flipped
+   87 |    */
+   88 |   async isFlipped() {
+>  89 |     const flipped = await this.content.getAttribute('data-flipped');
+      |                                        ^ TimeoutError: locator.getAttribute: Timeout 15000ms exceeded.
+   90 |     return flipped === 'true';
+   91 |   }
+   92 |
+   93 |   /**
+   94 |    * Get the front content text
+   95 |    */
+   96 |   async getFrontText() {
+   97 |     const isFlipped = await this.isFlipped();
+   98 |     if (isFlipped) {
+   99 |       await this.flip();
+  100 |     }
+  101 |     return this.frontContent.textContent();
+  102 |   }
+  103 |
+  104 |   /**
+  105 |    * Get the back content text
+  106 |    */
+  107 |   async getBackText() {
+  108 |     const isFlipped = await this.isFlipped();
+  109 |     if (!isFlipped) {
+  110 |       await this.flip();
+  111 |     }
+  112 |     return this.backContent.textContent();
+  113 |   }
+  114 | } 
 ```

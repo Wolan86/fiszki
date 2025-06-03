@@ -3,9 +3,10 @@ import { PageHeader } from "./PageHeader";
 import { SourceTextForm } from "./SourceTextForm";
 import { ProgressIndicator } from "./ProgressIndicator";
 import { GeneratedFlashcards } from "./GeneratedFlashcards";
+import { FlashcardCreationForm } from "./FlashcardCreationForm";
 import { ErrorMessage } from "./ErrorMessage";
 import { useFlashcardGeneration } from "./hooks/useFlashcardGeneration";
-import type { SourceTextDto, UpdateFlashcardCommand } from "@/types";
+import type { SourceTextDto, UpdateFlashcardCommand, CreateSourceTextResponse } from "@/types";
 import type { UseFlashcardGenerationOptions } from "./types";
 
 export const CreatorView: React.FC = () => {
@@ -18,44 +19,48 @@ export const CreatorView: React.FC = () => {
     isGenerating,
     generationStats,
     error,
-    generateFlashcards,
+    savingFlashcardIds,
+    loadFlashcardsFromResponse,
     updateFlashcard,
     regenerateFlashcard,
-    reset: resetFlashcards
+    saveFlashcard,
+    editFlashcard,
+    reset
   } = useFlashcardGeneration();
   
   // Obsługa zapisania tekstu źródłowego
-  const handleTextSaved = (text: SourceTextDto) => {
-    setSourceText(text);
+  const handleTextSaved = (savedText: SourceTextDto) => {
+    setSourceText(savedText);
   };
   
-  // Obsługa żądania generowania fiszek
-  const handleGenerateRequest = (sourceTextId: string, options?: UseFlashcardGenerationOptions) => {
-    generateFlashcards(sourceTextId, options);
+  // Obsługa wygenerowania fiszek - nowy flow
+  const handleFlashcardsGenerated = (response: CreateSourceTextResponse) => {
+    loadFlashcardsFromResponse(response);
   };
   
   // Obsługa akceptacji fiszki
-  const handleAcceptFlashcard = (id: string) => {
-    const update: UpdateFlashcardCommand = { accepted: true };
-    updateFlashcard(id, update);
+  const handleAcceptFlashcard = async (id: string) => {
+    await updateFlashcard(id, { accepted: true });
   };
   
   // Obsługa odrzucenia fiszki
-  const handleRejectFlashcard = (id: string) => {
-    const update: UpdateFlashcardCommand = { accepted: false };
-    updateFlashcard(id, update);
+  const handleRejectFlashcard = async (id: string) => {
+    await updateFlashcard(id, { accepted: false });
   };
   
   // Obsługa regeneracji fiszki
-  const handleRegenerateFlashcard = (id: string) => {
-    regenerateFlashcard(id);
+  const handleRegenerateFlashcard = async (id: string) => {
+    await regenerateFlashcard(id);
   };
   
-  // Ponowienie próby generowania fiszek
-  const handleRetryGeneration = () => {
-    if (sourceText) {
-      generateFlashcards(sourceText.id);
-    }
+  // Obsługa zapisania fiszki do bazy danych
+  const handleSaveFlashcard = async (id: string) => {
+    await saveFlashcard(id);
+  };
+
+  // Obsługa edycji fiszki
+  const handleEditFlashcard = (id: string, frontContent: string, backContent: string) => {
+    editFlashcard(id, frontContent, backContent);
   };
   
   return (
@@ -68,15 +73,28 @@ export const CreatorView: React.FC = () => {
       
       <SourceTextForm
         onTextSaved={handleTextSaved}
-        onGenerateRequest={handleGenerateRequest}
+        onFlashcardsGenerated={handleFlashcardsGenerated}
         data-testid="source-text-form"
+      />
+
+      <FlashcardCreationForm
+        sourceTextId={sourceText?.id}
+        onFlashcardCreated={() => {
+          // Możemy dodać jakąś notyfikację o sukcesie
+          console.log("Fiszka została utworzona pomyślnie");
+        }}
+        data-testid="flashcard-creation-form"
       />
       
       {error && (
         <div className="mt-6" data-testid="flashcard-generation-error">
           <ErrorMessage
             error={error}
-            onRetry={handleRetryGeneration}
+            onRetry={() => {
+              if (sourceText) {
+                // Implement the retry logic here
+              }
+            }}
             data-testid="generation-error-message"
           />
         </div>
@@ -91,10 +109,15 @@ export const CreatorView: React.FC = () => {
       {generationStats && flashcards.length > 0 && (
         <GeneratedFlashcards
           flashcards={flashcards}
-          stats={generationStats}
+          isGenerating={isGenerating}
+          generationStats={generationStats}
+          error={error}
+          savingFlashcardIds={savingFlashcardIds}
           onAccept={handleAcceptFlashcard}
           onReject={handleRejectFlashcard}
           onRegenerate={handleRegenerateFlashcard}
+          onSave={handleSaveFlashcard}
+          onEdit={handleEditFlashcard}
           data-testid="generated-flashcards-container"
         />
       )}
