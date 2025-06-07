@@ -1,5 +1,5 @@
-import type { APIRoute } from 'astro';
-import { createSupabaseServerInstance } from '../../../db/supabase.client';
+import type { APIRoute } from "astro";
+import { createSupabaseServerInstance } from "../../../db/supabase.client";
 
 export const prerender = false;
 
@@ -9,9 +9,9 @@ export const POST: APIRoute = async ({ request, cookies, redirect }) => {
   // Walidacja danych wejściowych
   if (!email || !password) {
     return new Response(
-      JSON.stringify({ 
-        success: false, 
-        error: 'Email i hasło są wymagane' 
+      JSON.stringify({
+        success: false,
+        error: "Email i hasło są wymagane",
       }),
       { status: 400 }
     );
@@ -29,19 +29,19 @@ export const POST: APIRoute = async ({ request, cookies, redirect }) => {
 
   if (error) {
     return new Response(
-      JSON.stringify({ 
-        success: false, 
-        error: error.message
-      }), 
+      JSON.stringify({
+        success: false,
+        error: error.message,
+      }),
       { status: 400 }
     );
   }
 
   return new Response(
-    JSON.stringify({ 
-      success: true, 
-      user: data.user 
-    }), 
+    JSON.stringify({
+      success: true,
+      user: data.user,
+    }),
     { status: 200 }
   );
-}; 
+};
