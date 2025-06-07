@@ -34,12 +34,15 @@ export const FlashcardActions: React.FC<FlashcardActionsProps> = ({
   isRejected = false,
   isEditing = false,
   showSaveButton = false,
-  "data-testid": dataTestId = "flashcard-actions"
+  "data-testid": dataTestId = "flashcard-actions",
 }) => {
   // Jeśli jest w trybie edycji, pokazuj przyciski zapisz/anuluj edycję
   if (isEditing) {
     return (
-      <div className="flex justify-center space-x-2 p-3 bg-neutral-50 border-t border-neutral-200" data-testid={dataTestId}>
+      <div
+        className="flex justify-center space-x-2 p-3 bg-neutral-50 border-t border-neutral-200"
+        data-testid={dataTestId}
+      >
         <Button
           variant="ghost"
           size="sm"
@@ -51,7 +54,7 @@ export const FlashcardActions: React.FC<FlashcardActionsProps> = ({
           <Check className="w-4 h-4 mr-1" />
           <span>Zapisz zmiany</span>
         </Button>
-        
+
         <Button
           variant="ghost"
           size="sm"
@@ -70,7 +73,10 @@ export const FlashcardActions: React.FC<FlashcardActionsProps> = ({
   // Jeśli fiszka jest zaakceptowana (accepted === true), pokazuj tylko przycisk Zapisz i status
   if (isAccepted) {
     return (
-      <div className="flex justify-center space-x-2 p-3 bg-neutral-50 border-t border-neutral-200" data-testid={dataTestId}>
+      <div
+        className="flex justify-center space-x-2 p-3 bg-neutral-50 border-t border-neutral-200"
+        data-testid={dataTestId}
+      >
         {onEdit && (
           <Button
             variant="ghost"
@@ -117,7 +123,10 @@ export const FlashcardActions: React.FC<FlashcardActionsProps> = ({
   // Jeśli fiszka jest odrzucona (accepted === false), pokazuj tylko przycisk Regeneruj i status
   if (isRejected) {
     return (
-      <div className="flex justify-center space-x-2 p-3 bg-neutral-50 border-t border-neutral-200" data-testid={dataTestId}>
+      <div
+        className="flex justify-center space-x-2 p-3 bg-neutral-50 border-t border-neutral-200"
+        data-testid={dataTestId}
+      >
         <Button
           variant="ghost"
           size="sm"
@@ -148,7 +157,10 @@ export const FlashcardActions: React.FC<FlashcardActionsProps> = ({
 
   // Domyślnie (accepted === null) pokazuj przyciski akceptuj/odrzuć/edytuj dla nowych fiszek
   return (
-    <div className="flex justify-center space-x-2 p-3 bg-neutral-50 border-t border-neutral-200" data-testid={dataTestId}>
+    <div
+      className="flex justify-center space-x-2 p-3 bg-neutral-50 border-t border-neutral-200"
+      data-testid={dataTestId}
+    >
       <Button
         variant="ghost"
         size="sm"
@@ -160,7 +172,7 @@ export const FlashcardActions: React.FC<FlashcardActionsProps> = ({
         <Check className="w-4 h-4 mr-1" />
         <span>Akceptuj</span>
       </Button>
-      
+
       <Button
         variant="ghost"
         size="sm"
@@ -188,4 +200,4 @@ export const FlashcardActions: React.FC<FlashcardActionsProps> = ({
       )}
     </div>
   );
-}; 
+};

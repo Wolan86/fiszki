@@ -12,4 +12,4 @@ export const PageHeader: React.FC<PageHeaderProps> = ({ title, description }) =>
       <p className="text-muted-foreground text-neutral-500">{description}</p>
     </div>
   );
-}; 
+};

@@ -15,7 +15,7 @@ export const SourceTextInput: React.FC<SourceTextInputProps> = ({
   onBlur,
   isValid,
   errors,
-  placeholder = "Wprowadź tekst źródłowy (minimum 1000 słów)..."
+  placeholder = "Wprowadź tekst źródłowy (minimum 1000 słów)...",
 }) => {
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     onChange(e.target.value);
@@ -26,9 +26,7 @@ export const SourceTextInput: React.FC<SourceTextInputProps> = ({
       <div className="relative">
         <textarea
           className={`w-full min-h-[300px] p-4 border rounded-md resize-y focus:outline-none focus:ring-2 focus:ring-offset-1 ${
-            errors.length > 0
-              ? "border-red-500 focus:ring-red-500"
-              : "border-neutral-200 focus:ring-neutral-500"
+            errors.length > 0 ? "border-red-500 focus:ring-red-500" : "border-neutral-200 focus:ring-neutral-500"
           }`}
           value={value}
           onChange={handleChange}
@@ -39,7 +37,7 @@ export const SourceTextInput: React.FC<SourceTextInputProps> = ({
           data-testid="source-text-textarea"
         />
       </div>
-      
+
       {errors.length > 0 && (
         <div id="source-text-error" className="text-sm text-red-500 mt-1" data-testid="source-text-errors">
           {errors.map((error, index) => (
@@ -49,4 +47,4 @@ export const SourceTextInput: React.FC<SourceTextInputProps> = ({
       )}
     </div>
   );
-}; 
+};

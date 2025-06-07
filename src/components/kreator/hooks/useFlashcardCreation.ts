@@ -15,15 +15,11 @@ export interface UseFlashcardCreationResult {
   reset: () => void;
 }
 
-export const useFlashcardCreation = (
-  options?: UseFlashcardCreationOptions
-): UseFlashcardCreationResult => {
+export const useFlashcardCreation = (options?: UseFlashcardCreationOptions): UseFlashcardCreationResult => {
   const [isCreating, setIsCreating] = useState<boolean>(false);
   const [error, setError] = useState<ApiErrorResponse | null>(null);
 
-  const createNewFlashcard = async (
-    command: CreateFlashcardCommand
-  ): Promise<FlashcardDto | null> => {
+  const createNewFlashcard = async (command: CreateFlashcardCommand): Promise<FlashcardDto | null> => {
     try {
       setIsCreating(true);
       setError(null);
@@ -35,9 +31,9 @@ export const useFlashcardCreation = (
     } catch (e) {
       const apiError: ApiErrorResponse = {
         message: e instanceof Error ? e.message : "Nie udało się utworzyć fiszki",
-        code: "CREATION_FAILED"
+        code: "CREATION_FAILED",
       };
-      
+
       setError(apiError);
       options?.onError?.(apiError);
       return null;
@@ -55,6 +51,6 @@ export const useFlashcardCreation = (
     isCreating,
     error,
     createNewFlashcard,
-    reset
+    reset,
   };
-}; 
+};

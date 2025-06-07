@@ -9,7 +9,7 @@ export const TestButton: React.FC<TestButtonProps> = ({ onClick }) => {
   console.log("TestButton rendered, onClick type:", typeof onClick);
 
   return (
-    <Button 
+    <Button
       onClick={() => {
         console.log("Button clicked");
         onClick();
@@ -18,4 +18,4 @@ export const TestButton: React.FC<TestButtonProps> = ({ onClick }) => {
       Test Button
     </Button>
   );
-}; 
+};

@@ -1,4 +1,4 @@
-import type { Locator, Page } from '@playwright/test';
+import type { Locator, Page } from "@playwright/test";
 
 /**
  * Component class for interacting with a single flashcard
@@ -55,13 +55,15 @@ export class FlashcardComponent {
    * Accept the flashcard
    */
   async accept() {
-    await this.actionsContainer.waitFor({ state: 'visible', timeout: 5000 });
-    await this.acceptButton.evaluate(element => {
-      element.dispatchEvent(new MouseEvent('click', {
-        bubbles: true,
-        cancelable: true,
-        view: window
-      }));
+    await this.actionsContainer.waitFor({ state: "visible", timeout: 5000 });
+    await this.acceptButton.evaluate((element) => {
+      element.dispatchEvent(
+        new MouseEvent("click", {
+          bubbles: true,
+          cancelable: true,
+          view: window,
+        })
+      );
     });
   }
 
@@ -69,7 +71,7 @@ export class FlashcardComponent {
    * Reject the flashcard
    */
   async reject() {
-    await this.actionsContainer.waitFor({ state: 'visible', timeout: 5000 });
+    await this.actionsContainer.waitFor({ state: "visible", timeout: 5000 });
     await this.rejectButton.click();
   }
 
@@ -77,7 +79,7 @@ export class FlashcardComponent {
    * Regenerate the flashcard
    */
   async regenerate() {
-    await this.actionsContainer.waitFor({ state: 'visible', timeout: 5000 });
+    await this.actionsContainer.waitFor({ state: "visible", timeout: 5000 });
     await this.regenerateButton.click();
     await this.page.waitForSelector('[data-testid="regenerate-flashcard-button"]:not(:has(.animate-spin))');
   }
@@ -86,8 +88,8 @@ export class FlashcardComponent {
    * Check if the flashcard is flipped
    */
   async isFlipped() {
-    const flipped = await this.content.getAttribute('data-flipped');
-    return flipped === 'true';
+    const flipped = await this.content.getAttribute("data-flipped");
+    return flipped === "true";
   }
 
   /**
@@ -111,4 +113,4 @@ export class FlashcardComponent {
     }
     return this.backContent.textContent();
   }
-} 
+}

@@ -2,13 +2,13 @@
  * Factory for creating OpenRouter service with proper error handling
  */
 
-import { OpenRouterService, OpenRouterAuthError } from './openrouter.services';
+import { OpenRouterService, OpenRouterAuthError } from "./openrouter.services";
 
 // Custom error for service unavailability
 export class AIServiceUnavailableError extends Error {
   constructor(message: string) {
     super(`AI_SERVICE_UNAVAILABLE: ${message}`);
-    this.name = 'AIServiceUnavailableError';
+    this.name = "AIServiceUnavailableError";
   }
 }
 
@@ -21,15 +21,15 @@ export function createOpenRouterService(): OpenRouterService {
     return new OpenRouterService();
   } catch (error) {
     if (error instanceof OpenRouterAuthError) {
-      throw new AIServiceUnavailableError('OpenRouter API key not configured');
+      throw new AIServiceUnavailableError("OpenRouter API key not configured");
     }
-    
+
     // Rethrow other errors with consistent format
     if (error instanceof Error) {
       throw new AIServiceUnavailableError(error.message);
     }
-    
-    throw new AIServiceUnavailableError('Unknown error initializing OpenRouter service');
+
+    throw new AIServiceUnavailableError("Unknown error initializing OpenRouter service");
   }
 }
 
@@ -45,7 +45,7 @@ export function getOpenRouterService(): OpenRouterService | null {
     try {
       openRouterInstance = createOpenRouterService();
     } catch (error) {
-      console.error('Failed to initialize OpenRouter service:', error);
+      console.error("Failed to initialize OpenRouter service:", error);
       return null;
     }
   }
@@ -62,4 +62,4 @@ export function isOpenRouterAvailable(): boolean {
   } catch (error) {
     return false;
   }
-} 
+}

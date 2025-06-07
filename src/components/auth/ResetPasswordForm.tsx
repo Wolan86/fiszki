@@ -14,12 +14,7 @@ interface ResetPasswordFormProps {
   error?: string;
 }
 
-export const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({
-  onSubmit,
-  token,
-  isLoading = false,
-  error
-}) => {
+export const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({ onSubmit, token, isLoading = false, error }) => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [validationErrors, setValidationErrors] = useState<{
@@ -75,9 +70,7 @@ export const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({
     <Card className="w-full max-w-md mx-auto">
       <CardHeader>
         <CardTitle>Resetowanie hasła</CardTitle>
-        <CardDescription>
-          Wprowadź i potwierdź nowe hasło
-        </CardDescription>
+        <CardDescription>Wprowadź i potwierdź nowe hasło</CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -87,7 +80,7 @@ export const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({
               <AlertDescription>{error}</AlertDescription>
             </Alert>
           )}
-          
+
           <div className="space-y-2">
             <Label htmlFor="password">Nowe hasło</Label>
             <Input
@@ -99,14 +92,12 @@ export const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({
               disabled={isLoading}
               aria-invalid={!!validationErrors.password}
             />
-            {validationErrors.password && (
-              <p className="text-sm text-red-500 mt-1">{validationErrors.password}</p>
-            )}
+            {validationErrors.password && <p className="text-sm text-red-500 mt-1">{validationErrors.password}</p>}
             <p className="text-xs text-gray-500">
               Hasło musi zawierać minimum 8 znaków, w tym przynajmniej jedną cyfrę i jeden znak specjalny.
             </p>
           </div>
-          
+
           <div className="space-y-2">
             <Label htmlFor="confirmPassword">Potwierdzenie nowego hasła</Label>
             <Input
@@ -122,12 +113,8 @@ export const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({
               <p className="text-sm text-red-500 mt-1">{validationErrors.confirmPassword}</p>
             )}
           </div>
-          
-          <Button
-            type="submit"
-            className="w-full"
-            disabled={isLoading}
-          >
+
+          <Button type="submit" className="w-full" disabled={isLoading}>
             {isLoading ? "Resetowanie..." : "Zresetuj hasło"}
           </Button>
         </form>
@@ -141,4 +128,4 @@ export const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({
       </CardFooter>
     </Card>
   );
-}; 
+};

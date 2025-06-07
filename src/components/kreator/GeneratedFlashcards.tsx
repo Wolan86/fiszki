@@ -26,7 +26,7 @@ export const GeneratedFlashcards: React.FC<GeneratedFlashcardsProps> = ({
   onReject,
   onRegenerate,
   onSave,
-  onEdit
+  onEdit,
 }) => {
   if (flashcards.length === 0 && !isGenerating) {
     return null;
@@ -37,19 +37,17 @@ export const GeneratedFlashcards: React.FC<GeneratedFlashcardsProps> = ({
       {generationStats && (
         <div className="flex justify-between items-center">
           <GenerationStats stats={generationStats} />
-          <div className="flex space-x-2">
-            {/* Buttons for saving, downloading, etc. could go here */}
-          </div>
+          <div className="flex space-x-2">{/* Buttons for saving, downloading, etc. could go here */}</div>
         </div>
       )}
-      
+
       {error && (
         <div className="bg-red-50 border border-red-200 rounded-lg p-4">
           <p className="text-red-800 font-medium">Błąd generowania fiszek</p>
           <p className="text-red-600 text-sm">{error.message}</p>
         </div>
       )}
-      
+
       <FlashcardList
         flashcards={flashcards}
         onAccept={onAccept}
@@ -63,4 +61,4 @@ export const GeneratedFlashcards: React.FC<GeneratedFlashcardsProps> = ({
       />
     </div>
   );
-}; 
+};

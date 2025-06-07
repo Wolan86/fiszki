@@ -21,7 +21,7 @@ export const FlashcardList: React.FC<FlashcardListProps> = ({
   onSave,
   onEdit,
   showSaveButtons = false,
-  savingFlashcardIds = []
+  savingFlashcardIds = [],
 }) => {
   if (flashcards.length === 0) {
     return null;
@@ -30,9 +30,9 @@ export const FlashcardList: React.FC<FlashcardListProps> = ({
   return (
     <div className="space-y-4 my-6" data-testid="flashcard-list-container">
       <h2 className="text-xl font-semibold">Wygenerowane fiszki</h2>
-      
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6" data-testid="flashcard-grid">
-        {flashcards.map(flashcard => (
+        {flashcards.map((flashcard) => (
           <FlashcardItem
             key={flashcard.id}
             flashcard={flashcard}
@@ -49,4 +49,4 @@ export const FlashcardList: React.FC<FlashcardListProps> = ({
       </div>
     </div>
   );
-}; 
+};

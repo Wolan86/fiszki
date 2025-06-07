@@ -8,11 +8,7 @@ interface ErrorMessageProps {
   className?: string;
 }
 
-export const ErrorMessage: React.FC<ErrorMessageProps> = ({ 
-  error, 
-  onRetry,
-  className = ""
-}) => {
+export const ErrorMessage: React.FC<ErrorMessageProps> = ({ error, onRetry, className = "" }) => {
   if (!error) return null;
 
   // Mapowanie kodów błędów na przydatne informacje dla użytkownika
@@ -22,37 +18,37 @@ export const ErrorMessage: React.FC<ErrorMessageProps> = ({
         return {
           title: "Usługa AI niedostępna",
           message: "Usługa generowania fiszek jest obecnie niedostępna. Spróbuj ponownie za kilka minut.",
-          showRetry: true
+          showRetry: true,
         };
       case "AI_GENERATION_FAILED":
         return {
           title: "Błąd generowania",
           message: "Nie udało się wygenerować fiszek z podanego tekstu. Spróbuj zmodyfikować tekst źródłowy.",
-          showRetry: true
+          showRetry: true,
         };
       case "GENERATION_FAILED":
         return {
           title: "Błąd generowania",
           message: error.message || "Wystąpił problem podczas generowania fiszek.",
-          showRetry: true
+          showRetry: true,
         };
       case "UPDATE_FAILED":
         return {
           title: "Błąd aktualizacji",
           message: error.message || "Nie udało się zaktualizować fiszki.",
-          showRetry: false
+          showRetry: false,
         };
       case "REGENERATION_FAILED":
         return {
           title: "Błąd regeneracji",
           message: error.message || "Nie udało się zregenerować fiszki.",
-          showRetry: true
+          showRetry: true,
         };
       default:
         return {
           title: "Wystąpił błąd",
           message: error.message || "Wystąpił nieoczekiwany błąd. Spróbuj ponownie później.",
-          showRetry: false
+          showRetry: false,
         };
     }
   };
@@ -96,4 +92,4 @@ export const ErrorMessage: React.FC<ErrorMessageProps> = ({
       </div>
     </Card>
   );
-}; 
+};

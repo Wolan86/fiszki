@@ -10,14 +10,14 @@ export type FlashcardCreationType = Database["public"]["Enums"]["flashcard_creat
 // ----- SOURCE TEXT DTOs -----
 
 // Create Source Text Command
-export type CreateSourceTextCommand = {
+export interface CreateSourceTextCommand {
   content: string;
   generate_flashcards?: boolean;
   flashcard_count?: number;
-};
+}
 
 // Create Source Text Response (when flashcards are generated)
-export type CreateSourceTextResponse = {
+export interface CreateSourceTextResponse {
   source_text: SourceTextDto;
   flashcards?: UnsavedFlashcardDto[];
   generation_stats?: {
@@ -25,58 +25,58 @@ export type CreateSourceTextResponse = {
     generated_count: number;
     total_time_ms: number;
   };
-};
+}
 
 // Source Text Response DTO
 export type SourceTextDto = SourceText;
 
 // Source Text List Query Parameters
-export type SourceTextListQueryParams = {
+export interface SourceTextListQueryParams {
   limit?: number;
   offset?: number;
   sort?: keyof SourceText;
   order?: "asc" | "desc";
-};
+}
 
 // Source Text List Response
-export type SourceTextListResponse = {
+export interface SourceTextListResponse {
   data: SourceTextDto[];
   pagination: {
     total: number;
     limit: number;
     offset: number;
   };
-};
+}
 
 // Generate Flashcards Command
-export type GenerateFlashcardsCommand = {
+export interface GenerateFlashcardsCommand {
   count?: number;
-};
+}
 
 // Generate Flashcards Response
-export type GenerateFlashcardsResponse = {
+export interface GenerateFlashcardsResponse {
   flashcards: FlashcardDto[];
   generation_stats: {
     requested_count: number;
     generated_count: number;
     total_time_ms: number;
   };
-};
+}
 
 // ----- FLASHCARD DTOs -----
 
 // Create Flashcard Command
-export type CreateFlashcardCommand = {
+export interface CreateFlashcardCommand {
   front_content: string;
   back_content: string;
   source_text_id?: string;
-};
+}
 
 // Flashcard Response DTO
 export type FlashcardDto = Flashcard;
 
 // Unsaved Flashcard DTO (for generated but not yet saved flashcards)
-export type UnsavedFlashcardDto = {
+export interface UnsavedFlashcardDto {
   id: string; // temporary ID
   front_content: string;
   back_content: string;
@@ -87,17 +87,17 @@ export type UnsavedFlashcardDto = {
   created_at: string;
   updated_at: string;
   generation_time_ms: number | null;
-};
+}
 
 // Update Flashcard Command
-export type UpdateFlashcardCommand = {
+export interface UpdateFlashcardCommand {
   front_content?: string;
   back_content?: string;
   accepted?: boolean;
-};
+}
 
 // Flashcard List Query Parameters
-export type FlashcardListQueryParams = {
+export interface FlashcardListQueryParams {
   limit?: number;
   offset?: number;
   sort?: keyof Flashcard;
@@ -105,33 +105,33 @@ export type FlashcardListQueryParams = {
   source_text_id?: string;
   creation_type?: FlashcardCreationType;
   accepted?: boolean;
-};
+}
 
 // Flashcard List Response
-export type FlashcardListResponse = {
+export interface FlashcardListResponse {
   data: FlashcardDto[];
   pagination: {
     total: number;
     limit: number;
     offset: number;
   };
-};
+}
 
 // Flashcard Learning Query Parameters
-export type FlashcardLearningQueryParams = {
+export interface FlashcardLearningQueryParams {
   limit?: number;
   source_text_id?: string;
-};
+}
 
 // Flashcard Learning Response
-export type FlashcardLearningResponse = {
+export interface FlashcardLearningResponse {
   data: FlashcardDto[];
   total: number;
-};
+}
 
 // API Error Response
-export type ApiErrorResponse = {
+export interface ApiErrorResponse {
   message: string;
   code: string;
   details?: Record<string, unknown>;
-}; 
+}

@@ -1,4 +1,12 @@
-import type { CreateSourceTextCommand, CreateSourceTextResponse, FlashcardDto, SourceTextDto, UpdateFlashcardCommand, UnsavedFlashcardDto, FlashcardCreationType } from "@/types";
+import type {
+  CreateSourceTextCommand,
+  CreateSourceTextResponse,
+  FlashcardDto,
+  SourceTextDto,
+  UpdateFlashcardCommand,
+  UnsavedFlashcardDto,
+  FlashcardCreationType,
+} from "@/types";
 
 export interface SourceTextFormViewModel {
   content: string;
@@ -79,4 +87,4 @@ export interface ApiErrorResponse {
   message: string;
   code: string;
   details?: Record<string, unknown>;
-} 
+}

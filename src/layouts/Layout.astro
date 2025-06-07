@@ -25,30 +25,35 @@ const user = Astro.locals.user;
     <header class="border-b border-gray-200">
       <div class="container mx-auto py-4 px-4 flex items-center justify-between">
         <a href="/" class="text-xl font-bold">Fiszki</a>
-        
+
         <nav class="hidden md:flex items-center space-x-6">
-          {user && (
-            <>
-              <a href="/" class="text-gray-700 hover:text-blue-600">Moje fiszki</a>
-              <a href="/kreator" class="text-gray-700 hover:text-blue-600">Kreator</a>
-              <a href="/nauka" class="text-gray-700 hover:text-blue-600">Nauka</a>
-            </>
-          )}
+          {
+            user && (
+              <>
+                <a href="/" class="text-gray-700 hover:text-blue-600">
+                  Moje fiszki
+                </a>
+                <a href="/kreator" class="text-gray-700 hover:text-blue-600">
+                  Kreator
+                </a>
+                <a href="/nauka" class="text-gray-700 hover:text-blue-600">
+                  Nauka
+                </a>
+              </>
+            )
+          }
         </nav>
-        
+
         <div class="flex items-center">
-          <AuthStatus 
-            client:load
-            user={user}
-          />
+          <AuthStatus client:load user={user} />
         </div>
       </div>
     </header>
-    
+
     <main>
       <slot />
     </main>
-    
+
     <footer class="border-t border-gray-200 mt-12">
       <div class="container mx-auto py-6 px-4 text-center text-gray-500 text-sm">
         &copy; {new Date().getFullYear()} Fiszki. Wszystkie prawa zastrzeżone.

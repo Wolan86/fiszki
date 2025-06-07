@@ -12,22 +12,22 @@ export const LogoutButton: React.FC<LogoutButtonProps> = ({ className = "" }) =>
   const handleLogout = async () => {
     try {
       setIsLoading(true);
-      const response = await fetch('/api/auth/logout', {
-        method: 'POST',
+      const response = await fetch("/api/auth/logout", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
       });
 
       if (!response.ok) {
         const data = await response.json();
-        throw new Error(data.error || 'Błąd podczas wylogowywania');
+        throw new Error(data.error || "Błąd podczas wylogowywania");
       }
 
       // Przekierowanie po udanym wylogowaniu
-      window.location.href = '/auth/login';
+      window.location.href = "/auth/login";
     } catch (error) {
-      console.error('Błąd wylogowania:', error);
+      console.error("Błąd wylogowania:", error);
     } finally {
       setIsLoading(false);
     }
@@ -52,4 +52,4 @@ export const LogoutButton: React.FC<LogoutButtonProps> = ({ className = "" }) =>
       )}
     </Button>
   );
-}; 
+};

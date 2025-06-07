@@ -1,6 +1,6 @@
-import type { Page } from '@playwright/test';
-import { expect } from '@playwright/test';
-import { BasePage } from './BasePage';
+import type { Page } from "@playwright/test";
+import { expect } from "@playwright/test";
+import { BasePage } from "./BasePage";
 
 /**
  * Page Object Model for the Flashcard Creator page
@@ -12,46 +12,46 @@ export class CreatorPage extends BasePage {
 
   // Main container locators
   get creatorView() {
-    return this.page.getByTestId('flashcard-creator-view');
+    return this.page.getByTestId("flashcard-creator-view");
   }
 
   // Source text form locators
   get sourceTextCard() {
-    return this.page.getByTestId('source-text-card');
+    return this.page.getByTestId("source-text-card");
   }
 
   get sourceTextInput() {
-    return this.page.getByTestId('source-text-textarea');
+    return this.page.getByTestId("source-text-textarea");
   }
 
   get wordCounter() {
-    return this.page.getByTestId('word-counter');
+    return this.page.getByTestId("word-counter");
   }
 
   get generateButton() {
-    return this.page.getByTestId('generate-button');
+    return this.page.getByTestId("generate-button");
   }
 
   get saveStatus() {
-    return this.page.getByTestId('save-status');
+    return this.page.getByTestId("save-status");
   }
 
   // Progress indicator locator
   get progressIndicator() {
-    return this.page.getByTestId('flashcard-generation-progress');
+    return this.page.getByTestId("flashcard-generation-progress");
   }
 
   // Generated flashcards locators
   get generatedFlashcardsResult() {
-    return this.page.getByTestId('generated-flashcards-result');
+    return this.page.getByTestId("generated-flashcards-result");
   }
 
   get flashcardList() {
-    return this.page.getByTestId('flashcard-list-container');
+    return this.page.getByTestId("flashcard-list-container");
   }
 
   get flashcardGrid() {
-    return this.page.getByTestId('flashcard-grid');
+    return this.page.getByTestId("flashcard-grid");
   }
 
   /**
@@ -60,9 +60,9 @@ export class CreatorPage extends BasePage {
   async goto() {
     // Ensure user is authenticated before accessing the creator page
     await this.ensureAuthenticated();
-    
+
     // Navigate to the creator page
-    await this.page.goto('/kreator');
+    await this.page.goto("/kreator");
     await this.waitForCreatorView();
   }
 
@@ -70,7 +70,7 @@ export class CreatorPage extends BasePage {
    * Wait for the creator view to be visible
    */
   async waitForCreatorView() {
-    await this.creatorView.waitFor({ state: 'visible' });
+    await this.creatorView.waitFor({ state: "visible" });
   }
 
   /**
@@ -79,29 +79,29 @@ export class CreatorPage extends BasePage {
   async enterSourceText(text: string) {
     // Ensure user is on the creator page
     await this.ensureAuthenticated();
-    
+
     try {
       // Wait for the text area to be visible and enabled with increased timeout
-      await this.sourceTextInput.waitFor({ state: 'visible', timeout: 10000 });
-      
+      await this.sourceTextInput.waitFor({ state: "visible", timeout: 10000 });
+
       // Type text in chunks instead of using fill to avoid performance issues with large text
       const chunkSize = 500; // Process in smaller chunks
       for (let i = 0; i < text.length; i += chunkSize) {
         const chunk = text.substring(i, i + chunkSize);
         await this.sourceTextInput.type(chunk, { delay: 0 }); // Type with no delay between keystrokes
-        
+
         // Short pause between chunks to allow processing
         await this.page.waitForTimeout(100);
       }
-      
+
       await this.sourceTextInput.blur();
-      
+
       // Wait for auto-save to complete with increased timeout
       await this.page.waitForTimeout(3500); // Increased from 2500ms
-      
-      console.log('Source text entered successfully');
+
+      console.log("Source text entered successfully");
     } catch (error) {
-      console.error('Error entering source text:', error);
+      console.error("Error entering source text:", error);
       throw error;
     }
   }
@@ -110,12 +110,14 @@ export class CreatorPage extends BasePage {
    * Click the generate button to generate flashcards
    */
   async clickGenerateButton() {
-    await this.generateButton.evaluate(element => {
-      element.dispatchEvent(new MouseEvent('click', {
-        bubbles: true,
-        cancelable: true,
-        view: window
-      }));
+    await this.generateButton.evaluate((element) => {
+      element.dispatchEvent(
+        new MouseEvent("click", {
+          bubbles: true,
+          cancelable: true,
+          view: window,
+        })
+      );
     });
   }
 
@@ -124,11 +126,11 @@ export class CreatorPage extends BasePage {
    */
   async waitForFlashcardsGeneration() {
     // First wait for the progress indicator to appear
-    await this.progressIndicator.waitFor({ state: 'visible' });
+    await this.progressIndicator.waitFor({ state: "visible" });
     // Then wait for it to disappear or for flashcards to appear
     await Promise.race([
-      this.progressIndicator.waitFor({ state: 'hidden' }),
-      this.generatedFlashcardsResult.waitFor({ state: 'visible' })
+      this.progressIndicator.waitFor({ state: "hidden" }),
+      this.generatedFlashcardsResult.waitFor({ state: "visible" }),
     ]);
   }
 
@@ -144,10 +146,10 @@ export class CreatorPage extends BasePage {
    */
   async getAllFlashcards() {
     // Wait for the flashcard grid to be visible
-    await this.flashcardGrid.waitFor({ state: 'visible', timeout: 10000 });
-    
-    console.log('Looking for flashcard items with data-testid pattern flashcard-item-*');
-    
+    await this.flashcardGrid.waitFor({ state: "visible", timeout: 10000 });
+
+    console.log("Looking for flashcard items with data-testid pattern flashcard-item-*");
+
     // Use the more specific selector for flashcard items
     return this.page.locator('[data-testid^="flashcard-item-"]').all();
   }
@@ -158,14 +160,14 @@ export class CreatorPage extends BasePage {
   async generateFlashcards(sourceText: string) {
     // Ensure user is authenticated
     await this.ensureAuthenticated();
-    
+
     // Navigate to creator if not already there
-    if (!await this.creatorView.isVisible()) {
+    if (!(await this.creatorView.isVisible())) {
       await this.goto();
     }
-    
+
     await this.enterSourceText(sourceText);
     await this.clickGenerateButton();
     await this.waitForFlashcardsGeneration();
   }
-} 
+}

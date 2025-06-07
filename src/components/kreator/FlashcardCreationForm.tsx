@@ -16,7 +16,7 @@ interface FlashcardCreationFormProps {
 export const FlashcardCreationForm: React.FC<FlashcardCreationFormProps> = ({
   sourceTextId,
   onFlashcardCreated,
-  "data-testid": dataTestId = "flashcard-creation-form"
+  "data-testid": dataTestId = "flashcard-creation-form",
 }) => {
   const [frontContent, setFrontContent] = useState("");
   const [backContent, setBackContent] = useState("");
@@ -29,12 +29,12 @@ export const FlashcardCreationForm: React.FC<FlashcardCreationFormProps> = ({
       setBackContent("");
       setIsExpanded(false);
       onFlashcardCreated?.(flashcard);
-    }
+    },
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!frontContent.trim() || !backContent.trim()) {
       return;
     }
@@ -42,7 +42,7 @@ export const FlashcardCreationForm: React.FC<FlashcardCreationFormProps> = ({
     const command: CreateFlashcardCommand = {
       front_content: frontContent.trim(),
       back_content: backContent.trim(),
-      source_text_id: sourceTextId
+      source_text_id: sourceTextId,
     };
 
     await createNewFlashcard(command);
@@ -83,14 +83,10 @@ export const FlashcardCreationForm: React.FC<FlashcardCreationFormProps> = ({
       <CardContent>
         {error && (
           <div className="mb-4">
-            <ErrorMessage
-              error={error}
-              onRetry={() => reset()}
-              data-testid="flashcard-creation-error"
-            />
+            <ErrorMessage error={error} onRetry={() => reset()} data-testid="flashcard-creation-error" />
           </div>
         )}
-        
+
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label htmlFor="front-content" className="block text-sm font-medium mb-2">
@@ -108,7 +104,7 @@ export const FlashcardCreationForm: React.FC<FlashcardCreationFormProps> = ({
               data-testid="front-content-input"
             />
           </div>
-          
+
           <div>
             <label htmlFor="back-content" className="block text-sm font-medium mb-2">
               Tył fiszki (odpowiedź)
@@ -125,13 +121,9 @@ export const FlashcardCreationForm: React.FC<FlashcardCreationFormProps> = ({
               data-testid="back-content-input"
             />
           </div>
-          
+
           <div className="flex space-x-2">
-            <Button
-              type="submit"
-              disabled={!isFormValid || isCreating}
-              data-testid="save-flashcard-button"
-            >
+            <Button type="submit" disabled={!isFormValid || isCreating} data-testid="save-flashcard-button">
               {isCreating ? (
                 <>
                   <Loader2 className="w-4 h-4 mr-2 animate-spin" />
@@ -144,7 +136,7 @@ export const FlashcardCreationForm: React.FC<FlashcardCreationFormProps> = ({
                 </>
               )}
             </Button>
-            
+
             <Button
               type="button"
               variant="outline"
@@ -159,4 +151,4 @@ export const FlashcardCreationForm: React.FC<FlashcardCreationFormProps> = ({
       </CardContent>
     </Card>
   );
-}; 
+};

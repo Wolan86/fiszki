@@ -25,15 +25,15 @@ export const FlashcardItem: React.FC<FlashcardItemProps> = ({
   onEdit,
   showSaveButton = false,
   isSaving = false,
-  "data-testid": dataTestId
+  "data-testid": dataTestId,
 }) => {
   const [isFlipped, setIsFlipped] = useState<boolean>(flashcard.isFlipped);
   const [isEditing, setIsEditing] = useState<boolean>(flashcard.isEditing);
   const [editableFrontContent, setEditableFrontContent] = useState<string>(flashcard.editableFrontContent);
   const [editableBackContent, setEditableBackContent] = useState<string>(flashcard.editableBackContent);
-  
+
   const handleFlip = () => {
-    setIsFlipped(prev => !prev);
+    setIsFlipped((prev) => !prev);
   };
 
   const handleStartEdit = () => {
@@ -56,14 +56,14 @@ export const FlashcardItem: React.FC<FlashcardItemProps> = ({
     setEditableFrontContent(flashcard.front_content);
     setEditableBackContent(flashcard.back_content);
   };
-  
+
   // Use the provided testId if available, otherwise fall back to the standard format
   const testId = dataTestId || `flashcard-${flashcard.id}`;
-  
+
   // Properly determine acceptance status
   const isAccepted = flashcard.accepted === true;
   const isRejected = flashcard.accepted === false;
-  
+
   return (
     <Card className="overflow-hidden mb-6 transform transition-all duration-300 hover:shadow-md" data-testid={testId}>
       <FlashcardContent
@@ -78,7 +78,7 @@ export const FlashcardItem: React.FC<FlashcardItemProps> = ({
         onEditBackContent={setEditableBackContent}
         data-testid={`flashcard-content-${flashcard.id}`}
       />
-      
+
       {flashcard.showActions && (
         <FlashcardActions
           onAccept={onAccept}
@@ -99,4 +99,4 @@ export const FlashcardItem: React.FC<FlashcardItemProps> = ({
       )}
     </Card>
   );
-}; 
+};

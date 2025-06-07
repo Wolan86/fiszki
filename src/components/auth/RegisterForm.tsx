@@ -12,10 +12,7 @@ interface RegisterFormProps {
   error?: string;
 }
 
-export const RegisterForm: React.FC<RegisterFormProps> = ({
-  isLoading = false,
-  error
-}) => {
+export const RegisterForm: React.FC<RegisterFormProps> = ({ isLoading = false, error }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -27,10 +24,10 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({
 
   // Client-side validation only
   const validateForm = (): boolean => {
-    const errors: { 
-      email?: string; 
-      password?: string; 
-      confirmPassword?: string 
+    const errors: {
+      email?: string;
+      password?: string;
+      confirmPassword?: string;
     } = {};
     let isValid = true;
 
@@ -89,9 +86,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({
     <Card className="w-full max-w-md mx-auto">
       <CardHeader>
         <CardTitle>Rejestracja</CardTitle>
-        <CardDescription>
-          Utwórz konto, aby móc tworzyć i zapisywać swoje fiszki
-        </CardDescription>
+        <CardDescription>Utwórz konto, aby móc tworzyć i zapisywać swoje fiszki</CardDescription>
       </CardHeader>
       <CardContent>
         <form className="space-y-4">
@@ -101,7 +96,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({
               <AlertDescription>{error}</AlertDescription>
             </Alert>
           )}
-          
+
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
             <Input
@@ -114,11 +109,9 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({
               disabled={isLoading}
               aria-invalid={!!validationErrors.email}
             />
-            {validationErrors.email && (
-              <p className="text-sm text-red-500 mt-1">{validationErrors.email}</p>
-            )}
+            {validationErrors.email && <p className="text-sm text-red-500 mt-1">{validationErrors.email}</p>}
           </div>
-          
+
           <div className="space-y-2">
             <Label htmlFor="password">Hasło</Label>
             <Input
@@ -131,14 +124,12 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({
               disabled={isLoading}
               aria-invalid={!!validationErrors.password}
             />
-            {validationErrors.password && (
-              <p className="text-sm text-red-500 mt-1">{validationErrors.password}</p>
-            )}
+            {validationErrors.password && <p className="text-sm text-red-500 mt-1">{validationErrors.password}</p>}
             <p className="text-xs text-gray-500">
               Hasło musi zawierać minimum 8 znaków, w tym przynajmniej jedną cyfrę i jeden znak specjalny.
             </p>
           </div>
-          
+
           <div className="space-y-2">
             <Label htmlFor="confirmPassword">Potwierdzenie hasła</Label>
             <Input
@@ -155,12 +146,8 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({
               <p className="text-sm text-red-500 mt-1">{validationErrors.confirmPassword}</p>
             )}
           </div>
-          
-          <Button
-            type="submit"
-            className="w-full"
-            disabled={isLoading}
-          >
+
+          <Button type="submit" className="w-full" disabled={isLoading}>
             {isLoading ? "Rejestracja..." : "Zarejestruj się"}
           </Button>
         </form>
@@ -175,4 +162,4 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({
       </CardFooter>
     </Card>
   );
-}; 
+};

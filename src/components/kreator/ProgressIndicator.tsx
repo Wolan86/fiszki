@@ -10,7 +10,7 @@ interface ProgressIndicatorProps {
 export const ProgressIndicator: React.FC<ProgressIndicatorProps> = ({
   isGenerating,
   progressText = "Generowanie fiszek. Proszę czekać...",
-  "data-testid": dataTestId
+  "data-testid": dataTestId,
 }) => {
   if (!isGenerating) return null;
 
@@ -24,14 +24,12 @@ export const ProgressIndicator: React.FC<ProgressIndicatorProps> = ({
           <div className="absolute inset-4 rounded-full bg-neutral-400 opacity-75"></div>
           <div className="absolute inset-6 rounded-full bg-neutral-500"></div>
         </div>
-        
+
         <div className="text-center">
           <p className="text-lg font-medium">{progressText}</p>
-          <p className="text-sm text-neutral-500 mt-1">
-            Ten proces może potrwać do 30 sekund
-          </p>
+          <p className="text-sm text-neutral-500 mt-1">Ten proces może potrwać do 30 sekund</p>
         </div>
-        
+
         {/* Pasek postępu */}
         <div className="w-full max-w-md h-2 bg-neutral-100 rounded-full overflow-hidden">
           <div className="h-full bg-neutral-500 rounded-full animate-progress"></div>
@@ -41,7 +39,7 @@ export const ProgressIndicator: React.FC<ProgressIndicatorProps> = ({
   );
 };
 
-// Dodajemy stylistykę animacji do globalnych stylów, 
+// Dodajemy stylistykę animacji do globalnych stylów,
 // alternatywnie można dodać to do pliku tailwind.config.js
 const globalStyles = `
 @keyframes progress {
@@ -56,8 +54,8 @@ const globalStyles = `
 `;
 
 // Dodajemy style do komponentu
-const styleElement = typeof document !== 'undefined' ? document.createElement('style') : null;
+const styleElement = typeof document !== "undefined" ? document.createElement("style") : null;
 if (styleElement) {
   styleElement.textContent = globalStyles;
   document.head.appendChild(styleElement);
-} 
+}

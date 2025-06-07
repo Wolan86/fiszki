@@ -18,7 +18,7 @@ export const ForgotPasswordForm: React.FC<ForgotPasswordFormProps> = ({
   onSubmit,
   isLoading = false,
   error,
-  isSuccess = false
+  isSuccess = false,
 }) => {
   const [email, setEmail] = useState("");
   const [validationError, setValidationError] = useState<string | null>(null);
@@ -51,9 +51,7 @@ export const ForgotPasswordForm: React.FC<ForgotPasswordFormProps> = ({
     <Card className="w-full max-w-md mx-auto">
       <CardHeader>
         <CardTitle>Odzyskiwanie hasła</CardTitle>
-        <CardDescription>
-          Podaj swój adres email, a my wyślemy ci link do zresetowania hasła
-        </CardDescription>
+        <CardDescription>Podaj swój adres email, a my wyślemy ci link do zresetowania hasła</CardDescription>
       </CardHeader>
       <CardContent>
         {isSuccess ? (
@@ -71,7 +69,7 @@ export const ForgotPasswordForm: React.FC<ForgotPasswordFormProps> = ({
                 <AlertDescription>{error}</AlertDescription>
               </Alert>
             )}
-            
+
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <Input
@@ -83,16 +81,10 @@ export const ForgotPasswordForm: React.FC<ForgotPasswordFormProps> = ({
                 disabled={isLoading}
                 aria-invalid={!!validationError}
               />
-              {validationError && (
-                <p className="text-sm text-red-500 mt-1">{validationError}</p>
-              )}
+              {validationError && <p className="text-sm text-red-500 mt-1">{validationError}</p>}
             </div>
-            
-            <Button
-              type="submit"
-              className="w-full"
-              disabled={isLoading}
-            >
+
+            <Button type="submit" className="w-full" disabled={isLoading}>
               {isLoading ? "Wysyłanie..." : "Wyślij link resetujący"}
             </Button>
           </form>
@@ -107,4 +99,4 @@ export const ForgotPasswordForm: React.FC<ForgotPasswordFormProps> = ({
       </CardFooter>
     </Card>
   );
-}; 
+};

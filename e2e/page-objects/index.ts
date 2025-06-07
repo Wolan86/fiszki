@@ -1,3 +1,3 @@
-export * from './BasePage';
-export * from './CreatorPage';
-export * from './FlashcardComponent'; 
+export * from "./BasePage";
+export * from "./CreatorPage";
+export * from "./FlashcardComponent";

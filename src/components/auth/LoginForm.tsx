@@ -12,10 +12,7 @@ interface LoginFormProps {
   error?: string;
 }
 
-export const LoginForm: React.FC<LoginFormProps> = ({
-  isLoading = false,
-  error
-}) => {
+export const LoginForm: React.FC<LoginFormProps> = ({ isLoading = false, error }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [validationErrors, setValidationErrors] = useState<{
@@ -67,9 +64,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
     <Card className="w-full max-w-md mx-auto">
       <CardHeader>
         <CardTitle>Logowanie</CardTitle>
-        <CardDescription>
-          Zaloguj się do swojego konta, aby mieć dostęp do swoich fiszek
-        </CardDescription>
+        <CardDescription>Zaloguj się do swojego konta, aby mieć dostęp do swoich fiszek</CardDescription>
       </CardHeader>
       <CardContent>
         <form className="space-y-4" data-testid="login-form">
@@ -79,7 +74,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
               <AlertDescription>{error}</AlertDescription>
             </Alert>
           )}
-          
+
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
             <Input
@@ -93,18 +88,13 @@ export const LoginForm: React.FC<LoginFormProps> = ({
               aria-invalid={!!validationErrors.email}
               data-testid="email-input"
             />
-            {validationErrors.email && (
-              <p className="text-sm text-red-500 mt-1">{validationErrors.email}</p>
-            )}
+            {validationErrors.email && <p className="text-sm text-red-500 mt-1">{validationErrors.email}</p>}
           </div>
-          
+
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <Label htmlFor="password">Hasło</Label>
-              <a
-                href="/auth/forgot-password"
-                className="text-sm text-blue-600 hover:underline"
-              >
+              <a href="/auth/forgot-password" className="text-sm text-blue-600 hover:underline">
                 Zapomniałeś hasła?
               </a>
             </div>
@@ -119,17 +109,10 @@ export const LoginForm: React.FC<LoginFormProps> = ({
               aria-invalid={!!validationErrors.password}
               data-testid="password-input"
             />
-            {validationErrors.password && (
-              <p className="text-sm text-red-500 mt-1">{validationErrors.password}</p>
-            )}
+            {validationErrors.password && <p className="text-sm text-red-500 mt-1">{validationErrors.password}</p>}
           </div>
-          
-          <Button
-            type="submit"
-            className="w-full"
-            disabled={isLoading}
-            data-testid="login-button"
-          >
+
+          <Button type="submit" className="w-full" disabled={isLoading} data-testid="login-button">
             {isLoading ? "Logowanie..." : "Zaloguj się"}
           </Button>
         </form>
@@ -144,4 +127,4 @@ export const LoginForm: React.FC<LoginFormProps> = ({
       </CardFooter>
     </Card>
   );
-}; 
+};

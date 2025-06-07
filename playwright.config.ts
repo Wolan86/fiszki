@@ -1,15 +1,15 @@
-import { defineConfig, devices } from '@playwright/test';
-import dotenv from 'dotenv';
-import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
+import { defineConfig, devices } from "@playwright/test";
+import dotenv from "dotenv";
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
 
 // Get directory path in ES modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Load test-specific variables - use process.env extension approach for better UI mode compatibility
-const envFile = path.resolve(__dirname, '.env.test');
+const envFile = path.resolve(__dirname, ".env.test");
 if (fs.existsSync(envFile)) {
   const envConfig = dotenv.parse(fs.readFileSync(envFile));
   Object.entries(envConfig).forEach(([key, value]) => {
@@ -18,8 +18,8 @@ if (fs.existsSync(envFile)) {
 }
 
 // Define storage state file path
-const storageStatePath = './e2e/auth/storageState.json';
-const emptyStatePath = './e2e/auth/empty-state.json';
+const storageStatePath = "./e2e/auth/storageState.json";
+const emptyStatePath = "./e2e/auth/empty-state.json";
 
 // Check if storage state file exists, create it from empty state if not
 if (!fs.existsSync(storageStatePath)) {
@@ -28,7 +28,7 @@ if (!fs.existsSync(storageStatePath)) {
     if (!fs.existsSync(path.dirname(storageStatePath))) {
       fs.mkdirSync(path.dirname(storageStatePath), { recursive: true });
     }
-    
+
     // Copy empty state to storage state if it doesn't exist
     if (fs.existsSync(emptyStatePath)) {
       fs.copyFileSync(emptyStatePath, storageStatePath);
@@ -37,7 +37,7 @@ if (!fs.existsSync(storageStatePath)) {
       fs.writeFileSync(storageStatePath, JSON.stringify({ cookies: [], origins: [] }));
     }
   } catch (error) {
-    console.error('Failed to create storage state file:', error);
+    console.error("Failed to create storage state file:", error);
   }
 }
 
@@ -46,21 +46,21 @@ if (!fs.existsSync(storageStatePath)) {
  * @see https://playwright.dev/docs/test-configuration
  */
 export default defineConfig({
-  testDir: './e2e/tests',
+  testDir: "./e2e/tests",
   timeout: 60 * 1000,
   expect: {
-    timeout: 15000
+    timeout: 15000,
   },
   fullyParallel: false,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 1,
   workers: 1,
-  reporter: 'html',
-  
+  reporter: "html",
+
   use: {
-    baseURL: 'http://localhost:3000',
-    trace: 'on-first-retry',
-    screenshot: 'only-on-failure',
+    baseURL: "http://localhost:3000",
+    trace: "on-first-retry",
+    screenshot: "only-on-failure",
     navigationTimeout: 30000,
     actionTimeout: 15000,
   },
@@ -68,24 +68,24 @@ export default defineConfig({
   /* Configure projects for different scenarios */
   projects: [
     {
-      name: 'setup',
+      name: "setup",
       testMatch: /global\.setup\.ts/,
       use: { storageState: emptyStatePath },
     },
     {
-      name: 'authenticated',
+      name: "authenticated",
       testMatch: /flashcard-creator\.spec\.ts/,
-      use: { 
-        ...devices['Desktop Chrome'],
+      use: {
+        ...devices["Desktop Chrome"],
         storageState: storageStatePath,
       },
-      dependencies: ['setup'],
+      dependencies: ["setup"],
     },
     {
-      name: 'unauthenticated',
+      name: "unauthenticated",
       testMatch: /auth\.spec\.ts/,
-      use: { 
-        ...devices['Desktop Chrome'],
+      use: {
+        ...devices["Desktop Chrome"],
         storageState: emptyStatePath,
       },
     },
@@ -93,11 +93,11 @@ export default defineConfig({
 
   /* Run local development server before tests */
   webServer: {
-    command: 'npm run dev:e2e',
+    command: "npm run dev:e2e",
     port: 3000,
     reuseExistingServer: !process.env.CI,
     env: {
-      NODE_ENV: 'test',
+      NODE_ENV: "test",
     },
   },
-}); 
+});

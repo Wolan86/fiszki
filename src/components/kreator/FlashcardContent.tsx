@@ -23,7 +23,7 @@ export const FlashcardContent: React.FC<FlashcardContentProps> = ({
   onFlip,
   onEditFrontContent,
   onEditBackContent,
-  "data-testid": dataTestId = "flashcard-content"
+  "data-testid": dataTestId = "flashcard-content",
 }) => {
   const handleContentClick = () => {
     // Don't flip when in editing mode
@@ -36,19 +36,19 @@ export const FlashcardContent: React.FC<FlashcardContentProps> = ({
   const currentBackContent = isEditing ? editableBackContent : backContent;
 
   return (
-    <div 
+    <div
       className={`relative w-full transition-all duration-300 p-6 min-h-[200px] flex items-center justify-center ${
-        isFlipped 
-          ? "bg-neutral-100 text-neutral-700" 
-          : "bg-white text-neutral-900"
+        isFlipped ? "bg-neutral-100 text-neutral-700" : "bg-white text-neutral-900"
       } ${isEditing ? "" : "cursor-pointer"}`}
       onClick={handleContentClick}
       role={isEditing ? "form" : "button"}
       tabIndex={isEditing ? -1 : 0}
       aria-label={
-        isEditing 
-          ? "Edytujesz fiszkę" 
-          : (isFlipped ? "Kliknij aby pokazać przód fiszki" : "Kliknij aby pokazać tył fiszki")
+        isEditing
+          ? "Edytujesz fiszkę"
+          : isFlipped
+            ? "Kliknij aby pokazać przód fiszki"
+            : "Kliknij aby pokazać tył fiszki"
       }
       onKeyDown={(e) => {
         if (!isEditing && (e.key === "Enter" || e.key === " ")) {
@@ -64,7 +64,7 @@ export const FlashcardContent: React.FC<FlashcardContentProps> = ({
         {isFlipped ? "Odpowiedź" : "Pytanie"}
         {isEditing && <span className="ml-2 text-blue-500">(edytowanie)</span>}
       </div>
-      
+
       <div className="text-center w-full">
         {isFlipped ? (
           <div className="prose w-full" data-testid="flashcard-back-content">
@@ -98,12 +98,15 @@ export const FlashcardContent: React.FC<FlashcardContentProps> = ({
           </div>
         )}
       </div>
-      
+
       {!isEditing && (
-        <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 text-xs text-neutral-400" data-testid="flashcard-flip-hint">
+        <div
+          className="absolute bottom-2 left-1/2 transform -translate-x-1/2 text-xs text-neutral-400"
+          data-testid="flashcard-flip-hint"
+        >
           {isFlipped ? "Kliknij aby odwrócić" : "Kliknij aby zobaczyć odpowiedź"}
         </div>
       )}
     </div>
   );
-}; 
+};

@@ -12,7 +12,7 @@ import type { UseFlashcardGenerationOptions } from "./types";
 export const CreatorView: React.FC = () => {
   // Stan tekstu źródłowego
   const [sourceText, setSourceText] = useState<SourceTextDto | null>(null);
-  
+
   // Hook do generowania fiszek
   const {
     flashcards,
@@ -25,34 +25,34 @@ export const CreatorView: React.FC = () => {
     regenerateFlashcard,
     saveFlashcard,
     editFlashcard,
-    reset
+    reset,
   } = useFlashcardGeneration();
-  
+
   // Obsługa zapisania tekstu źródłowego
   const handleTextSaved = (savedText: SourceTextDto) => {
     setSourceText(savedText);
   };
-  
+
   // Obsługa wygenerowania fiszek - nowy flow
   const handleFlashcardsGenerated = (response: CreateSourceTextResponse) => {
     loadFlashcardsFromResponse(response);
   };
-  
+
   // Obsługa akceptacji fiszki
   const handleAcceptFlashcard = async (id: string) => {
     await updateFlashcard(id, { accepted: true });
   };
-  
+
   // Obsługa odrzucenia fiszki
   const handleRejectFlashcard = async (id: string) => {
     await updateFlashcard(id, { accepted: false });
   };
-  
+
   // Obsługa regeneracji fiszki
   const handleRegenerateFlashcard = async (id: string) => {
     await regenerateFlashcard(id);
   };
-  
+
   // Obsługa zapisania fiszki do bazy danych
   const handleSaveFlashcard = async (id: string) => {
     await saveFlashcard(id);
@@ -62,15 +62,14 @@ export const CreatorView: React.FC = () => {
   const handleEditFlashcard = (id: string, frontContent: string, backContent: string) => {
     editFlashcard(id, frontContent, backContent);
   };
-  
+
   return (
     <div className="container mx-auto py-8 px-4 max-w-5xl" data-testid="flashcard-creator-view">
       <PageHeader
         title="Kreator fiszek"
         description="Wprowadź tekst źródłowy i wygeneruj fiszki edukacyjne przy pomocy sztucznej inteligencji."
-        
       />
-      
+
       <SourceTextForm
         onTextSaved={handleTextSaved}
         onFlashcardsGenerated={handleFlashcardsGenerated}
@@ -85,7 +84,7 @@ export const CreatorView: React.FC = () => {
         }}
         data-testid="flashcard-creation-form"
       />
-      
+
       {error && (
         <div className="mt-6" data-testid="flashcard-generation-error">
           <ErrorMessage
@@ -99,13 +98,13 @@ export const CreatorView: React.FC = () => {
           />
         </div>
       )}
-      
+
       <ProgressIndicator
         isGenerating={isGenerating}
         progressText="Trwa generowanie fiszek edukacyjnych na podstawie tekstu źródłowego..."
         data-testid="flashcard-generation-progress"
       />
-      
+
       {generationStats && flashcards.length > 0 && (
         <GeneratedFlashcards
           flashcards={flashcards}
@@ -123,4 +122,4 @@ export const CreatorView: React.FC = () => {
       )}
     </div>
   );
-}; 
+};

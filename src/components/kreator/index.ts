@@ -23,4 +23,4 @@ export { useFlashcardGeneration } from "./hooks/useFlashcardGeneration";
 export { useFlashcardCreation } from "./hooks/useFlashcardCreation";
 
 // Types
-export type * from "./types"; 
+export type * from "./types";

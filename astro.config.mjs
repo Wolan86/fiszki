@@ -12,7 +12,7 @@ export default defineConfig({
   integrations: [react(), sitemap()],
   server: { port: 3000 },
   experimental: {
-    session: true
+    session: true,
   },
   vite: {
     plugins: [tailwindcss()],

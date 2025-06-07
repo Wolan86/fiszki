@@ -7,11 +7,7 @@ interface GenerateButtonProps {
   isLoading: boolean;
 }
 
-export const GenerateButton: React.FC<GenerateButtonProps> = ({
-  onClick,
-  disabled,
-  isLoading
-}) => {
+export const GenerateButton: React.FC<GenerateButtonProps> = ({ onClick, disabled, isLoading }) => {
   return (
     <Button
       onClick={onClick}
@@ -28,14 +24,7 @@ export const GenerateButton: React.FC<GenerateButtonProps> = ({
             fill="none"
             viewBox="0 0 24 24"
           >
-            <circle
-              className="opacity-25"
-              cx="12"
-              cy="12"
-              r="10"
-              stroke="currentColor"
-              strokeWidth="4"
-            ></circle>
+            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
             <path
               className="opacity-75"
               fill="currentColor"
@@ -53,16 +42,11 @@ export const GenerateButton: React.FC<GenerateButtonProps> = ({
             viewBox="0 0 24 24"
             stroke="currentColor"
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M13 10V3L4 14h7v7l9-11h-7z"
-            />
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
           </svg>
           Generuj fiszki
         </>
       )}
     </Button>
   );
-}; 
+};
