@@ -1,0 +1,10 @@
+---
+import Layout from "../layouts/Layout.astro";
+import LearningPage from "../components/learning/LearningPage";
+
+export const prerender = false;
+---
+
+<Layout title="Nauka - Fiszki">
+  <LearningPage client:load />
+</Layout> 

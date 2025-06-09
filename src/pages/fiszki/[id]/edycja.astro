@@ -1,0 +1,16 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import FlashcardEditView from '../../../components/flashcards/FlashcardEditView';
+
+export const prerender = false;
+
+const { id } = Astro.params;
+
+if (!id) {
+  return Astro.redirect('/fiszki');
+}
+---
+
+<Layout title="Edycja Fiszki">
+  <FlashcardEditView client:load flashcardId={id} />
+</Layout> 

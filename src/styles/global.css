@@ -143,3 +143,99 @@
 .flashcard-flipped .flashcard-inner {
   transform: rotateY(180deg);
 }
+
+/* Style dla widoku nauki */
+.learning-page-container {
+  min-height: calc(100vh - 200px);
+  display: flex;
+  flex-direction: column;
+}
+
+.learning-page-container.fullscreen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: hsl(var(--background));
+  z-index: 9999;
+  min-height: 100vh;
+}
+
+.learning-session {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 500px;
+}
+
+.learning-session.fullscreen-mode {
+  height: 100vh;
+  min-height: 100vh;
+}
+
+.session-header {
+  flex-shrink: 0;
+}
+
+.session-content {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+}
+
+.session-footer {
+  flex-shrink: 0;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .learning-page-container {
+    min-height: calc(100vh - 160px);
+  }
+  
+  .session-content {
+    min-height: 300px;
+    padding: 1rem;
+  }
+}
+
+/* Ukrywanie elementów w trybie pełnoekranowym */
+.fullscreen header,
+.fullscreen footer {
+  display: none;
+}
+
+/* Animacje dla smooth transitions */
+@keyframes fadeIn {
+  from { 
+    opacity: 0; 
+    transform: translateY(-10px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0); 
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}

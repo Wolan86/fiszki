@@ -73,6 +73,7 @@ export const flashcardListQuerySchema = z.object({
   source_text_id: z.string().uuid("Invalid source_text_id format").optional(),
   creation_type: z.enum(["ai_generated", "ai_edited", "manual"]).optional(),
   accepted: z.coerce.boolean().optional(),
+  search: z.string().min(1, "Search query cannot be empty").optional(),
 });
 
 // Validation schema for flashcard learning query parameters
@@ -264,6 +265,11 @@ export async function getFlashcards(
 
     if (queryParams.accepted !== undefined) {
       query = query.eq("accepted", queryParams.accepted);
+    }
+
+    // Apply search filter (search in both front_content and back_content)
+    if (queryParams.search) {
+      query = query.or(`front_content.ilike.%${queryParams.search}%,back_content.ilike.%${queryParams.search}%`);
     }
 
     // Apply sorting

@@ -92,8 +92,12 @@ export const useSourceText = ({
         return null;
       }
 
+      // Waliduj treść bezpośrednio zamiast polegać na stanie errors
+      const currentWordCount = countWords(content);
+      const currentErrors = validateContent(content, currentWordCount);
+
       // Jeśli tekst nie jest poprawny, nie zapisujemy
-      if (errors.length > 0) {
+      if (currentErrors.length > 0) {
         setIsSaving(false);
         return null;
       }

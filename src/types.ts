@@ -105,6 +105,7 @@ export interface FlashcardListQueryParams {
   source_text_id?: string;
   creation_type?: FlashcardCreationType;
   accepted?: boolean;
+  search?: string;
 }
 
 // Flashcard List Response
@@ -134,4 +135,64 @@ export interface ApiErrorResponse {
   message: string;
   code: string;
   details?: Record<string, unknown>;
+}
+
+// ----- FRONTEND-SPECIFIC TYPES FOR FLASHCARD VIEWS -----
+
+// Flashcard Filters for the list view
+export interface FlashcardFilters {
+  limit: number; // default: 10, max: 100
+  offset: number; // default: 0
+  sort: 'created_at' | 'updated_at' | 'front_content'; // default: created_at
+  order: 'asc' | 'desc'; // default: desc
+  source_text_id?: string; // UUID format
+  creation_type?: FlashcardCreationType | 'all';
+  accepted?: boolean;
+}
+
+// Request for updating flashcard
+export interface UpdateFlashcardRequest {
+  front_content?: string; // 1-2000 chars
+  back_content?: string; // 1-2000 chars
+  accepted?: boolean;
+}
+
+// Form data for flashcard editing
+export interface EditFormData {
+  front_content: string;
+  back_content: string;
+}
+
+// Validation errors
+export interface ValidationErrors {
+  front_content?: string[];
+  back_content?: string[];
+}
+
+// Save status for auto-save functionality
+export type SaveStatus = 'idle' | 'saving' | 'saved' | 'error';
+
+// Table action types
+export type TableAction = 'preview' | 'edit' | 'delete';
+
+// Type for creation type filter (includes 'all' option)
+export type CreationType = FlashcardCreationType | 'all';
+
+// Sort field options
+export type SortField = 'created_at' | 'updated_at' | 'front_content';
+
+// Preview state for modal
+export interface PreviewState {
+  isOpen: boolean;
+  flashcardId: string | null;
+  side: 'front' | 'back';
+}
+
+// Pagination info
+export interface PaginationInfo {
+  total: number;
+  limit: number;
+  offset: number;
+  hasNext: boolean;
+  hasPrevious: boolean;
 }
