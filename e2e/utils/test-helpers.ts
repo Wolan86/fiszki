@@ -2,6 +2,10 @@
  * Test helpers for E2E tests
  */
 
+import fs from 'fs';
+import path from 'path';
+import type { Page } from '@playwright/test';
+
 /**
  * Generate a sample text with the specified length in words
  * @param wordCount The number of words to generate
@@ -69,75 +73,47 @@ export const testUser = {
  * Login helper for authentication
  * @param page Playwright page
  */
-export async function loginAsTestUser(page: any): Promise<void> {
+export async function loginAsTestUser(page: Page): Promise<void> {
+  const context = page.context();
+  
+  console.log('Starting authentication process...');
+  
   // Navigate to login page
-  await page.goto("/auth/login");
-
+  await page.goto('/auth/login');
+  await page.waitForLoadState('networkidle');
+  
   // Wait for the login form to be visible
-  await page.getByTestId("login-form").waitFor({ state: "visible" });
-
-  // Make sure we have a valid password that meets validation requirements
-  const password = testUser.password && testUser.password.length >= 8 ? testUser.password : "test123456";
-
-  // Fill in the login form - ensure proper focus and clear any existing values
-  await page.getByTestId("email-input").click();
-  await page.getByTestId("email-input").clear();
-  await page.getByTestId("email-input").fill(testUser.email);
-
-  await page.getByTestId("password-input").click();
-  await page.getByTestId("password-input").clear();
-  await page.getByTestId("password-input").fill(password);
-
-  // Wait a moment to ensure form is properly filled
-  await wait(500);
-
-  // Submit the form
-  await page.evaluate(() => {
-    document.querySelector('[data-testid="login-button"]')?.dispatchEvent(
-      new MouseEvent("click", {
-        bubbles: true,
-        cancelable: true,
-        view: window,
-      })
-    );
-  });
-
-  // Wait for response - handle multiple possible success indicators
-  try {
-    // Try to wait for redirection to a known page or for authentication elements
-    await Promise.race([
-      page.waitForURL("**/kreator", { timeout: 10000 }).catch(() => console.log("URL redirect pattern not matched")),
-      page
-        .waitForURL("/**", { timeout: 10000 })
-        .then(async () => {
-          // Check for authentication indicators on the new page
-          await Promise.race([
-            page
-              .getByTestId("user-menu-button")
-              .waitFor({ state: "visible", timeout: 5000 })
-              .catch(() => console.log("User menu button not found")),
-            page
-              .getByText("Wyloguj się")
-              .waitFor({ state: "visible", timeout: 5000 })
-              .catch(() => console.log("Logout button not found")),
-          ]);
-        })
-        .catch(() => console.log("General URL redirect not detected")),
-    ]);
-
-    // Add a small delay to ensure the page is fully loaded
-    await wait(1000);
-
-    console.log("Login successful");
-  } catch (error) {
-    console.error("Login failed:", error);
-
-    // Check if there are validation errors
-    const validationErrors = await page.locator(".text-red-500").allTextContents();
-    if (validationErrors.length > 0) {
-      console.error("Validation errors:", validationErrors);
-    }
-
-    throw new Error("Failed to log in: " + error);
+  await page.waitForSelector('[data-testid="login-form"]', { timeout: 5000 });
+  
+  // Fill in login form using the correct test IDs
+  await page.fill('[data-testid="email-input"]', process.env.E2E_USERNAME!);
+  await page.fill('[data-testid="password-input"]', process.env.E2E_PASSWORD!);
+  
+  // Submit the form using the login button
+  await page.click('[data-testid="login-button"]');
+  
+  // Wait a moment and check what URL we're on
+  await page.waitForTimeout(3000);
+  const currentUrl = page.url();
+  console.log(`[loginAsTestUser] Current URL after form submission: ${currentUrl}`);
+  
+  // Check if there are any error messages on the page
+  const errorAlert = await page.locator('[role="alert"]').first();
+  if (await errorAlert.isVisible()) {
+    const errorText = await errorAlert.textContent();
+    console.log(`[loginAsTestUser] Error message found: ${errorText}`);
   }
+  
+  // Wait for redirect after successful login (should go to /kreator)
+  // Use a more flexible URL pattern in case there are query parameters
+  await page.waitForURL(/\/kreator/, { timeout: 10000 });
+  
+  // Save the storage state
+  const storageState = await context.storageState();
+  const storageStatePath = path.resolve('e2e/auth/storageState.json');
+  
+  fs.writeFileSync(storageStatePath, JSON.stringify(storageState, null, 2));
+  console.log(`[loginAsTestUser] Saved storage state with ${storageState.cookies.length} cookies`);
+  
+  console.log('[loginAsTestUser] Login verification successful');
 }

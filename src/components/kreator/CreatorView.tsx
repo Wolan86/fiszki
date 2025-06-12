@@ -12,11 +12,12 @@ import type { UseFlashcardGenerationOptions } from "./types";
 export const CreatorView: React.FC = () => {
   // Stan tekstu źródłowego
   const [sourceText, setSourceText] = useState<SourceTextDto | null>(null);
+  // Stan generowania fiszek - zarządzamy tutaj dla synchronizacji
+  const [isGenerating, setIsGenerating] = useState<boolean>(false);
 
   // Hook do generowania fiszek
   const {
     flashcards,
-    isGenerating,
     generationStats,
     error,
     savingFlashcardIds,
@@ -36,6 +37,16 @@ export const CreatorView: React.FC = () => {
   // Obsługa wygenerowania fiszek - nowy flow
   const handleFlashcardsGenerated = (response: CreateSourceTextResponse) => {
     loadFlashcardsFromResponse(response);
+  };
+
+  // Obsługa rozpoczęcia generowania
+  const handleGenerationStart = () => {
+    setIsGenerating(true);
+  };
+
+  // Obsługa zakończenia generowania
+  const handleGenerationEnd = () => {
+    setIsGenerating(false);
   };
 
   // Obsługa akceptacji fiszki
@@ -73,6 +84,9 @@ export const CreatorView: React.FC = () => {
       <SourceTextForm
         onTextSaved={handleTextSaved}
         onFlashcardsGenerated={handleFlashcardsGenerated}
+        isGenerating={isGenerating}
+        onGenerationStart={handleGenerationStart}
+        onGenerationEnd={handleGenerationEnd}
         data-testid="source-text-form"
       />
 

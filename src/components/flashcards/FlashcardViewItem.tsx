@@ -74,99 +74,85 @@ export const FlashcardViewItem: React.FC<FlashcardViewItemProps> = ({
   const currentContent = isFlipped ? flashcard.back_content : flashcard.front_content;
 
   return (
-    <div className="bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
-      {/* Card Content */}
-      <div 
-        className={`min-h-32 p-4 cursor-pointer ${editState.isEditing ? 'cursor-default' : ''}`}
-        onClick={handleFlip}
-      >
+    <div 
+      className="bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow duration-200"
+      data-testid={`flashcard-item-${flashcard.id}`}
+    >
+      <div className="p-4">
         {editState.isEditing ? (
-          <div className="space-y-3">
-            <div>
-              <label className="block text-xs font-medium text-gray-500 mb-1">
-                Przód
-              </label>
-              <textarea
-                value={editState.editableFrontContent}
-                onChange={(e) => setEditState(prev => ({
-                  ...prev,
-                  editableFrontContent: e.target.value
-                }))}
-                className="w-full p-2 text-sm border border-gray-300 rounded resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                rows={2}
-                placeholder="Treść przodu fiszki..."
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-medium text-gray-500 mb-1">
-                Tył
-              </label>
-              <textarea
-                value={editState.editableBackContent}
-                onChange={(e) => setEditState(prev => ({
-                  ...prev,
-                  editableBackContent: e.target.value
-                }))}
-                className="w-full p-2 text-sm border border-gray-300 rounded resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                rows={2}
-                placeholder="Treść tyłu fiszki..."
-              />
+          <div data-testid={`edit-form-${flashcard.id}`}>
+            <div className="space-y-3">
+              <div>
+                <input
+                  type="text"
+                  value={editState.editableFrontContent}
+                  onChange={(e) => setEditState(prev => ({
+                    ...prev,
+                    editableFrontContent: e.target.value
+                  }))}
+                  className="w-full p-2 border border-gray-300 rounded-md text-sm font-medium"
+                  placeholder="Termin"
+                  data-testid={`edit-term-input-${flashcard.id}`}
+                />
+              </div>
+              <div>
+                <textarea
+                  value={editState.editableBackContent}
+                  onChange={(e) => setEditState(prev => ({
+                    ...prev,
+                    editableBackContent: e.target.value
+                  }))}
+                  className="w-full p-2 border border-gray-300 rounded-md text-sm resize-none min-h-[60px]"
+                  placeholder="Definicja"
+                  data-testid={`edit-definition-input-${flashcard.id}`}
+                />
+              </div>
+              <div className="flex gap-2 justify-end">
+                <button
+                  onClick={handleCancelEdit}
+                  className="px-3 py-1 text-xs text-gray-600 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors"
+                  data-testid={`cancel-edit-button-${flashcard.id}`}
+                >
+                  Anuluj
+                </button>
+                <button
+                  onClick={handleSaveEdit}
+                  className="px-3 py-1 text-xs text-white bg-blue-600 rounded-md hover:bg-blue-700 transition-colors"
+                  data-testid={`save-edit-button-${flashcard.id}`}
+                >
+                  Zapisz
+                </button>
+              </div>
             </div>
           </div>
         ) : (
-          <div className="flex flex-col justify-center items-center text-center min-h-20">
-            <p className="text-sm text-gray-800 mb-2">
-              {currentContent}
+          <div data-testid={`flashcard-content-${flashcard.id}`}>
+            <div className="flex items-start justify-between mb-2">
+              <h3 className="text-sm font-medium text-gray-900 line-clamp-2" data-testid={`flashcard-term-${flashcard.id}`}>
+                {flashcard.front_content}
+              </h3>
+              <div className="flex gap-1 ml-2">
+                <button
+                  onClick={handleStartEdit}
+                  className="p-1 text-gray-400 hover:text-blue-600 transition-colors"
+                  title="Edytuj fiszkę"
+                  data-testid={`edit-button-${flashcard.id}`}
+                >
+                  <Edit className="h-4 w-4" />
+                </button>
+                <button
+                  onClick={handleDelete}
+                  className="p-1 text-gray-400 hover:text-red-600 transition-colors"
+                  title="Usuń fiszkę"
+                  data-testid={`delete-button-${flashcard.id}`}
+                >
+                  <Trash2 className="h-4 w-4" />
+                </button>
+              </div>
+            </div>
+            <p className="text-xs text-gray-600 line-clamp-3" data-testid={`flashcard-definition-${flashcard.id}`}>
+              {flashcard.back_content}
             </p>
-            <div className="text-xs text-gray-400">
-              {isFlipped ? 'Tył' : 'Przód'}
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* Actions */}
-      <div className="border-t border-gray-100 px-4 py-3">
-        {editState.isEditing ? (
-          <div className="flex justify-between">
-            <button
-              onClick={handleCancelEdit}
-              disabled={editState.isSaving}
-              className="flex items-center gap-1 px-3 py-1 text-xs text-gray-600 hover:text-gray-800 disabled:opacity-50"
-            >
-              <X className="w-3 h-3" />
-              Anuluj
-            </button>
-            <button
-              onClick={handleSaveEdit}
-              disabled={editState.isSaving || !editState.editableFrontContent.trim() || !editState.editableBackContent.trim()}
-              className="flex items-center gap-1 px-3 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <Save className="w-3 h-3" />
-              {editState.isSaving ? 'Zapisywanie...' : 'Zapisz'}
-            </button>
-          </div>
-        ) : (
-          <div className="flex justify-between items-center">
-            <div className="text-xs text-gray-400">
-              {new Date(flashcard.updated_at).toLocaleDateString('pl-PL')}
-            </div>
-            <div className="flex gap-2">
-              <button
-                onClick={handleStartEdit}
-                className="flex items-center gap-1 px-2 py-1 text-xs text-gray-600 hover:text-blue-600 transition-colors"
-                title="Edytuj"
-              >
-                <Edit className="w-3 h-3" />
-              </button>
-              <button
-                onClick={handleDelete}
-                className="flex items-center gap-1 px-2 py-1 text-xs text-gray-600 hover:text-red-600 transition-colors"
-                title="Usuń"
-              >
-                <Trash2 className="w-3 h-3" />
-              </button>
-            </div>
           </div>
         )}
       </div>

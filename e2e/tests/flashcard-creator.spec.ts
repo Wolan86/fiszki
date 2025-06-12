@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "../utils/test-fixtures";
 import { CreatorPage } from "../page-objects/CreatorPage";
 import { FlashcardComponent } from "../page-objects/FlashcardComponent";
 import { generateSampleText, wait, testUser } from "../utils/test-helpers";
@@ -6,10 +6,11 @@ import { generateSampleText, wait, testUser } from "../utils/test-helpers";
 /**
  * Test suite for flashcard creation workflow
  * Authentication is handled by global.setup.ts and playwright.config.ts
+ * Data cleanup is handled by test-fixtures.ts
  */
 test.describe("Flashcard Creator", () => {
   // Example test for the source text entry
-  test("should allow entering source text", async ({ page }) => {
+  test("should allow entering source text", async ({ page, cleanupTestData }) => {
     // Arrange
     const creatorPage = new CreatorPage(page);
     const sampleText = "Sample text for testing";
@@ -29,7 +30,7 @@ test.describe("Flashcard Creator", () => {
   });
 
   // New test for validation and happy path
-  test("should validate minimum word count then allow generation when requirements met", async ({ page }) => {
+  test("should validate minimum word count then allow generation when requirements met", async ({ page, cleanupTestData }) => {
     // Arrange
     const creatorPage = new CreatorPage(page);
     const insufficientText = generateSampleText(50); // Less than 1000 words
@@ -68,7 +69,7 @@ test.describe("Flashcard Creator", () => {
   });
 
   // Example test for flashcard generation
-  test("should generate flashcards from source text", async ({ page }) => {
+  test("should generate flashcards from source text", async ({ page, cleanupTestData }) => {
     // Arrange
     const creatorPage = new CreatorPage(page);
     const sampleText = generateSampleText(1500);
@@ -84,7 +85,7 @@ test.describe("Flashcard Creator", () => {
   });
 
   // Example test for accepting flashcards
-  test("should allow accepting flashcards", async ({ page }) => {
+  test("should allow accepting flashcards", async ({ page, cleanupTestData }) => {
     // Arrange
     const creatorPage = new CreatorPage(page);
     const sampleText = generateSampleText(2000);
@@ -166,8 +167,9 @@ test.describe("Flashcard Creator", () => {
       // Accept the flashcard
       await flashcard.accept();
 
-      // Verify the button is disabled after accepting
-      await expect(flashcard.acceptButton).toBeDisabled();
+      // Verify the flashcard shows accepted status (instead of checking disabled button)
+      const acceptedStatus = flashcard.locator.locator('text=Zaakceptowana');
+      await expect(acceptedStatus).toBeVisible({ timeout: 10000 });
     } else {
       // If no items found with our new selector, try an alternative approach
       console.log('No flashcard items found with [data-testid^="flashcard-item-"], trying direct button click');
@@ -183,7 +185,7 @@ test.describe("Flashcard Creator", () => {
   });
 
   // Example test for complete workflow (create, generate, accept)
-  test("should complete the entire flashcard creation workflow", async ({ page }) => {
+  test("should complete the entire flashcard creation workflow", async ({ page, cleanupTestData }) => {
     // Arrange
     const creatorPage = new CreatorPage(page);
     const sampleText = generateSampleText(3000);
@@ -204,7 +206,7 @@ test.describe("Flashcard Creator", () => {
 
     for (let i = 0; i < flashcards.length; i++) {
       const testId = await flashcards[i].getAttribute("data-testid");
-      const flashcardId = testId ? testId.replace("flashcard-", "") : "";
+      const flashcardId = testId ? testId.replace("flashcard-item-", "") : "";
       const flashcard = new FlashcardComponent(page, flashcardId);
 
       // Check front and back content
@@ -218,7 +220,10 @@ test.describe("Flashcard Creator", () => {
 
       // Accept the flashcard
       await flashcard.accept();
-      await expect(flashcard.acceptButton).toBeDisabled();
+
+      // Verify the flashcard shows accepted status (instead of checking disabled button)
+      const acceptedStatus = flashcard.locator.locator('text=Zaakceptowana');
+      await expect(acceptedStatus).toBeVisible({ timeout: 10000 });
 
       // Wait a bit between actions to avoid race conditions
       if (i < flashcards.length - 1) {

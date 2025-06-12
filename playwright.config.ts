@@ -56,6 +56,8 @@ export default defineConfig({
   retries: process.env.CI ? 2 : 1,
   workers: 1,
   reporter: "html",
+  globalSetup: "./e2e/global.setup.ts",
+  globalTeardown: "./e2e/global.teardown.ts",
 
   use: {
     baseURL: "http://localhost:3000",
@@ -68,18 +70,12 @@ export default defineConfig({
   /* Configure projects for different scenarios */
   projects: [
     {
-      name: "setup",
-      testMatch: /global\.setup\.ts/,
-      use: { storageState: emptyStatePath },
-    },
-    {
       name: "authenticated",
       testMatch: /flashcard-creator\.spec\.ts/,
       use: {
         ...devices["Desktop Chrome"],
         storageState: storageStatePath,
       },
-      dependencies: ["setup"],
     },
     {
       name: "unauthenticated",

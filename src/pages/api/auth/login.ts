@@ -37,11 +37,23 @@ export const POST: APIRoute = async ({ request, cookies, redirect }) => {
     );
   }
 
-  return new Response(
+  // Create response with success data
+  const response = new Response(
     JSON.stringify({
       success: true,
       user: data.user,
     }),
-    { status: 200 }
+    { 
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    }
   );
+
+  // The cookies should already be set by the Supabase client through context.cookies.set()
+  // This happens automatically when signInWithPassword is called
+  console.log(`[login] Authentication successful for user: ${data.user?.email}`);
+
+  return response;
 };

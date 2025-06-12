@@ -1,6 +1,118 @@
-# E2E Testing with Playwright
+# E2E Testing
 
-This directory contains end-to-end tests using Playwright.
+This directory contains end-to-end tests for the Fiszki AI application using Playwright.
+
+## Structure
+
+- `auth/` - Authentication storage state files
+- `page-objects/` - Page Object Model classes
+- `tests/` - Test files
+- `utils/` - Test utilities and helpers
+- `global.setup.ts` - Global setup for authentication
+- `global.teardown.ts` - Global teardown for data cleanup
+- `tsconfig.json` - TypeScript configuration
+
+## Data Cleanup
+
+The E2E tests include automatic cleanup mechanisms to ensure test isolation:
+
+### Test-level Cleanup (Fixture)
+
+Each test automatically cleans up data after completion using a custom Playwright fixture:
+
+- **File**: `utils/test-fixtures.ts`
+- **Purpose**: Removes flashcards and source texts created during individual tests
+- **Scope**: Worker-level (runs after each worker completes)
+- **Usage**: Import `test` and `expect` from `../utils/test-fixtures` instead of `@playwright/test`
+
+### Global Cleanup (Teardown)
+
+A global teardown runs after all tests complete:
+
+- **File**: `global.teardown.ts`
+- **Purpose**: Final cleanup of any remaining test data
+- **Scope**: Runs once after all test projects complete
+- **Target**: Removes all data for the test user ID specified in `E2E_USERNAME_ID`
+
+### Environment Variables
+
+The cleanup system uses these environment variables from `.env.test`:
+
+```bash
+SUPABASE_URL=https://your-project.supabase.co
+SUPABASE_PUBLIC_KEY=your-anon-key
+E2E_USERNAME_ID=test-user-uuid
+E2E_USERNAME=test@test.com
+E2E_PASSWORD=your-test-password
+```
+
+### Database Tables Cleaned
+
+The cleanup process removes data from:
+
+1. **flashcards** - All flashcards created by the test user
+2. **source_texts** - All source texts created by the test user
+
+### Row Level Security (RLS)
+
+All cleanup operations respect Supabase Row Level Security policies, ensuring:
+
+- Only data belonging to the test user is affected
+- No accidental deletion of production data
+- Secure isolation between test and production environments
+
+## Running Tests
+
+```bash
+# Run all E2E tests with cleanup
+npm run test:e2e
+
+# Run specific test file
+npx playwright test flashcard-creator.spec.ts
+
+# Run tests with cleanup disabled (for debugging)
+npx playwright test --grep-invert "cleanup test data"
+```
+
+## Test Structure
+
+Tests are organized using Playwright's global setup/teardown and projects:
+
+1. **globalSetup** - Runs `global.setup.ts` for authentication before all tests
+2. **authenticated** - Tests requiring login (`flashcard-creator.spec.ts`)
+3. **unauthenticated** - Tests not requiring login (`auth.spec.ts`)
+4. **globalTeardown** - Runs `global.teardown.ts` for cleanup after all tests
+
+### Global Setup and Teardown
+
+- **Setup**: `e2e/global.setup.ts` - Authenticates test user and saves session state
+- **Teardown**: `e2e/global.teardown.ts` - Cleans up all test data after test completion
+
+The global setup/teardown approach ensures:
+- Authentication happens once before all tests
+- Cleanup happens once after all tests complete
+- Better performance compared to per-test authentication
+- Reliable test isolation through data cleanup
+
+## Development Guidelines
+
+When writing new E2E tests:
+
+1. **Import test utilities**: Use `import { test, expect } from "../utils/test-fixtures"`
+2. **Add cleanup parameter**: Include `cleanupTestData` in test function parameters when creating data
+3. **Use test user**: Always use the test user credentials from environment variables
+4. **Test isolation**: Each test should be independent and not rely on data from other tests
+
+Example:
+
+```typescript
+import { test, expect } from "../utils/test-fixtures";
+
+test("should create flashcard", async ({ page, cleanupTestData }) => {
+  // Test code that creates data
+  // Cleanup happens automatically after test completion
+});
+```
 
 ## Authentication Setup
 

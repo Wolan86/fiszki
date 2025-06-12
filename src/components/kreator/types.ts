@@ -71,7 +71,6 @@ export interface UseFlashcardGenerationOptions {
 
 export interface UseFlashcardGenerationResult {
   flashcards: FlashcardViewModel[];
-  isGenerating: boolean;
   generationStats: GenerationStatsViewModel | null;
   error: ApiErrorResponse | null;
   savingFlashcardIds: string[];

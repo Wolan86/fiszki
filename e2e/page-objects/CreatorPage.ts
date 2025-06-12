@@ -125,13 +125,18 @@ export class CreatorPage extends BasePage {
    * Wait for flashcards to be generated
    */
   async waitForFlashcardsGeneration() {
-    // First wait for the progress indicator to appear
-    await this.progressIndicator.waitFor({ state: "visible" });
-    // Then wait for it to disappear or for flashcards to appear
+    // Wait for the generate button to be disabled (generation starts)
+    await this.generateButton.waitFor({ state: "visible" });
+    await expect(this.generateButton).toBeDisabled();
+    
+    // Wait for either flashcards to appear or an error to occur
     await Promise.race([
-      this.progressIndicator.waitFor({ state: "hidden" }),
-      this.generatedFlashcardsResult.waitFor({ state: "visible" }),
+      this.generatedFlashcardsResult.waitFor({ state: "visible", timeout: 30000 }),
+      this.page.locator('[data-testid="flashcard-generation-error"]').waitFor({ state: "visible", timeout: 30000 }),
     ]);
+    
+    // Wait for the generate button to be enabled again (generation finished)
+    await expect(this.generateButton).toBeEnabled({ timeout: 5000 });
   }
 
   /**

@@ -9,14 +9,22 @@ import type { SourceTextDto, CreateSourceTextResponse } from "@/types";
 interface SourceTextFormProps {
   onTextSaved: (sourceText: SourceTextDto) => void;
   onFlashcardsGenerated: (response: CreateSourceTextResponse) => void;
+  isGenerating?: boolean;
+  onGenerationStart?: () => void;
+  onGenerationEnd?: () => void;
 }
 
-export const SourceTextForm: React.FC<SourceTextFormProps> = ({ onTextSaved, onFlashcardsGenerated }) => {
+export const SourceTextForm: React.FC<SourceTextFormProps> = ({ 
+  onTextSaved, 
+  onFlashcardsGenerated,
+  isGenerating = false,
+  onGenerationStart,
+  onGenerationEnd
+}) => {
   const MIN_WORD_COUNT = 1000;
   const MAX_WORD_COUNT = 10000;
 
   const [sourceTextId, setSourceTextId] = useState<string | null>(null);
-  const [isGenerating, setIsGenerating] = useState<boolean>(false);
 
   const {
     content,
@@ -61,7 +69,7 @@ export const SourceTextForm: React.FC<SourceTextFormProps> = ({ onTextSaved, onF
     }
 
     try {
-      setIsGenerating(true);
+      onGenerationStart?.();
       const response = await saveSourceTextAndGenerateFlashcards(5); // Default 5 flashcards
 
       if (response) {
@@ -72,7 +80,7 @@ export const SourceTextForm: React.FC<SourceTextFormProps> = ({ onTextSaved, onF
     } catch (error) {
       console.error("Error generating flashcards:", error);
     } finally {
-      setIsGenerating(false);
+      onGenerationEnd?.();
     }
   };
 

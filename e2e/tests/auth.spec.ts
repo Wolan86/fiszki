@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "../utils/test-fixtures";
 import { testUser, loginAsTestUser, wait } from "../utils/test-helpers";
 
 test.describe("Authentication", () => {

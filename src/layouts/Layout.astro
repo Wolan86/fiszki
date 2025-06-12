@@ -30,13 +30,13 @@ const user = Astro.locals.user;
           {
             user && (
               <>
-                <a href="/fiszki" class="text-gray-700 hover:text-blue-600">
+                <a href="/fiszki" class="text-gray-700 hover:text-blue-600" data-testid="nav-moje-fiszki">
                   Moje fiszki
                 </a>
-                <a href="/kreator" class="text-gray-700 hover:text-blue-600">
+                <a href="/kreator" class="text-gray-700 hover:text-blue-600" data-testid="nav-kreator">
                   Kreator
                 </a>
-                <a href="/nauka" class="text-gray-700 hover:text-blue-600">
+                <a href="/nauka" class="text-gray-700 hover:text-blue-600" data-testid="nav-nauka">
                   Nauka
                 </a>
               </>
