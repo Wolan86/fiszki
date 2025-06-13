@@ -1,19 +1,6 @@
 ---
 import Welcome from "../components/Welcome.astro";
 import Layout from "../layouts/Layout.astro";
-
-// Sprawdzenie czy użytkownik jest zalogowany
-const user = Astro.locals.user;
-
-// Jeśli użytkownik jest zalogowany, przekieruj do dashboardu
-if (user) {
-  return Astro.redirect('/fiszki');
-}
-
-// Jeśli użytkownik nie jest zalogowany, przekieruj do strony logowania
-return Astro.redirect('/auth/login');
-
-export const prerender = false;
 ---
 
 <Layout>
