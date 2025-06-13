@@ -1,7 +1,7 @@
 import { useEffect, useCallback } from "react";
 
 // Sprawdzenie czy jesteśmy w przeglądarce
-const isBrowser = typeof window !== 'undefined' && typeof document !== 'undefined';
+const isBrowser = typeof window !== "undefined" && typeof document !== "undefined";
 
 // Konfiguracja skrótów klawiaturowych
 interface KeyboardHandlers {
@@ -19,69 +19,91 @@ interface KeyboardShortcut {
 }
 
 export const useKeyboardNavigation = (handlers: KeyboardHandlers) => {
-  const {
-    onPrevious,
-    onNext,
-    onFlip,
-    onFullscreen,
-    onExit,
-  } = handlers;
+  const { onPrevious, onNext, onFlip, onFullscreen, onExit } = handlers;
 
   // Obsługa wydarzeń klawiatury
-  const handleKeyDown = useCallback((event: KeyboardEvent) => {
-    if (!isBrowser) return;
-    
-    // Sprawdzenie czy focus nie jest na elemencie input/textarea
-    const activeElement = document.activeElement;
-    const isInputFocused = activeElement?.tagName === 'INPUT' || 
-                          activeElement?.tagName === 'TEXTAREA' ||
-                          activeElement?.getAttribute('contenteditable') === 'true';
-    
-    if (isInputFocused) return;
+  const handleKeyDown = useCallback(
+    (event: KeyboardEvent) => {
+      if (!isBrowser) return;
 
-    switch (event.key) {
-      case 'ArrowLeft':
-        event.preventDefault();
-        onPrevious?.();
-        break;
-      case 'ArrowRight':
-        event.preventDefault();
-        onNext?.();
-        break;
-      case ' ':
-      case 'Enter':
-        event.preventDefault();
-        onFlip?.();
-        break;
-      case 'f':
-      case 'F':
-        event.preventDefault();
-        onFullscreen?.();
-        break;
-      case 'Escape':
-        event.preventDefault();
-        onExit?.();
-        break;
-    }
-  }, [onPrevious, onNext, onFlip, onFullscreen, onExit]);
+      // Sprawdzenie czy focus nie jest na elemencie input/textarea
+      const activeElement = document.activeElement;
+      const isInputFocused =
+        activeElement?.tagName === "INPUT" ||
+        activeElement?.tagName === "TEXTAREA" ||
+        activeElement?.getAttribute("contenteditable") === "true";
+
+      if (isInputFocused) return;
+
+      switch (event.key) {
+        case "ArrowLeft":
+          event.preventDefault();
+          onPrevious?.();
+          break;
+        case "ArrowRight":
+          event.preventDefault();
+          onNext?.();
+          break;
+        case " ":
+        case "Enter":
+          event.preventDefault();
+          onFlip?.();
+          break;
+        case "f":
+        case "F":
+          event.preventDefault();
+          onFullscreen?.();
+          break;
+        case "Escape":
+          event.preventDefault();
+          onExit?.();
+          break;
+      }
+    },
+    [onPrevious, onNext, onFlip, onFullscreen, onExit]
+  );
 
   // Dodanie i usunięcie event listenera
   useEffect(() => {
     if (!isBrowser) return;
-    
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
   }, [handleKeyDown]);
 
   // Mapowanie klawiszy do opisów
   const shortcuts: KeyboardShortcut[] = [
-    { key: '←/→', description: 'Nawigacja między fiszkami', handler: () => {} },
-    { key: 'Spacja/Enter', description: 'Odwróć kartę', handler: () => {} },
-    { key: 'F', description: 'Tryb pełnoekranowy', handler: () => {} },
-    { key: 'ESC', description: 'Wyjście z trybu/zakończ', handler: () => {} },
+    {
+      key: "←/→",
+      description: "Nawigacja między fiszkami",
+      handler: () => {
+        // Navigation handlers are provided via onPrevious/onNext props
+      },
+    },
+    {
+      key: "Spacja/Enter",
+      description: "Odwróć kartę",
+      handler: () => {
+        // Flip handler is provided via onFlip prop
+      },
+    },
+    {
+      key: "F",
+      description: "Tryb pełnoekranowy",
+      handler: () => {
+        // Fullscreen handler is provided via onFullscreen prop
+      },
+    },
+    {
+      key: "ESC",
+      description: "Wyjście z trybu/zakończ",
+      handler: () => {
+        // Exit handler is provided via onExit prop
+      },
+    },
   ];
 
   return {
     shortcuts,
   };
-}; 
+};

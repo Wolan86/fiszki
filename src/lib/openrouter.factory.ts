@@ -59,7 +59,7 @@ export function isOpenRouterAvailable(): boolean {
   try {
     const service = createOpenRouterService();
     return !!service;
-  } catch (error) {
+  } catch {
     return false;
   }
 }

@@ -8,10 +8,12 @@ interface LogoutButtonProps {
 
 export const LogoutButton: React.FC<LogoutButtonProps> = ({ className = "" }) => {
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleLogout = async () => {
     try {
       setIsLoading(true);
+      setError(null);
       const response = await fetch("/api/auth/logout", {
         method: "POST",
         headers: {
@@ -27,29 +29,37 @@ export const LogoutButton: React.FC<LogoutButtonProps> = ({ className = "" }) =>
       // Przekierowanie po udanym wylogowaniu
       window.location.href = "/auth/login";
     } catch (error) {
-      console.error("Błąd wylogowania:", error);
+      const errorMessage = error instanceof Error ? error.message : "Błąd podczas wylogowywania";
+      setError(errorMessage);
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <Button
-      variant="ghost"
-      size="sm"
-      onClick={handleLogout}
-      disabled={isLoading}
-      className={className}
-      data-testid="logout-button"
-    >
-      {isLoading ? (
-        "Wylogowywanie..."
-      ) : (
-        <>
-          <LogOut className="h-4 w-4 mr-2" />
-          Wyloguj się
-        </>
+    <div>
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={handleLogout}
+        disabled={isLoading}
+        className={className}
+        data-testid="logout-button"
+      >
+        {isLoading ? (
+          "Wylogowywanie..."
+        ) : (
+          <>
+            <LogOut className="h-4 w-4 mr-2" />
+            Wyloguj się
+          </>
+        )}
+      </Button>
+      {error && (
+        <p className="text-red-500 text-sm mt-1" role="alert">
+          {error}
+        </p>
       )}
-    </Button>
+    </div>
   );
 };

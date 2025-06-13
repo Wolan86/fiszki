@@ -103,7 +103,7 @@ describe("WordCounter", () => {
         // Assert
         const countDisplay = screen.getByText("5 / 10-100");
         expect(countDisplay).toHaveClass("text-amber-500");
-        
+
         const progressBar = screen.getByRole("progressbar");
         expect(progressBar).toHaveClass("bg-amber-500");
       });
@@ -128,10 +128,8 @@ describe("WordCounter", () => {
         ];
 
         scenarios.forEach(({ current, min, expectedDeficit }) => {
-          const { unmount } = render(
-            <WordCounter currentCount={current} minCount={min} maxCount={200} />
-          );
-          
+          const { unmount } = render(<WordCounter currentCount={current} minCount={min} maxCount={200} />);
+
           expect(screen.getByText(`Wymagane minimum ${min} słów (brakuje ${expectedDeficit})`)).toBeInTheDocument();
           unmount();
         });
@@ -149,7 +147,7 @@ describe("WordCounter", () => {
         // Assert
         const countDisplay = screen.getByText("120 / 10-100");
         expect(countDisplay).toHaveClass("text-red-500");
-        
+
         const progressBar = screen.getByRole("progressbar");
         expect(progressBar).toHaveClass("bg-red-500");
       });
@@ -174,11 +172,11 @@ describe("WordCounter", () => {
         ];
 
         scenarios.forEach(({ current, max, expectedExcess }) => {
-          const { unmount } = render(
-            <WordCounter currentCount={current} minCount={10} maxCount={max} />
-          );
-          
-          expect(screen.getByText(`Przekroczono maksymalną liczbę ${max} słów (o ${expectedExcess})`)).toBeInTheDocument();
+          const { unmount } = render(<WordCounter currentCount={current} minCount={10} maxCount={max} />);
+
+          expect(
+            screen.getByText(`Przekroczono maksymalną liczbę ${max} słów (o ${expectedExcess})`)
+          ).toBeInTheDocument();
           unmount();
         });
       });
@@ -195,7 +193,7 @@ describe("WordCounter", () => {
         // Assert
         const countDisplay = screen.getByText("50 / 10-100");
         expect(countDisplay).toHaveClass("text-green-500");
-        
+
         const progressBar = screen.getByRole("progressbar");
         expect(progressBar).toHaveClass("bg-green-500");
       });
@@ -259,9 +257,7 @@ describe("WordCounter", () => {
 
     it("updates ARIA attributes when count changes", () => {
       // Arrange
-      const { rerender } = render(
-        <WordCounter currentCount={5} minCount={10} maxCount={100} />
-      );
+      const { rerender } = render(<WordCounter currentCount={5} minCount={10} maxCount={100} />);
 
       // Act
       rerender(<WordCounter currentCount={15} minCount={10} maxCount={100} />);
@@ -326,7 +322,7 @@ describe("WordCounter", () => {
     it("prevents division by zero when minimum is 0", () => {
       // Arrange & Act
       render(<WordCounter currentCount={0} minCount={0} maxCount={100} />);
-      
+
       const progressBar = screen.getByRole("progressbar");
       // Fix: When minimum is 0, percentage calculation results in NaN, which becomes invalid CSS
       // React will render this as an empty width value, effectively 0%
@@ -343,7 +339,7 @@ describe("WordCounter", () => {
       // Assert
       expect(screen.getByText("-5 / 10-100")).toBeInTheDocument();
       expect(screen.getByText("Wymagane minimum 10 słów (brakuje 15)")).toBeInTheDocument();
-      
+
       const progressBar = screen.getByRole("progressbar");
       expect(progressBar).toHaveAttribute("aria-valuenow", "-5");
     });
@@ -368,10 +364,8 @@ describe("WordCounter", () => {
       ];
 
       states.forEach(({ currentCount, minCount, maxCount, expectedClass }) => {
-        const { unmount } = render(
-          <WordCounter currentCount={currentCount} minCount={minCount} maxCount={maxCount} />
-        );
-        
+        const { unmount } = render(<WordCounter currentCount={currentCount} minCount={minCount} maxCount={maxCount} />);
+
         const progressBar = screen.getByRole("progressbar");
         expect(progressBar).toHaveClass(expectedClass);
         unmount();
@@ -387,14 +381,12 @@ describe("WordCounter", () => {
       ];
 
       states.forEach(({ currentCount, minCount, maxCount, expectedClass }) => {
-        const { unmount } = render(
-          <WordCounter currentCount={currentCount} minCount={minCount} maxCount={maxCount} />
-        );
-        
+        const { unmount } = render(<WordCounter currentCount={currentCount} minCount={minCount} maxCount={maxCount} />);
+
         const countDisplay = screen.getByText(`${currentCount} / ${minCount}-${maxCount}`);
         expect(countDisplay).toHaveClass(expectedClass);
         unmount();
       });
     });
   });
-}); 
+});

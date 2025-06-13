@@ -2,14 +2,14 @@ import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Save, Loader2 } from "lucide-react";
-import type { CreateFlashcardCommand } from "@/types";
+import type { CreateFlashcardCommand, FlashcardDto } from "@/types";
 import { useFlashcardCreation } from "./hooks/useFlashcardCreation";
 import { ErrorMessage } from "./ErrorMessage";
 import { cn } from "@/lib/utils";
 
 interface FlashcardCreationFormProps {
   sourceTextId?: string;
-  onFlashcardCreated?: (flashcard: any) => void;
+  onFlashcardCreated?: (flashcard: FlashcardDto) => void;
   "data-testid"?: string;
 }
 

@@ -13,7 +13,7 @@ interface LearningSessionProps {
   currentFlashcard: FlashcardDto | null;
   canGoPrevious: boolean;
   canGoNext: boolean;
-  onNavigation: (direction: 'prev' | 'next') => void;
+  onNavigation: (direction: "prev" | "next") => void;
   onCardFlip: () => void;
   onFullscreenToggle: () => void;
   isFullscreenSupported: boolean;
@@ -24,7 +24,7 @@ const LearningSession = ({
   currentIndex,
   isCardFlipped,
   isFullscreen,
-  totalCount,
+
   currentFlashcard,
   canGoPrevious,
   canGoNext,
@@ -33,7 +33,6 @@ const LearningSession = ({
   onFullscreenToggle,
   isFullscreenSupported,
 }: LearningSessionProps) => {
-
   if (!currentFlashcard) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
@@ -43,15 +42,11 @@ const LearningSession = ({
   }
 
   return (
-    <div className={`learning-session ${isFullscreen ? 'fullscreen-mode' : ''}`}>
+    <div className={`learning-session ${isFullscreen ? "fullscreen-mode" : ""}`}>
       {/* Nagłówek z postępem i kontrolkami fullscreen */}
       <div className="session-header flex justify-between items-center p-4 border-b">
-        <ProgressIndicator 
-          current={currentIndex + 1} 
-          total={flashcards.length}
-          showPercentage={true}
-        />
-        
+        <ProgressIndicator current={currentIndex + 1} total={flashcards.length} showPercentage={true} />
+
         <FullscreenControls
           isFullscreen={isFullscreen}
           onToggleFullscreen={onFullscreenToggle}
@@ -61,11 +56,7 @@ const LearningSession = ({
 
       {/* Główny obszar z fiszką */}
       <div className="session-content flex-1 flex flex-col items-center justify-center p-8">
-        <FlashcardViewer
-          flashcard={currentFlashcard}
-          isFlipped={isCardFlipped}
-          onFlip={onCardFlip}
-        />
+        <FlashcardViewer flashcard={currentFlashcard} isFlipped={isCardFlipped} onFlip={onCardFlip} />
       </div>
 
       {/* Kontrolki nawigacji */}
@@ -73,8 +64,8 @@ const LearningSession = ({
         <NavigationControls
           currentIndex={currentIndex}
           totalCount={flashcards.length}
-          onPrevious={() => onNavigation('prev')}
-          onNext={() => onNavigation('next')}
+          onPrevious={() => onNavigation("prev")}
+          onNext={() => onNavigation("next")}
           canGoPrevious={canGoPrevious}
           canGoNext={canGoNext}
         />
@@ -83,4 +74,4 @@ const LearningSession = ({
   );
 };
 
-export default LearningSession; 
+export default LearningSession;

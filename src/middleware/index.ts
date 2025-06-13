@@ -1,5 +1,5 @@
-import { defineMiddleware } from 'astro:middleware';
-import { createSupabaseServerInstance, supabaseClient } from '../db/supabase.client.ts';
+import { defineMiddleware } from "astro:middleware";
+import { createSupabaseServerInstance, supabaseClient } from "../db/supabase.client.ts";
 
 // Ścieżki publiczne które nie wymagają uwierzytelnienia
 const PUBLIC_PATHS = [
@@ -17,44 +17,42 @@ const PUBLIC_PATHS = [
   "/api/auth/confirm",
 ];
 
-export const onRequest = defineMiddleware(
-  async ({ locals, cookies, url, request, redirect }, next) => {
-    // Debug
-    const isApiRoute = url.pathname.startsWith('/api/');
-    if (isApiRoute) {
-      console.log(`Auth Middleware for API route: ${url.pathname}`);
-    }
-    
-    // Dodajemy supabaseClient do kontekstu dla wszystkich ścieżek
-    locals.supabase = supabaseClient;
+export const onRequest = defineMiddleware(async ({ locals, cookies, url, request, redirect }, next) => {
+  // Debug
+  const isApiRoute = url.pathname.startsWith("/api/");
+  if (isApiRoute) {
+    console.log(`Auth Middleware for API route: ${url.pathname}`);
+  }
 
-    // Dla ścieżek publicznych nie sprawdzamy uwierzytelnienia
-    if (PUBLIC_PATHS.includes(url.pathname)) {
-      return next();
-    }
+  // Dodajemy supabaseClient do kontekstu dla wszystkich ścieżek
+  locals.supabase = supabaseClient;
 
-    // Dla wszystkich innych ścieżek weryfikujemy sesję
-    const supabase = createSupabaseServerInstance({
-      cookies,
-      headers: request.headers,
-    });
-
-    // Zawsze najpierw pobieramy sesję użytkownika
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-
-    if (user) {
-      // Jeśli użytkownik jest zalogowany, zapisujemy dane w kontekście
-      locals.user = {
-        email: user.email || null,
-        id: user.id,
-      };
-    } else if (!PUBLIC_PATHS.includes(url.pathname)) {
-      // Jeśli użytkownik nie jest zalogowany, przekierowujemy do strony logowania
-      return redirect('/auth/login');
-    }
-
+  // Dla ścieżek publicznych nie sprawdzamy uwierzytelnienia
+  if (PUBLIC_PATHS.includes(url.pathname)) {
     return next();
   }
-); 
+
+  // Dla wszystkich innych ścieżek weryfikujemy sesję
+  const supabase = createSupabaseServerInstance({
+    cookies,
+    headers: request.headers,
+  });
+
+  // Zawsze najpierw pobieramy sesję użytkownika
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (user) {
+    // Jeśli użytkownik jest zalogowany, zapisujemy dane w kontekście
+    locals.user = {
+      email: user.email || null,
+      id: user.id,
+    };
+  } else if (!PUBLIC_PATHS.includes(url.pathname)) {
+    // Jeśli użytkownik nie jest zalogowany, przekierowujemy do strony logowania
+    return redirect("/auth/login");
+  }
+
+  return next();
+});

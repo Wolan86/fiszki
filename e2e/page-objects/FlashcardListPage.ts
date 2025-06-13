@@ -89,7 +89,7 @@ export class FlashcardListPage extends BasePage {
   async waitForPageLoad() {
     await this.container.waitFor({ state: "visible" });
     await this.pageTitle.waitFor({ state: "visible" });
-    
+
     // Wait for loading to finish first
     try {
       await this.loadingGrid.waitFor({ state: "visible", timeout: 2000 });
@@ -97,12 +97,12 @@ export class FlashcardListPage extends BasePage {
     } catch {
       // Loading grid might not appear if data loads quickly
     }
-    
+
     // Wait for either grid with flashcards or empty state
     try {
       await Promise.race([
         this.flashcardGrid.waitFor({ state: "visible", timeout: 10000 }),
-        this.emptyGrid.waitFor({ state: "visible", timeout: 10000 })
+        this.emptyGrid.waitFor({ state: "visible", timeout: 10000 }),
       ]);
     } catch (error) {
       // If neither state appears, check if we have any flashcard items at all
@@ -144,13 +144,13 @@ export class FlashcardListPage extends BasePage {
   async getAllFlashcardItems(): Promise<FlashcardListItem[]> {
     const flashcardItems = await this.page.locator('[data-testid^="flashcard-item-"]').all();
     const items: FlashcardListItem[] = [];
-    
+
     for (const locator of flashcardItems) {
-      const testId = await locator.getAttribute('data-testid');
-      const id = testId?.replace('flashcard-item-', '') || '';
+      const testId = await locator.getAttribute("data-testid");
+      const id = testId?.replace("flashcard-item-", "") || "";
       items.push(new FlashcardListItem(this.page, id));
     }
-    
+
     return items;
   }
 
@@ -166,14 +166,14 @@ export class FlashcardListPage extends BasePage {
    */
   async getFlashcardByTerm(term: string): Promise<FlashcardListItem | null> {
     const flashcardItems = await this.getAllFlashcardItems();
-    
+
     for (const item of flashcardItems) {
       const itemTerm = await item.getTerm();
       if (itemTerm?.includes(term)) {
         return item;
       }
     }
-    
+
     return null;
   }
 
@@ -220,4 +220,4 @@ export class FlashcardListPage extends BasePage {
   async getPageTitle(): Promise<string | null> {
     return await this.pageTitle.textContent();
   }
-} 
+}

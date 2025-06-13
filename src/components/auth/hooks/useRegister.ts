@@ -9,10 +9,7 @@ interface UseRegisterReturn {
   clearError: () => void;
 }
 
-export const useRegister = (
-  onSuccess?: () => void,
-  onError?: (error: AuthError) => void
-): UseRegisterReturn => {
+export const useRegister = (onSuccess?: () => void, onError?: (error: AuthError) => void): UseRegisterReturn => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -28,7 +25,7 @@ export const useRegister = (
     } catch (err) {
       const authError = err as AuthError;
       let errorMessage = "Wystąpił błąd podczas rejestracji";
-      
+
       // Handle different types of errors
       if (authError.status === 409) {
         errorMessage = "Użytkownik z tym adresem email już istnieje";
@@ -37,8 +34,9 @@ export const useRegister = (
       } else if (authError.message) {
         errorMessage = authError.message;
       }
-      
-      console.error('Registration error:', authError);
+
+      // eslint-disable-next-line no-console
+      console.error("Registration error:", authError);
       setError(errorMessage);
       onError?.(authError);
     } finally {
@@ -56,4 +54,4 @@ export const useRegister = (
     error,
     clearError,
   };
-}; 
+};

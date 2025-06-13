@@ -1,61 +1,64 @@
-import { render, screen, waitFor, act } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { vi, describe, it, expect, beforeEach } from "vitest";
 import React from "react";
 import { CreatorView } from "../CreatorView";
+import type { UseSourceTextResult, UseFlashcardGenerationResult } from "../types";
+import type { UseFlashcardCreationResult } from "../hooks/useFlashcardCreation";
 
 // Mock the hooks with proper implementations
 vi.mock("../hooks/useSourceText", () => ({
-  useSourceText: vi.fn(() => ({
-    sourceText: "",
-    setSourceText: vi.fn(),
-    wordCount: { total: 0, unique: 0 },
-    isValid: false,
-    validationErrors: [],
-    save: vi.fn(),
-    reset: vi.fn(),
-    isAutosaving: false,
-    lastSaved: null,
-  })),
+  useSourceText: vi.fn(
+    (): UseSourceTextResult => ({
+      content: "",
+      setContent: vi.fn(),
+      wordCount: 0,
+      isValid: false,
+      isSaving: false,
+      lastSaved: null,
+      errors: [],
+      saveSourceText: vi.fn(),
+      saveSourceTextAndGenerateFlashcards: vi.fn(),
+      reset: vi.fn(),
+    })
+  ),
 }));
 
 vi.mock("../hooks/useFlashcardGeneration", () => ({
-  useFlashcardGeneration: vi.fn(() => ({
-    isLoading: false,
-    error: null,
-    updateFlashcard: vi.fn(),
-    saveFlashcard: vi.fn(),
-    deleteFlashcard: vi.fn(),
-    reset: vi.fn(),
-    flashcards: [],
-    generation: {
-      requestedCount: 0,
-      generatedCount: 0,
-    },
-  })),
+  useFlashcardGeneration: vi.fn(
+    (): UseFlashcardGenerationResult => ({
+      flashcards: [],
+      generationStats: null,
+      error: null,
+      isGenerating: false,
+      savingFlashcardIds: [],
+      loadFlashcardsFromResponse: vi.fn(),
+      updateFlashcard: vi.fn(),
+      regenerateFlashcard: vi.fn(),
+      saveFlashcard: vi.fn(),
+      editFlashcard: vi.fn(),
+      reset: vi.fn(),
+    })
+  ),
 }));
 
 vi.mock("../hooks/useFlashcardCreation", () => ({
-  useFlashcardCreation: vi.fn(() => ({
-    createFlashcard: vi.fn(),
-    isLoading: false,
-    error: null,
-    reset: vi.fn(),
-  })),
+  useFlashcardCreation: vi.fn(
+    (): UseFlashcardCreationResult => ({
+      isCreating: false,
+      error: null,
+      createNewFlashcard: vi.fn(),
+      reset: vi.fn(),
+    })
+  ),
 }));
 
 // Import the mocked hooks after mocking
-import { useSourceText } from "../hooks/useSourceText";
 import { useFlashcardGeneration } from "../hooks/useFlashcardGeneration";
-import { useFlashcardCreation } from "../hooks/useFlashcardCreation";
-
-const mockUseSourceText = vi.mocked(useSourceText);
-const mockUseFlashcardGeneration = vi.mocked(useFlashcardGeneration);
-const mockUseFlashcardCreation = vi.mocked(useFlashcardCreation);
 
 // Mock child components
 vi.mock("../PageHeader", () => ({
-  PageHeader: ({ title, description }: any) => (
+  PageHeader: ({ title, description }: { title: string; description: string }) => (
     <div data-testid="page-header">
       <h1>{title}</h1>
       <p>{description}</p>
@@ -64,7 +67,13 @@ vi.mock("../PageHeader", () => ({
 }));
 
 vi.mock("../SourceTextForm", () => ({
-  SourceTextForm: ({ onTextSaved, onGenerateRequest }: any) => (
+  SourceTextForm: ({
+    onTextSaved,
+    onGenerateRequest,
+  }: {
+    onTextSaved?: (sourceText: { id: string; content: string; created_at: string; user_id: string }) => void;
+    onGenerateRequest?: (sourceTextId: string) => void;
+  }) => (
     <div data-testid="source-text-form">
       <button onClick={() => onTextSaved && onTextSaved(mockSourceText)} data-testid="save-text">
         Save Text
@@ -77,14 +86,24 @@ vi.mock("../SourceTextForm", () => ({
 }));
 
 vi.mock("../ProgressIndicator", () => ({
-  ProgressIndicator: ({ isGenerating, progressText }: any) =>
+  ProgressIndicator: ({ isGenerating, progressText }: { isGenerating: boolean; progressText?: string }) =>
     isGenerating ? <div data-testid="progress-indicator">{progressText}</div> : null,
 }));
 
 vi.mock("../GeneratedFlashcards", () => ({
-  GeneratedFlashcards: ({ flashcards, stats, onAccept, onReject, onRegenerate }: any) => (
+  GeneratedFlashcards: ({
+    flashcards,
+    onAccept,
+    onReject,
+    onRegenerate,
+  }: {
+    flashcards: { id: string; front_content: string; back_content: string }[];
+    onAccept: (id: string) => void;
+    onReject: (id: string) => void;
+    onRegenerate: (id: string) => void;
+  }) => (
     <div data-testid="generated-flashcards">
-      {flashcards.map((card: any) => (
+      {flashcards.map((card) => (
         <div key={card.id} data-testid={`flashcard-${card.id}`}>
           {card.front_content} - {card.back_content}
           <button onClick={() => onAccept(card.id)} data-testid={`accept-${card.id}`}>
@@ -103,7 +122,7 @@ vi.mock("../GeneratedFlashcards", () => ({
 }));
 
 vi.mock("../ErrorMessage", () => ({
-  ErrorMessage: ({ error, onRetry }: any) => (
+  ErrorMessage: ({ error, onRetry }: { error: { message: string }; onRetry: () => void }) => (
     <div data-testid="error-message">
       {error.message}
       <button onClick={onRetry} data-testid="retry-button">
@@ -133,8 +152,14 @@ describe("CreatorView", () => {
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
       user_id: "user-1",
-      creation_type: "ai_generated",
+      creation_type: "ai_generated" as const,
       generation_time_ms: 100,
+      isFlipped: false,
+      isRegenerating: false,
+      showActions: true,
+      isEditing: false,
+      editableFrontContent: "Front 1",
+      editableBackContent: "Back 1",
     },
     {
       id: "card-2",
@@ -145,16 +170,22 @@ describe("CreatorView", () => {
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
       user_id: "user-1",
-      creation_type: "ai_generated",
+      creation_type: "ai_generated" as const,
       generation_time_ms: 120,
+      isFlipped: false,
+      isRegenerating: false,
+      showActions: true,
+      isEditing: false,
+      editableFrontContent: "Front 2",
+      editableBackContent: "Back 2",
     },
   ];
 
   const mockGenerationStats = {
-    totalCards: 2,
-    acceptedCards: 0,
-    rejectedCards: 0,
-    pendingCards: 2,
+    requestedCount: 2,
+    generatedCount: 2,
+    totalTimeMs: 220,
+    formattedTime: "0.2 sekund",
   };
 
   // Mock implementation
@@ -167,13 +198,17 @@ describe("CreatorView", () => {
     vi.clearAllMocks();
 
     // Default mock implementation
-    (useFlashcardGeneration as any).mockReturnValue({
+    (useFlashcardGeneration as ReturnType<typeof vi.fn>).mockReturnValue({
       flashcards: [],
       generationStats: null,
       error: null,
-      generateFlashcards: mockGenerateFlashcards,
+      isGenerating: false,
+      savingFlashcardIds: [],
+      loadFlashcardsFromResponse: vi.fn(),
       updateFlashcard: mockUpdateFlashcard,
       regenerateFlashcard: mockRegenerateFlashcard,
+      saveFlashcard: vi.fn(),
+      editFlashcard: vi.fn(),
       reset: mockReset,
     });
   });
@@ -189,18 +224,18 @@ describe("CreatorView", () => {
 
   it("calls generateFlashcards when source text is saved and generation requested", async () => {
     // Arrange
-    (useFlashcardGeneration as any).mockReturnValue({
+    (useFlashcardGeneration as ReturnType<typeof vi.fn>).mockReturnValue({
       flashcards: [],
       generationStats: null,
       error: null,
-      generateFlashcards: mockGenerateFlashcards,
+      isGenerating: false,
+      savingFlashcardIds: [],
+      loadFlashcardsFromResponse: vi.fn(),
       updateFlashcard: mockUpdateFlashcard,
       regenerateFlashcard: mockRegenerateFlashcard,
-      reset: mockReset,
-      loadFlashcardsFromResponse: vi.fn(),
       saveFlashcard: vi.fn(),
       editFlashcard: vi.fn(),
-      savingFlashcardIds: [],
+      reset: mockReset,
     });
 
     const user = userEvent.setup();
@@ -220,20 +255,24 @@ describe("CreatorView", () => {
 
   it("displays progress indicator when generating flashcards", () => {
     // Arrange
-    (useFlashcardGeneration as any).mockReturnValue({
+    (useFlashcardGeneration as ReturnType<typeof vi.fn>).mockReturnValue({
       flashcards: [],
       generationStats: null,
       error: null,
-      generateFlashcards: mockGenerateFlashcards,
+      isGenerating: false,
+      savingFlashcardIds: [],
+      loadFlashcardsFromResponse: vi.fn(),
       updateFlashcard: mockUpdateFlashcard,
       regenerateFlashcard: mockRegenerateFlashcard,
+      saveFlashcard: vi.fn(),
+      editFlashcard: vi.fn(),
       reset: mockReset,
     });
 
     // Act - render CreatorView and simulate generation state
     const TestWrapper = () => {
       const [isGenerating, setIsGenerating] = React.useState(false);
-      
+
       React.useEffect(() => {
         // Simulate generation start
         setIsGenerating(true);
@@ -246,9 +285,7 @@ describe("CreatorView", () => {
             <p>Wprowadź tekst źródłowy i wygeneruj fiszki edukacyjne przy pomocy sztucznej inteligencji.</p>
           </div>
           <div data-testid="source-text-form">Mock Source Text Form</div>
-          {isGenerating && (
-            <div data-testid="progress-indicator">Trwa generowanie fiszek</div>
-          )}
+          {isGenerating && <div data-testid="progress-indicator">Trwa generowanie fiszek</div>}
         </div>
       );
     };
@@ -262,13 +299,17 @@ describe("CreatorView", () => {
 
   it("displays generated flashcards when available", () => {
     // Arrange
-    (useFlashcardGeneration as any).mockReturnValue({
+    (useFlashcardGeneration as ReturnType<typeof vi.fn>).mockReturnValue({
       flashcards: mockFlashcards,
       generationStats: mockGenerationStats,
       error: null,
-      generateFlashcards: mockGenerateFlashcards,
+      isGenerating: false,
+      savingFlashcardIds: [],
+      loadFlashcardsFromResponse: vi.fn(),
       updateFlashcard: mockUpdateFlashcard,
       regenerateFlashcard: mockRegenerateFlashcard,
+      saveFlashcard: vi.fn(),
+      editFlashcard: vi.fn(),
       reset: mockReset,
     });
 
@@ -283,23 +324,23 @@ describe("CreatorView", () => {
 
   it("handles flashcard acceptance correctly", async () => {
     // Arrange
-    (useFlashcardGeneration as any).mockReturnValue({
+    (useFlashcardGeneration as ReturnType<typeof vi.fn>).mockReturnValue({
       flashcards: mockFlashcards,
       generationStats: mockGenerationStats,
       error: null,
-      generateFlashcards: mockGenerateFlashcards,
+      isGenerating: false,
+      savingFlashcardIds: [],
+      loadFlashcardsFromResponse: vi.fn(),
       updateFlashcard: mockUpdateFlashcard,
       regenerateFlashcard: mockRegenerateFlashcard,
-      reset: mockReset,
-      loadFlashcardsFromResponse: vi.fn(),
       saveFlashcard: vi.fn(),
       editFlashcard: vi.fn(),
-      savingFlashcardIds: [],
+      reset: mockReset,
     });
 
     const user = userEvent.setup();
     render(<CreatorView />);
-    
+
     // Act
     await user.click(screen.getByTestId("accept-card-1"));
 
@@ -309,23 +350,23 @@ describe("CreatorView", () => {
 
   it("handles flashcard rejection correctly", async () => {
     // Arrange
-    (useFlashcardGeneration as any).mockReturnValue({
+    (useFlashcardGeneration as ReturnType<typeof vi.fn>).mockReturnValue({
       flashcards: mockFlashcards,
       generationStats: mockGenerationStats,
       error: null,
-      generateFlashcards: mockGenerateFlashcards,
+      isGenerating: false,
+      savingFlashcardIds: [],
+      loadFlashcardsFromResponse: vi.fn(),
       updateFlashcard: mockUpdateFlashcard,
       regenerateFlashcard: mockRegenerateFlashcard,
-      reset: mockReset,
-      loadFlashcardsFromResponse: vi.fn(),
       saveFlashcard: vi.fn(),
       editFlashcard: vi.fn(),
-      savingFlashcardIds: [],
+      reset: mockReset,
     });
 
     const user = userEvent.setup();
     render(<CreatorView />);
-    
+
     // Act
     await user.click(screen.getByTestId("reject-card-1"));
 
@@ -335,23 +376,23 @@ describe("CreatorView", () => {
 
   it("handles flashcard regeneration correctly", async () => {
     // Arrange
-    (useFlashcardGeneration as any).mockReturnValue({
+    (useFlashcardGeneration as ReturnType<typeof vi.fn>).mockReturnValue({
       flashcards: mockFlashcards,
       generationStats: mockGenerationStats,
       error: null,
-      generateFlashcards: mockGenerateFlashcards,
+      isGenerating: false,
+      savingFlashcardIds: [],
+      loadFlashcardsFromResponse: vi.fn(),
       updateFlashcard: mockUpdateFlashcard,
       regenerateFlashcard: mockRegenerateFlashcard,
-      reset: mockReset,
-      loadFlashcardsFromResponse: vi.fn(),
       saveFlashcard: vi.fn(),
       editFlashcard: vi.fn(),
-      savingFlashcardIds: [],
+      reset: mockReset,
     });
 
     const user = userEvent.setup();
     render(<CreatorView />);
-    
+
     // Act
     await user.click(screen.getByTestId("regenerate-card-1"));
 
@@ -361,14 +402,18 @@ describe("CreatorView", () => {
 
   it("displays error message when generation fails", () => {
     // Arrange
-    const mockError = new Error("Generation failed");
-    (useFlashcardGeneration as any).mockReturnValue({
+    const mockError = { message: "Generation failed", code: "GENERATION_FAILED" };
+    (useFlashcardGeneration as ReturnType<typeof vi.fn>).mockReturnValue({
       flashcards: [],
       generationStats: null,
       error: mockError,
-      generateFlashcards: mockGenerateFlashcards,
+      isGenerating: false,
+      savingFlashcardIds: [],
+      loadFlashcardsFromResponse: vi.fn(),
       updateFlashcard: mockUpdateFlashcard,
       regenerateFlashcard: mockRegenerateFlashcard,
+      saveFlashcard: vi.fn(),
+      editFlashcard: vi.fn(),
       reset: mockReset,
     });
 
@@ -388,19 +433,19 @@ describe("CreatorView", () => {
 
   it("retries generation when source text is available", async () => {
     // Arrange
-    const mockError = new Error("Generation failed");
-    (useFlashcardGeneration as any).mockReturnValue({
+    const mockError = { message: "Generation failed", code: "GENERATION_FAILED" };
+    (useFlashcardGeneration as ReturnType<typeof vi.fn>).mockReturnValue({
       flashcards: [],
       generationStats: null,
       error: mockError,
-      generateFlashcards: mockGenerateFlashcards,
+      isGenerating: false,
+      savingFlashcardIds: [],
+      loadFlashcardsFromResponse: vi.fn(),
       updateFlashcard: mockUpdateFlashcard,
       regenerateFlashcard: mockRegenerateFlashcard,
-      reset: mockReset,
-      loadFlashcardsFromResponse: vi.fn(),
       saveFlashcard: vi.fn(),
       editFlashcard: vi.fn(),
-      savingFlashcardIds: [],
+      reset: mockReset,
     });
 
     const user = userEvent.setup();

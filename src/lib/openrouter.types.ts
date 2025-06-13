@@ -3,7 +3,7 @@
  */
 
 export interface ChatMessage {
-  role: 'system' | 'user' | 'assistant';
+  role: "system" | "user" | "assistant";
   content: string;
 }
 
@@ -22,11 +22,11 @@ export interface ChatResponse {
   id: string;
   model: string;
   content: string;
-  rawResponse: any;
+  rawResponse: unknown;
 }
 
 export interface ResponseFormat {
-  type: 'json_schema';
+  type: "json_schema";
   json_schema: {
     name: string;
     strict: boolean;
@@ -63,15 +63,15 @@ export interface RequestOptions {
 }
 
 export const DEFAULT_OPTIONS: OpenRouterOptions = {
-  defaultModel: 'openai/gpt-4o-mini',
-  baseUrl: 'https://openrouter.ai/api/v1',
+  defaultModel: "openai/gpt-4o-mini",
+  baseUrl: "https://openrouter.ai/api/v1",
   defaultParams: {
     temperature: 0.7,
     max_tokens: 1000,
     top_p: 1,
     frequency_penalty: 0,
-    presence_penalty: 0
+    presence_penalty: 0,
   },
   timeout: 60000,
-  retries: 3
-}; 
+  retries: 3,
+};

@@ -6,8 +6,7 @@ import { GeneratedFlashcards } from "./GeneratedFlashcards";
 import { FlashcardCreationForm } from "./FlashcardCreationForm";
 import { ErrorMessage } from "./ErrorMessage";
 import { useFlashcardGeneration } from "./hooks/useFlashcardGeneration";
-import type { SourceTextDto, UpdateFlashcardCommand, CreateSourceTextResponse } from "@/types";
-import type { UseFlashcardGenerationOptions } from "./types";
+import type { SourceTextDto, CreateSourceTextResponse } from "@/types";
 
 export const CreatorView: React.FC = () => {
   // Stan tekstu źródłowego
@@ -26,7 +25,6 @@ export const CreatorView: React.FC = () => {
     regenerateFlashcard,
     saveFlashcard,
     editFlashcard,
-    reset,
   } = useFlashcardGeneration();
 
   // Obsługa zapisania tekstu źródłowego
@@ -93,8 +91,8 @@ export const CreatorView: React.FC = () => {
       <FlashcardCreationForm
         sourceTextId={sourceText?.id}
         onFlashcardCreated={() => {
-          // Możemy dodać jakąś notyfikację o sukcesie
-          console.log("Fiszka została utworzona pomyślnie");
+          // Flashcard creation success handled here
+          // Console logging removed to comply with ESLint rules
         }}
         data-testid="flashcard-creation-form"
       />

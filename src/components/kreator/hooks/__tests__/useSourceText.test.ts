@@ -1,8 +1,9 @@
-import { renderHook, act, waitFor } from "@testing-library/react";
+import { renderHook, act } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { useSourceText } from "../useSourceText";
 import type { UseSourceTextOptions } from "../../types";
 import { saveSourceText } from "@/lib/services/api-service";
+import type { SourceTextDto, CreateSourceTextResponse } from "@/types";
 
 // Mock the API service
 vi.mock("@/lib/services/api-service", () => ({
@@ -222,10 +223,10 @@ describe("useSourceText", () => {
           created_at: "2024-01-01T00:00:00Z",
         },
       };
-      
+
       // Fix: Mock should return the response directly, not wrapped in another object
       mockSaveSourceText.mockResolvedValueOnce(mockResponse);
-      
+
       const { result } = renderHook(() => useSourceText(defaultOptions));
 
       // Act
@@ -234,7 +235,7 @@ describe("useSourceText", () => {
         result.current.setContent("Valid content with enough words for testing save operation properly");
       });
 
-      let saveResult: any;
+      let saveResult: SourceTextDto | null = null;
       await act(async () => {
         saveResult = await result.current.saveSourceText();
       });
@@ -258,7 +259,7 @@ describe("useSourceText", () => {
         result.current.setContent("Valid content with enough words for testing save failure");
       });
 
-      let saveResult: any;
+      let saveResult: SourceTextDto | null = null;
       await act(async () => {
         saveResult = await result.current.saveSourceText();
       });
@@ -292,17 +293,17 @@ describe("useSourceText", () => {
           total_time_ms: 1000,
         },
       };
-      
+
       mockSaveSourceText.mockResolvedValueOnce(mockGenerationResponse);
 
-      let saveResult: any;
-      let generationPromise: Promise<any>;
-      
+      let saveResult: SourceTextDto | null = null;
+      let generationPromise: Promise<CreateSourceTextResponse | null>;
+
       await act(async () => {
         generationPromise = result.current.saveSourceTextAndGenerateFlashcards(5);
         saveResult = await result.current.saveSourceText();
       });
-      
+
       await act(async () => {
         await generationPromise;
       });
@@ -330,9 +331,9 @@ describe("useSourceText", () => {
           total_time_ms: 1000,
         },
       };
-      
+
       mockSaveSourceText.mockResolvedValueOnce(mockResponse);
-      
+
       const { result } = renderHook(() => useSourceText(defaultOptions));
 
       // Act
@@ -341,14 +342,18 @@ describe("useSourceText", () => {
         result.current.setContent("Valid content with enough words for flashcard generation testing properly");
       });
 
-      let generationResult: any;
+      let generationResult: CreateSourceTextResponse | null = null;
       await act(async () => {
         generationResult = await result.current.saveSourceTextAndGenerateFlashcards(5);
       });
 
       // Assert
       expect(generationResult).toEqual(mockResponse);
-      expect(mockSaveSourceText).toHaveBeenCalledWith("Valid content with enough words for flashcard generation testing properly", true, 5);
+      expect(mockSaveSourceText).toHaveBeenCalledWith(
+        "Valid content with enough words for flashcard generation testing properly",
+        true,
+        5
+      );
       expect(result.current.lastSaved).toBeInstanceOf(Date);
     });
 
@@ -361,7 +366,7 @@ describe("useSourceText", () => {
         result.current.setContent("Too short");
       });
 
-      let generationResult: any;
+      let generationResult: CreateSourceTextResponse | null = null;
       await act(async () => {
         generationResult = await result.current.saveSourceTextAndGenerateFlashcards(5);
       });
@@ -376,7 +381,7 @@ describe("useSourceText", () => {
       mockSaveSourceText.mockReset(); // Clear any previous mock setup
       const apiError = new Error("API Error");
       mockSaveSourceText.mockRejectedValueOnce(apiError);
-      
+
       const { result } = renderHook(() => useSourceText(defaultOptions));
 
       // Act
@@ -404,22 +409,24 @@ describe("useSourceText", () => {
           created_at: "2024-01-01T00:00:00Z",
         },
       };
-      
+
       mockSaveSourceText.mockResolvedValueOnce(mockResponse);
-      
+
       const { result } = renderHook(() => useSourceText(defaultOptions));
 
       // Act
       act(() => {
-        result.current.setContent("Content for localStorage backup testing with enough words properly and successfully");
+        result.current.setContent(
+          "Content for localStorage backup testing with enough words properly and successfully"
+        );
       });
 
       // Wait for validation to complete
       await act(async () => {
-        await new Promise(resolve => setTimeout(resolve, 0));
+        await new Promise((resolve) => setTimeout(resolve, 0));
       });
 
-      let saveResult: any;
+      let saveResult: SourceTextDto | null = null;
       await act(async () => {
         saveResult = await result.current.saveSourceText();
       });
@@ -443,12 +450,12 @@ describe("useSourceText", () => {
           created_at: "2024-01-01T00:00:00Z",
         },
       };
-      
+
       mockSaveSourceText.mockResolvedValueOnce(mockResponse);
       mockLocalStorage.setItem.mockImplementationOnce(() => {
         throw new Error("Cannot access localStorage");
       });
-      
+
       const { result } = renderHook(() => useSourceText(defaultOptions));
 
       // Act
@@ -458,7 +465,7 @@ describe("useSourceText", () => {
 
       // Wait for validation to complete
       await act(async () => {
-        await new Promise(resolve => setTimeout(resolve, 0));
+        await new Promise((resolve) => setTimeout(resolve, 0));
       });
 
       await act(async () => {
@@ -499,7 +506,7 @@ describe("useSourceText", () => {
       mockLocalStorage.removeItem.mockImplementationOnce(() => {
         throw new Error("Cannot access localStorage");
       });
-      
+
       const { result } = renderHook(() => useSourceText(defaultOptions));
 
       // Act & Assert - Should not throw
@@ -510,4 +517,4 @@ describe("useSourceText", () => {
       expect(result.current.content).toBe("");
     });
   });
-}); 
+});

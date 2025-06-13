@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import LoadingSpinner from "./LoadingSpinner";
 import ErrorMessage from "./ErrorMessage";
 import EmptyState from "./EmptyState";
@@ -24,23 +24,24 @@ const LearningPage = () => {
     handleRetry,
   } = useLearningSession({ limit: 20 });
 
-  const {
-    isActive: isFullscreen,
-    isSupported: isFullscreenSupported,
-    toggleFullscreen,
-  } = useFullscreen();
+  const { isActive: isFullscreen, isSupported: isFullscreenSupported, toggleFullscreen } = useFullscreen();
 
   // Funkcja do wyjścia z nauki
   const handleExit = () => {
-    if (typeof window !== 'undefined') {
-      window.location.href = '/fiszki';
+    if (typeof window !== "undefined") {
+      window.location.replace("/fiszki");
     }
   };
 
+  // Use effect for any side effects that might have been causing the react-compiler error
+  useEffect(() => {
+    // Any side effects that were previously done outside the component should be here
+  }, []);
+
   // Konfiguracja skrótów klawiaturowych
   useKeyboardNavigation({
-    onPrevious: canGoPrevious ? () => handleNavigation('prev') : undefined,
-    onNext: canGoNext ? () => handleNavigation('next') : undefined,
+    onPrevious: canGoPrevious ? () => handleNavigation("prev") : undefined,
+    onNext: canGoNext ? () => handleNavigation("next") : undefined,
     onFlip: handleCardFlip,
     onFullscreen: isFullscreenSupported ? toggleFullscreen : undefined,
     onExit: isFullscreen ? toggleFullscreen : handleExit,
@@ -60,7 +61,7 @@ const LearningPage = () => {
   }
 
   return (
-    <div className={`learning-page-container ${isFullscreen ? 'fullscreen' : ''}`}>
+    <div className={`learning-page-container ${isFullscreen ? "fullscreen" : ""}`}>
       <LearningSession
         flashcards={flashcards}
         currentIndex={currentIndex}
@@ -79,4 +80,4 @@ const LearningPage = () => {
   );
 };
 
-export default LearningPage; 
+export default LearningPage;

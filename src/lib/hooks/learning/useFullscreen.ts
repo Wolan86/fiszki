@@ -7,8 +7,22 @@ interface FullscreenState {
   isTransitioning: boolean;
 }
 
+// Rozszerzenie interfejsu Document dla API fullscreen
+interface FullscreenDocument extends Document {
+  webkitExitFullscreen?: () => Promise<void>;
+  mozCancelFullScreen?: () => Promise<void>;
+  msExitFullscreen?: () => Promise<void>;
+}
+
+// Rozszerzenie interfejsu HTMLElement dla API fullscreen
+interface FullscreenElement extends HTMLElement {
+  webkitRequestFullscreen?: () => Promise<void>;
+  mozRequestFullScreen?: () => Promise<void>;
+  msRequestFullscreen?: () => Promise<void>;
+}
+
 // Sprawdzenie czy jesteśmy w przeglądarce
-const isBrowser = typeof window !== 'undefined' && typeof document !== 'undefined';
+const isBrowser = typeof window !== "undefined" && typeof document !== "undefined";
 
 export const useFullscreen = () => {
   const [fullscreenState, setFullscreenState] = useState<FullscreenState>({
@@ -20,9 +34,9 @@ export const useFullscreen = () => {
   // Sprawdzenie aktualnego stanu fullscreen
   const checkFullscreenStatus = useCallback(() => {
     if (!isBrowser) return;
-    
+
     const isCurrentlyFullscreen = document.fullscreenElement !== null;
-    setFullscreenState(prev => ({
+    setFullscreenState((prev) => ({
       ...prev,
       isActive: isCurrentlyFullscreen,
       isTransitioning: false,
@@ -38,45 +52,51 @@ export const useFullscreen = () => {
     };
 
     const handleFullscreenError = (event: Event) => {
-      console.error('Fullscreen error:', event);
-      setFullscreenState(prev => ({
+      // Replaced console.error with state update to handle error gracefully
+      setFullscreenState((prev) => ({
         ...prev,
         isTransitioning: false,
       }));
+      // Optional: You can add custom error handling here if needed
+      if (process.env.NODE_ENV === "development") {
+        // eslint-disable-next-line no-console
+        console.error("Fullscreen error:", event);
+      }
     };
 
     // Różne prefiksy dla różnych przeglądarek
-    document.addEventListener('fullscreenchange', handleFullscreenChange);
-    document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
-    document.addEventListener('mozfullscreenchange', handleFullscreenChange);
-    document.addEventListener('MSFullscreenChange', handleFullscreenChange);
+    document.addEventListener("fullscreenchange", handleFullscreenChange);
+    document.addEventListener("webkitfullscreenchange", handleFullscreenChange);
+    document.addEventListener("mozfullscreenchange", handleFullscreenChange);
+    document.addEventListener("MSFullscreenChange", handleFullscreenChange);
 
-    document.addEventListener('fullscreenerror', handleFullscreenError);
-    document.addEventListener('webkitfullscreenerror', handleFullscreenError);
-    document.addEventListener('mozfullscreenerror', handleFullscreenError);
-    document.addEventListener('MSFullscreenError', handleFullscreenError);
+    document.addEventListener("fullscreenerror", handleFullscreenError);
+    document.addEventListener("webkitfullscreenerror", handleFullscreenError);
+    document.addEventListener("mozfullscreenerror", handleFullscreenError);
+    document.addEventListener("MSFullscreenError", handleFullscreenError);
 
     // Sprawdzenie początkowego stanu i wsparcia API
+    const docElement = document.documentElement as FullscreenElement;
     const isSupported = !!(
       document.documentElement.requestFullscreen ||
-      (document.documentElement as any).webkitRequestFullscreen ||
-      (document.documentElement as any).mozRequestFullScreen ||
-      (document.documentElement as any).msRequestFullscreen
+      docElement.webkitRequestFullscreen ||
+      docElement.mozRequestFullScreen ||
+      docElement.msRequestFullscreen
     );
 
-    setFullscreenState(prev => ({ ...prev, isSupported }));
+    setFullscreenState((prev) => ({ ...prev, isSupported }));
     checkFullscreenStatus();
 
     return () => {
-      document.removeEventListener('fullscreenchange', handleFullscreenChange);
-      document.removeEventListener('webkitfullscreenchange', handleFullscreenChange);
-      document.removeEventListener('mozfullscreenchange', handleFullscreenChange);
-      document.removeEventListener('MSFullscreenChange', handleFullscreenChange);
+      document.removeEventListener("fullscreenchange", handleFullscreenChange);
+      document.removeEventListener("webkitfullscreenchange", handleFullscreenChange);
+      document.removeEventListener("mozfullscreenchange", handleFullscreenChange);
+      document.removeEventListener("MSFullscreenChange", handleFullscreenChange);
 
-      document.removeEventListener('fullscreenerror', handleFullscreenError);
-      document.removeEventListener('webkitfullscreenerror', handleFullscreenError);
-      document.removeEventListener('mozfullscreenerror', handleFullscreenError);
-      document.removeEventListener('MSFullscreenError', handleFullscreenError);
+      document.removeEventListener("fullscreenerror", handleFullscreenError);
+      document.removeEventListener("webkitfullscreenerror", handleFullscreenError);
+      document.removeEventListener("mozfullscreenerror", handleFullscreenError);
+      document.removeEventListener("MSFullscreenError", handleFullscreenError);
     };
   }, [checkFullscreenStatus]);
 
@@ -86,23 +106,27 @@ export const useFullscreen = () => {
       return;
     }
 
-    setFullscreenState(prev => ({ ...prev, isTransitioning: true }));
+    setFullscreenState((prev) => ({ ...prev, isTransitioning: true }));
 
     try {
-      const docEl = document.documentElement;
-      
+      const docEl = document.documentElement as FullscreenElement;
+
       if (docEl.requestFullscreen) {
         await docEl.requestFullscreen();
-      } else if ((docEl as any).webkitRequestFullscreen) {
-        await (docEl as any).webkitRequestFullscreen();
-      } else if ((docEl as any).mozRequestFullScreen) {
-        await (docEl as any).mozRequestFullScreen();
-      } else if ((docEl as any).msRequestFullscreen) {
-        await (docEl as any).msRequestFullscreen();
+      } else if (docEl.webkitRequestFullscreen) {
+        await docEl.webkitRequestFullscreen();
+      } else if (docEl.mozRequestFullScreen) {
+        await docEl.mozRequestFullScreen();
+      } else if (docEl.msRequestFullscreen) {
+        await docEl.msRequestFullscreen();
       }
     } catch (error) {
-      console.error('Error entering fullscreen:', error);
-      setFullscreenState(prev => ({ ...prev, isTransitioning: false }));
+      setFullscreenState((prev) => ({ ...prev, isTransitioning: false }));
+      // Optional: You can add custom error handling here if needed
+      if (process.env.NODE_ENV === "development") {
+        // eslint-disable-next-line no-console
+        console.error("Error entering fullscreen:", error);
+      }
     }
   }, [fullscreenState.isSupported, fullscreenState.isActive, fullscreenState.isTransitioning]);
 
@@ -112,21 +136,27 @@ export const useFullscreen = () => {
       return;
     }
 
-    setFullscreenState(prev => ({ ...prev, isTransitioning: true }));
+    setFullscreenState((prev) => ({ ...prev, isTransitioning: true }));
 
     try {
+      const doc = document as FullscreenDocument;
+
       if (document.exitFullscreen) {
         await document.exitFullscreen();
-      } else if ((document as any).webkitExitFullscreen) {
-        await (document as any).webkitExitFullscreen();
-      } else if ((document as any).mozCancelFullScreen) {
-        await (document as any).mozCancelFullScreen();
-      } else if ((document as any).msExitFullscreen) {
-        await (document as any).msExitFullscreen();
+      } else if (doc.webkitExitFullscreen) {
+        await doc.webkitExitFullscreen();
+      } else if (doc.mozCancelFullScreen) {
+        await doc.mozCancelFullScreen();
+      } else if (doc.msExitFullscreen) {
+        await doc.msExitFullscreen();
       }
     } catch (error) {
-      console.error('Error exiting fullscreen:', error);
-      setFullscreenState(prev => ({ ...prev, isTransitioning: false }));
+      setFullscreenState((prev) => ({ ...prev, isTransitioning: false }));
+      // Optional: You can add custom error handling here if needed
+      if (process.env.NODE_ENV === "development") {
+        // eslint-disable-next-line no-console
+        console.error("Error exiting fullscreen:", error);
+      }
     }
   }, [fullscreenState.isActive, fullscreenState.isTransitioning]);
 
@@ -145,4 +175,4 @@ export const useFullscreen = () => {
     exitFullscreen,
     toggleFullscreen,
   };
-}; 
+};

@@ -19,7 +19,6 @@ export const WordCounter: React.FC<WordCounterProps> = ({
   // Określanie stanu licznika
   const isUnderMinimum = currentCount < minCount;
   const isOverMaximum = currentCount > maxCount;
-  const isValid = !isUnderMinimum && !isOverMaximum;
 
   // Określanie koloru licznika na podstawie stanu
   const getStateColor = () => {

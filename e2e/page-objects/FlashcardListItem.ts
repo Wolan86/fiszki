@@ -99,7 +99,7 @@ export class FlashcardListItem {
     if (await this.isEditing()) {
       return; // Already in edit mode
     }
-    
+
     await this.editButton.click();
     await this.editForm.waitFor({ state: "visible" });
   }
@@ -109,15 +109,15 @@ export class FlashcardListItem {
    */
   async edit(newTerm: string, newDefinition: string) {
     await this.startEdit();
-    
+
     // Clear and fill the term input
     await this.editTermInput.clear();
     await this.editTermInput.fill(newTerm);
-    
+
     // Clear and fill the definition input
     await this.editDefinitionInput.clear();
     await this.editDefinitionInput.fill(newDefinition);
-    
+
     // Save the changes
     await this.saveEdit();
   }
@@ -129,9 +129,9 @@ export class FlashcardListItem {
     if (!(await this.isEditing())) {
       throw new Error("Not in edit mode");
     }
-    
+
     await this.saveEditButton.click();
-    
+
     // Wait for edit mode to close
     await this.editForm.waitFor({ state: "hidden" });
   }
@@ -143,9 +143,9 @@ export class FlashcardListItem {
     if (!(await this.isEditing())) {
       return; // Not in edit mode
     }
-    
+
     await this.cancelEditButton.click();
-    
+
     // Wait for edit mode to close
     await this.editForm.waitFor({ state: "hidden" });
   }
@@ -156,14 +156,14 @@ export class FlashcardListItem {
    */
   async delete() {
     await this.deleteButton.click();
-    
+
     // Handle the native confirmation dialog
-    await this.page.on('dialog', async dialog => {
-      if (dialog.type() === 'confirm') {
+    await this.page.on("dialog", async (dialog) => {
+      if (dialog.type() === "confirm") {
         await dialog.accept();
       }
     });
-    
+
     // Wait for the item to be removed from DOM
     await this.locator.waitFor({ state: "detached" });
   }
@@ -173,14 +173,14 @@ export class FlashcardListItem {
    */
   async deleteAndConfirm() {
     // Set up dialog handler for native confirm dialog
-    this.page.on('dialog', async dialog => {
-      if (dialog.type() === 'confirm') {
+    this.page.on("dialog", async (dialog) => {
+      if (dialog.type() === "confirm") {
         await dialog.accept();
       }
     });
-    
+
     await this.deleteButton.click();
-    
+
     // Wait for the item to be removed from DOM
     await this.locator.waitFor({ state: "detached" });
   }
@@ -190,14 +190,14 @@ export class FlashcardListItem {
    */
   async deleteAndCancel() {
     // Set up dialog handler for native confirm dialog
-    this.page.on('dialog', async dialog => {
-      if (dialog.type() === 'confirm') {
+    this.page.on("dialog", async (dialog) => {
+      if (dialog.type() === "confirm") {
         await dialog.dismiss();
       }
     });
-    
+
     await this.deleteButton.click();
-    
+
     // Verify the item is still visible
     await this.locator.waitFor({ state: "visible" });
   }
@@ -216,7 +216,7 @@ export class FlashcardListItem {
   async verifyContent(expectedTerm: string, expectedDefinition: string): Promise<boolean> {
     const actualTerm = await this.getTerm();
     const actualDefinition = await this.getDefinition();
-    
+
     return actualTerm === expectedTerm && actualDefinition === expectedDefinition;
   }
-} 
+}

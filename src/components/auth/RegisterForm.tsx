@@ -15,7 +15,10 @@ interface RegisterFormProps {
   error?: string;
 }
 
-export const RegisterForm: React.FC<RegisterFormProps> = ({ isLoading: externalLoading = false, error: externalError }) => {
+export const RegisterForm: React.FC<RegisterFormProps> = ({
+  isLoading: externalLoading = false,
+  error: externalError,
+}) => {
   const {
     register,
     handleSubmit,

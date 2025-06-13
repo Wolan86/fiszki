@@ -74,7 +74,7 @@ export async function GET({ request, cookies }: APIContext) {
   try {
     // Parse query parameters from URL
     const url = new URL(request.url);
-    const queryParams: Record<string, any> = {};
+    const queryParams: Record<string, string> = {};
 
     // Extract all query parameters
     for (const [key, value] of url.searchParams.entries()) {

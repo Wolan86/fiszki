@@ -34,13 +34,13 @@ export class SearchComponent {
   async search(query: string) {
     await this.searchInput.clear();
     await this.searchInput.fill(query);
-    
+
     // Wait a bit for the debounced input to update
     await this.page.waitForTimeout(100);
-    
+
     // Trigger search by pressing Enter or waiting for debounce
     await this.searchInput.press("Enter");
-    
+
     // Wait for search to complete
     await this.waitForSearchComplete();
   }
@@ -55,7 +55,7 @@ export class SearchComponent {
     } else {
       await this.searchInput.clear();
     }
-    
+
     await this.waitForSearchComplete();
   }
 
@@ -112,7 +112,7 @@ export class SearchComponent {
    */
   async typeNaturally(text: string) {
     await this.searchInput.clear();
-    
+
     // Type character by character with small delays
     for (const char of text) {
       await this.searchInput.type(char);
@@ -126,20 +126,20 @@ export class SearchComponent {
   async focus() {
     // First ensure the search input is visible
     await this.searchInput.waitFor({ state: "visible" });
-    
+
     // Click on the search input to ensure focus
     await this.searchInput.click();
-    
+
     // Wait a bit for focus to be set
     await this.page.waitForTimeout(300);
-    
+
     // Verify focus was set, retry if needed
     const isFocused = await this.isFocused();
     if (!isFocused) {
       // Try focusing again
       await this.searchInput.focus();
       await this.page.waitForTimeout(200);
-      
+
       // If still not focused, try clicking again
       const stillNotFocused = !(await this.isFocused());
       if (stillNotFocused) {
@@ -170,7 +170,7 @@ export class SearchComponent {
    */
   async searchAndWaitForResults(query: string, expectedCount?: number) {
     await this.search(query);
-    
+
     if (expectedCount !== undefined) {
       // Wait for specific number of flashcard items to be visible
       await this.page.waitForFunction(
@@ -191,7 +191,7 @@ export class SearchComponent {
     const hasRole = await this.searchInput.getAttribute("role");
     const hasAriaLabel = await this.searchInput.getAttribute("aria-label");
     const hasPlaceholder = await this.searchInput.getAttribute("placeholder");
-    
+
     return Boolean(hasRole || hasAriaLabel || hasPlaceholder);
   }
-} 
+}

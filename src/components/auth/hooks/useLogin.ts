@@ -9,10 +9,7 @@ interface UseLoginReturn {
   clearError: () => void;
 }
 
-export const useLogin = (
-  onSuccess?: () => void,
-  onError?: (error: AuthError) => void
-): UseLoginReturn => {
+export const useLogin = (onSuccess?: () => void, onError?: (error: AuthError) => void): UseLoginReturn => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -28,7 +25,7 @@ export const useLogin = (
     } catch (err) {
       const authError = err as AuthError;
       let errorMessage = "Wystąpił błąd podczas logowania";
-      
+
       // Handle different types of errors
       if (authError.status === 401) {
         errorMessage = "Niepoprawny email lub hasło";
@@ -37,8 +34,7 @@ export const useLogin = (
       } else if (authError.message) {
         errorMessage = authError.message;
       }
-      
-      console.error('Login error:', authError);
+
       setError(errorMessage);
       onError?.(authError);
     } finally {
@@ -56,4 +52,4 @@ export const useLogin = (
     error,
     clearError,
   };
-}; 
+};

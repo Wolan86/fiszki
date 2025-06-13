@@ -5,7 +5,6 @@ import type {
   FlashcardDto,
   GenerateFlashcardsCommand,
   GenerateFlashcardsResponse,
-  SourceTextDto,
   UpdateFlashcardCommand,
   ApiErrorResponse,
 } from "@/types";
@@ -15,11 +14,7 @@ export const saveSourceText = async (
   generateFlashcards?: boolean,
   flashcardCount?: number
 ): Promise<CreateSourceTextResponse> => {
-  console.log("=== API saveSourceText called ===", {
-    contentLength: content.length,
-    generateFlashcards,
-    flashcardCount,
-  });
+  // API saveSourceText called with specified parameters
 
   const command: CreateSourceTextCommand = {
     content,
@@ -38,11 +33,7 @@ export const saveSourceText = async (
   }
 
   const result = await response.json();
-  console.log("=== API saveSourceText response ===", {
-    hasSourceText: !!result.source_text,
-    hasFlashcards: !!result.flashcards,
-    flashcardCount: result.flashcards?.length || 0,
-  });
+  // API saveSourceText response received
 
   return result;
 };

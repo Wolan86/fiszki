@@ -64,16 +64,16 @@ export class CreatorPage extends BasePage {
     // Check if we're already on the kreator page (after successful login)
     const currentUrl = this.page.url();
     console.log(`[CreatorPage.goto] Current URL after authentication: ${currentUrl}`);
-    
-    if (currentUrl.includes('/kreator')) {
-      console.log('[CreatorPage.goto] Already on kreator page, skipping navigation');
+
+    if (currentUrl.includes("/kreator")) {
+      console.log("[CreatorPage.goto] Already on kreator page, skipping navigation");
       // Just wait for the creator view to be ready
       await this.waitForCreatorView();
       return;
     }
 
     // Only navigate if we're not already on the kreator page
-    console.log('[CreatorPage.goto] Navigating to kreator page...');
+    console.log("[CreatorPage.goto] Navigating to kreator page...");
     await this.page.goto("/kreator");
     await this.waitForCreatorView();
   }
@@ -140,13 +140,13 @@ export class CreatorPage extends BasePage {
     // Wait for the generate button to be disabled (generation starts)
     await this.generateButton.waitFor({ state: "visible" });
     await expect(this.generateButton).toBeDisabled();
-    
+
     // Wait for either flashcards to appear or an error to occur
     await Promise.race([
       this.generatedFlashcardsResult.waitFor({ state: "visible", timeout: 30000 }),
       this.page.locator('[data-testid="flashcard-generation-error"]').waitFor({ state: "visible", timeout: 30000 }),
     ]);
-    
+
     // Wait for the generate button to be enabled again (generation finished)
     await expect(this.generateButton).toBeEnabled({ timeout: 5000 });
   }

@@ -10,14 +10,7 @@ interface NavigationControlsProps {
   canGoNext: boolean;
 }
 
-const NavigationControls = ({
-  currentIndex,
-  totalCount,
-  onPrevious,
-  onNext,
-  canGoPrevious,
-  canGoNext,
-}: NavigationControlsProps) => {
+const NavigationControls = ({ onPrevious, onNext, canGoPrevious, canGoNext }: NavigationControlsProps) => {
   return (
     <div className="flex items-center justify-between">
       {/* Przycisk poprzedni */}
@@ -39,12 +32,12 @@ const NavigationControls = ({
           <div>Spacja/Enter: odwróć kartę</div>
           <div>F: tryb pełnoekranowy</div>
         </div>
-        
+
         {/* Przycisk powrotu */}
         <Button
           variant="ghost"
           size="sm"
-          onClick={() => window.location.href = '/fiszki'}
+          onClick={() => (window.location.href = "/fiszki")}
           className="flex items-center space-x-1 text-xs"
         >
           <Home className="w-3 h-3" />
@@ -67,4 +60,4 @@ const NavigationControls = ({
   );
 };
 
-export default NavigationControls; 
+export default NavigationControls;

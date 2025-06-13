@@ -3,6 +3,8 @@
  * Provides interfaces for chat completions and specialized AI functions
  */
 
+/* eslint-disable no-console */
+
 import type {
   ChatMessage,
   ChatOptions,
@@ -172,7 +174,15 @@ export class OpenRouterService {
       const requestBody = this.buildRequestBody(messages, options);
 
       // Make the API request
-      const response = await this.makeRequest<any>("/chat/completions", requestBody);
+      const response = await this.makeRequest<{
+        id?: string;
+        model?: string;
+        choices?: {
+          message?: {
+            content?: string;
+          };
+        }[];
+      }>("/chat/completions", requestBody);
 
       // Reset failure count on success
       this.consecutiveFailures = 0;
@@ -203,7 +213,7 @@ export class OpenRouterService {
    * @param schema The JSON schema definition
    * @returns A formatted response format object for API requests
    */
-  public createJsonSchema<T>(name: string, schema: Record<string, unknown>): ResponseFormat {
+  public createJsonSchema(name: string, schema: Record<string, unknown>): ResponseFormat {
     if (!name || typeof name !== "string") {
       throw new OpenRouterValidationError("Schema name is required");
     }
@@ -463,7 +473,7 @@ export class OpenRouterService {
         }
       }
 
-      let parsedContent: any;
+      let parsedContent: unknown;
       let parsingMethod = "direct";
 
       // Handle string content by attempting to parse as JSON
@@ -525,7 +535,7 @@ export class OpenRouterService {
       console.log("Content parsed successfully using method:", parsingMethod);
 
       // Handle different response formats
-      let flashcards: any[] = [];
+      let flashcards: unknown[] = [];
       let structureType = "unknown";
 
       // Try to find flashcards array in the response
@@ -533,45 +543,72 @@ export class OpenRouterService {
         // Direct array of flashcards
         flashcards = parsedContent;
         structureType = "direct_array";
-      } else if (parsedContent.flashcards && Array.isArray(parsedContent.flashcards)) {
+      } else if (
+        parsedContent &&
+        typeof parsedContent === "object" &&
+        "flashcards" in parsedContent &&
+        Array.isArray((parsedContent as Record<string, unknown>).flashcards)
+      ) {
         // Object with flashcards property
-        flashcards = parsedContent.flashcards;
+        flashcards = (parsedContent as Record<string, unknown>).flashcards as unknown[];
         structureType = "flashcards_property";
-      } else if (parsedContent.data && Array.isArray(parsedContent.data)) {
+      } else if (
+        parsedContent &&
+        typeof parsedContent === "object" &&
+        "data" in parsedContent &&
+        Array.isArray((parsedContent as Record<string, unknown>).data)
+      ) {
         // Object with data property containing flashcards
-        flashcards = parsedContent.data;
+        flashcards = (parsedContent as Record<string, unknown>).data as unknown[];
         structureType = "data_property";
-      } else if (parsedContent.results && Array.isArray(parsedContent.results)) {
+      } else if (
+        parsedContent &&
+        typeof parsedContent === "object" &&
+        "results" in parsedContent &&
+        Array.isArray((parsedContent as Record<string, unknown>).results)
+      ) {
         // Object with results property
-        flashcards = parsedContent.results;
+        flashcards = (parsedContent as Record<string, unknown>).results as unknown[];
         structureType = "results_property";
       } else {
         // If we didn't find an array structure but have an object, check if it's a single flashcard
-        if (parsedContent.front_content && parsedContent.back_content) {
+        if (
+          parsedContent &&
+          typeof parsedContent === "object" &&
+          "front_content" in parsedContent &&
+          "back_content" in parsedContent
+        ) {
           flashcards = [parsedContent];
           structureType = "single_flashcard";
         } else {
-          console.log("Attempting to extract from object properties, available keys:", Object.keys(parsedContent));
+          console.log(
+            "Attempting to extract from object properties, available keys:",
+            parsedContent && typeof parsedContent === "object" ? Object.keys(parsedContent) : "not an object"
+          );
           // Try to create flashcards from object properties
-          const extractedCards = Object.entries(parsedContent)
-            .filter(([key, value]) => typeof value === "object" && value !== null)
-            .map(([key, value]: [string, any]) => {
-              if (value.front_content && value.back_content) {
-                return value;
-              } else if (value.front && value.back) {
-                return {
-                  front_content: value.front,
-                  back_content: value.back,
-                };
-              } else if (value.question && value.answer) {
-                return {
-                  front_content: value.question,
-                  back_content: value.answer,
-                };
-              }
-              return null;
-            })
-            .filter(Boolean);
+          const extractedCards =
+            parsedContent && typeof parsedContent === "object"
+              ? Object.entries(parsedContent)
+                  .filter(([, value]) => typeof value === "object" && value !== null)
+                  .map(([, value]) => {
+                    const card = value as Record<string, unknown>;
+                    if (card.front_content && card.back_content) {
+                      return card;
+                    } else if (card.front && card.back) {
+                      return {
+                        front_content: card.front,
+                        back_content: card.back,
+                      };
+                    } else if (card.question && card.answer) {
+                      return {
+                        front_content: card.question,
+                        back_content: card.answer,
+                      };
+                    }
+                    return null;
+                  })
+                  .filter(Boolean)
+              : [];
 
           if (extractedCards.length > 0) {
             flashcards = extractedCards;
@@ -591,18 +628,25 @@ export class OpenRouterService {
       // Validate and standardize flashcard format
       const result = flashcards
         .filter(
-          (card: any) =>
+          (card: unknown) =>
             card &&
+            typeof card === "object" &&
             // Standard format
-            ((typeof card.front_content === "string" && typeof card.back_content === "string") ||
+            ((typeof (card as Record<string, unknown>).front_content === "string" &&
+              typeof (card as Record<string, unknown>).back_content === "string") ||
               // Alternative formats
-              (typeof card.front === "string" && typeof card.back === "string") ||
-              (typeof card.question === "string" && typeof card.answer === "string"))
+              (typeof (card as Record<string, unknown>).front === "string" &&
+                typeof (card as Record<string, unknown>).back === "string") ||
+              (typeof (card as Record<string, unknown>).question === "string" &&
+                typeof (card as Record<string, unknown>).answer === "string"))
         )
-        .map((card: any) => ({
-          front_content: card.front_content || card.front || card.question || "",
-          back_content: card.back_content || card.back || card.answer || "",
-        }));
+        .map((card: unknown) => {
+          const cardObj = card as Record<string, unknown>;
+          return {
+            front_content: (cardObj.front_content || cardObj.front || cardObj.question || "") as string,
+            back_content: (cardObj.back_content || cardObj.back || cardObj.answer || "") as string,
+          };
+        });
 
       console.log("Filtered flashcards:", {
         before: flashcards.length,
@@ -634,7 +678,7 @@ export class OpenRouterService {
 
       // Look for numbered flashcards (e.g., "1. Q: What is...? A: It is...")
       const numberedPattern =
-        /\d+\s*[\.\)]\s*(?:Q:|Question:|Front:)?\s*([^\n?]+\??)\s*(?:A:|Answer:|Back:)?\s*([^\n]+)/gi;
+        /\d+\s*[.)]\s*(?:Q:|Question:|Front:)?\s*([^\n?]+\??)\s*(?:A:|Answer:|Back:)?\s*([^\n]+)/gi;
       let match: RegExpExecArray | null;
 
       while ((match = numberedPattern.exec(text)) !== null) {
@@ -846,7 +890,7 @@ export class OpenRouterService {
       // Log body but redact any sensitive content
       data: {
         ...data,
-        messages: data.messages ? `[${(data.messages as any[]).length} messages]` : undefined,
+        messages: data.messages ? `[${(data.messages as ChatMessage[]).length} messages]` : undefined,
         // Include model info which is helpful for debugging
         model: data.model,
       },
@@ -938,14 +982,14 @@ export class OpenRouterService {
           object: responseData.object,
           // Log response structure but limit content size
           choices: responseData.choices
-            ? responseData.choices.map((c: any) => ({
+            ? responseData.choices.map((c: Record<string, unknown>) => ({
                 index: c.index,
                 message: c.message
                   ? {
-                      role: c.message.role,
-                      content: c.message.content
-                        ? typeof c.message.content === "string"
-                          ? `${c.message.content.substring(0, 100)}${c.message.content.length > 100 ? "..." : ""}`
+                      role: (c.message as Record<string, unknown>).role,
+                      content: (c.message as Record<string, unknown>).content
+                        ? typeof (c.message as Record<string, unknown>).content === "string"
+                          ? `${((c.message as Record<string, unknown>).content as string).substring(0, 100)}${((c.message as Record<string, unknown>).content as string).length > 100 ? "..." : ""}`
                           : "non-string content"
                         : null,
                     }

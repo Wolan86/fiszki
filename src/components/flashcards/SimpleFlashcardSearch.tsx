@@ -1,5 +1,5 @@
-import React from 'react';
-import { Search, X } from 'lucide-react';
+import React from "react";
+import { Search, X } from "lucide-react";
 
 interface SimpleFlashcardSearchProps {
   searchQuery: string;
@@ -10,7 +10,7 @@ interface SimpleFlashcardSearchProps {
 export const SimpleFlashcardSearch: React.FC<SimpleFlashcardSearchProps> = ({
   searchQuery,
   onSearchChange,
-  loading = false
+  loading = false,
 }) => {
   const [debouncedQuery, setDebouncedQuery] = React.useState(searchQuery);
 
@@ -26,12 +26,12 @@ export const SimpleFlashcardSearch: React.FC<SimpleFlashcardSearchProps> = ({
   }, [debouncedQuery, searchQuery, onSearchChange]);
 
   const handleClear = () => {
-    setDebouncedQuery('');
-    onSearchChange('');
+    setDebouncedQuery("");
+    onSearchChange("");
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Escape' && debouncedQuery) {
+    if (e.key === "Escape" && debouncedQuery) {
       handleClear();
     }
   };
@@ -39,9 +39,7 @@ export const SimpleFlashcardSearch: React.FC<SimpleFlashcardSearchProps> = ({
   return (
     <div className="relative max-w-md" data-testid="flashcard-search-container">
       <div className="relative">
-        <Search 
-          className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" 
-        />
+        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
         <input
           type="text"
           placeholder="Szukaj w fiszkach..."
@@ -70,4 +68,4 @@ export const SimpleFlashcardSearch: React.FC<SimpleFlashcardSearchProps> = ({
       )}
     </div>
   );
-}; 
+};

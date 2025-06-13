@@ -10,21 +10,14 @@ interface FlashcardViewerProps {
 const FlashcardViewer = ({ flashcard, isFlipped, onFlip }: FlashcardViewerProps) => {
   return (
     <div className="flashcard-viewer w-full max-w-2xl">
-      <FlashcardCard
-        flashcard={flashcard}
-        isFlipped={isFlipped}
-        onClick={onFlip}
-        className="mx-auto"
-      />
-      
+      <FlashcardCard flashcard={flashcard} isFlipped={isFlipped} onClick={onFlip} className="mx-auto" />
+
       {/* Instrukcja */}
       <div className="text-center mt-6">
-        <p className="text-sm text-muted-foreground">
-          Kliknij kartę lub naciśnij spację, aby ją odwrócić
-        </p>
+        <p className="text-sm text-muted-foreground">Kliknij kartę lub naciśnij spację, aby ją odwrócić</p>
       </div>
     </div>
   );
 };
 
-export default FlashcardViewer; 
+export default FlashcardViewer;

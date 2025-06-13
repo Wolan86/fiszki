@@ -76,14 +76,14 @@ export async function GET({ request, cookies }: APIContext) {
 
   try {
     // Get flashcard statistics using the database function
-    // Note: Using any type because the function is not yet in generated types
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { data, error } = await (supabase as any).rpc("get_flashcard_stats", {
       p_user_id: session.user.id,
     });
 
     if (error) {
-      console.error("Error fetching flashcard stats:", error);
-      throw new Error(`DATABASE_ERROR: ${error.message}`);
+      // Error fetching flashcard stats - handled by throwing
+      throw new Error(`DATABASE_ERROR: ${error.message || "Unknown database error"}`);
     }
 
     if (!data || data.length === 0) {
@@ -112,9 +112,10 @@ export async function GET({ request, cookies }: APIContext) {
       ai_generated_flashcards: Number(stats.ai_generated_flashcards),
       manual_flashcards: Number(stats.manual_flashcards),
       avg_generation_time_ms: stats.avg_generation_time_ms ? Number(stats.avg_generation_time_ms) : null,
-      acceptance_rate_percent: Number(stats.total_flashcards) > 0 
-        ? Math.round((Number(stats.accepted_flashcards) / Number(stats.total_flashcards)) * 100 * 100) / 100
-        : 0,
+      acceptance_rate_percent:
+        Number(stats.total_flashcards) > 0
+          ? Math.round((Number(stats.accepted_flashcards) / Number(stats.total_flashcards)) * 100 * 100) / 100
+          : 0,
     };
 
     ApiLogger.info("Flashcard stats retrieved successfully", {
@@ -141,4 +142,4 @@ export async function GET({ request, cookies }: APIContext) {
     timer.end(500);
     return ApiErrorHandler.internalServerError(error);
   }
-} 
+}

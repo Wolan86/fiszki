@@ -6,7 +6,6 @@ import type {
   UpdateFlashcardCommand,
   FlashcardListQueryParams,
   FlashcardListResponse,
-  FlashcardCreationType,
   FlashcardLearningQueryParams,
   FlashcardLearningResponse,
 } from "../../types";
@@ -113,7 +112,7 @@ export async function saveGeneratedFlashcards(
   const { data, error } = await supabase.from("flashcards").insert(flashcardsToInsert).select("*");
 
   if (error) {
-    console.error("Error saving flashcards:", error);
+    // Error saving flashcards - handled by throwing
     throw new Error(`Failed to save flashcards: ${error.message}`);
   }
 
@@ -162,7 +161,7 @@ export async function createFlashcard(
   const { data, error } = await supabase.from("flashcards").insert([flashcardToInsert]).select("*").single();
 
   if (error) {
-    console.error("Error creating flashcard:", error);
+    // Error creating flashcard - handled by throwing
     throw new Error(`DATABASE_ERROR: ${error.message}`);
   }
 
@@ -334,7 +333,7 @@ export async function getFlashcardsForLearning(
     }
 
     const limit = queryParams.limit || 10;
-    
+
     // Use the database function for random flashcards
     const { data, error } = await supabase.rpc("get_random_flashcards", {
       p_user_id: userId,
@@ -390,11 +389,7 @@ export async function getFlashcardsForLearning(
  * @throws {Error} FLASHCARD_NOT_FOUND if flashcard doesn't exist or doesn't belong to user
  * @throws {Error} DATABASE_ERROR if database operation fails
  */
-export async function deleteFlashcard(
-  supabase: DbClient,
-  flashcardId: string,
-  userId: string
-): Promise<void> {
+export async function deleteFlashcard(supabase: DbClient, flashcardId: string, userId: string): Promise<void> {
   // Check if flashcard exists and belongs to user
   const { data: existingFlashcard, error: fetchError } = await supabase
     .from("flashcards")

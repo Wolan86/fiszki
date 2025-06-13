@@ -3,7 +3,7 @@ import { createSupabaseServerInstance } from "../../../db/supabase.client";
 
 export const prerender = false;
 
-export const POST: APIRoute = async ({ request, cookies, redirect }) => {
+export const POST: APIRoute = async ({ request, cookies }) => {
   const { email, password } = await request.json();
 
   // Walidacja danych wejściowych
@@ -29,12 +29,13 @@ export const POST: APIRoute = async ({ request, cookies, redirect }) => {
 
   if (error) {
     console.error("Login error:", error);
-    
+
     // Handle specific error cases with user-friendly messages
     let errorMessage = error.message;
-    
+
     if (error.message.includes("Email not confirmed")) {
-      errorMessage = "Adres email nie został potwierdzony. Sprawdź swoją skrzynkę pocztową i kliknij link potwierdzający.";
+      errorMessage =
+        "Adres email nie został potwierdzony. Sprawdź swoją skrzynkę pocztową i kliknij link potwierdzający.";
     } else if (error.message.includes("Invalid login credentials")) {
       errorMessage = "Niepoprawny email lub hasło.";
     } else if (error.message.includes("Too many requests")) {
@@ -42,7 +43,7 @@ export const POST: APIRoute = async ({ request, cookies, redirect }) => {
     } else if (error.message.includes("User not found")) {
       errorMessage = "Użytkownik o podanym adresie email nie istnieje.";
     }
-    
+
     return new Response(
       JSON.stringify({
         success: false,

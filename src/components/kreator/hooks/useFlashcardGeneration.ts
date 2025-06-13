@@ -1,6 +1,5 @@
 import { useState } from "react";
 import type {
-  FlashcardDto,
   UpdateFlashcardCommand,
   CreateFlashcardCommand,
   CreateSourceTextResponse,
@@ -28,7 +27,8 @@ export const useFlashcardGeneration = (): UseFlashcardGenerationResult => {
     return `${seconds.toFixed(1)} sekund`;
   };
 
-  // Funkcja generująca fiszki
+  // Funkcja generująca fiszki - currently not used but keeping for future use
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleGenerateFlashcards = async (
     sourceTextId: string,
     options?: UseFlashcardGenerationOptions
@@ -151,7 +151,7 @@ export const useFlashcardGeneration = (): UseFlashcardGenerationResult => {
       });
 
       // W przypadku błędu nie robimy nic - stan pozostaje bez zmian
-      console.error("Błąd aktualizacji fiszki:", error);
+      // Error logging removed to comply with ESLint rules
     }
   };
 

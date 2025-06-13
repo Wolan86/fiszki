@@ -1,0 +1,13 @@
+# Binary and generated files
+src/db/database.types.ts
+
+# Build outputs
+dist/
+.astro/
+
+# Node modules
+node_modules/
+
+# Test reports
+playwright-report/
+test-results/ 

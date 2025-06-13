@@ -7,23 +7,15 @@ interface FullscreenControlsProps {
   isSupported: boolean;
 }
 
-const FullscreenControls = ({
-  isFullscreen,
-  onToggleFullscreen,
-  isSupported,
-}: FullscreenControlsProps) => {
+const FullscreenControls = ({ isFullscreen, onToggleFullscreen, isSupported }: FullscreenControlsProps) => {
   if (!isSupported) {
     return null;
   }
 
   return (
     <div className="flex items-center space-x-2">
-      {isFullscreen && (
-        <span className="text-xs text-muted-foreground">
-          ESC - wyjście z pełnego ekranu
-        </span>
-      )}
-      
+      {isFullscreen && <span className="text-xs text-muted-foreground">ESC - wyjście z pełnego ekranu</span>}
+
       <Button
         variant="ghost"
         size="sm"
@@ -47,4 +39,4 @@ const FullscreenControls = ({
   );
 };
 
-export default FullscreenControls; 
+export default FullscreenControls;

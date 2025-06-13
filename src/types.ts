@@ -143,10 +143,10 @@ export interface ApiErrorResponse {
 export interface FlashcardFilters {
   limit: number; // default: 10, max: 100
   offset: number; // default: 0
-  sort: 'created_at' | 'updated_at' | 'front_content'; // default: created_at
-  order: 'asc' | 'desc'; // default: desc
+  sort: "created_at" | "updated_at" | "front_content"; // default: created_at
+  order: "asc" | "desc"; // default: desc
   source_text_id?: string; // UUID format
-  creation_type?: FlashcardCreationType | 'all';
+  creation_type?: FlashcardCreationType | "all";
   accepted?: boolean;
 }
 
@@ -170,22 +170,22 @@ export interface ValidationErrors {
 }
 
 // Save status for auto-save functionality
-export type SaveStatus = 'idle' | 'saving' | 'saved' | 'error';
+export type SaveStatus = "idle" | "saving" | "saved" | "error";
 
 // Table action types
-export type TableAction = 'preview' | 'edit' | 'delete';
+export type TableAction = "preview" | "edit" | "delete";
 
 // Type for creation type filter (includes 'all' option)
-export type CreationType = FlashcardCreationType | 'all';
+export type CreationType = FlashcardCreationType | "all";
 
 // Sort field options
-export type SortField = 'created_at' | 'updated_at' | 'front_content';
+export type SortField = "created_at" | "updated_at" | "front_content";
 
 // Preview state for modal
 export interface PreviewState {
   isOpen: boolean;
   flashcardId: string | null;
-  side: 'front' | 'back';
+  side: "front" | "back";
 }
 
 // Pagination info

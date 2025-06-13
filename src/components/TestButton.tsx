@@ -6,12 +6,9 @@ interface TestButtonProps {
 }
 
 export const TestButton: React.FC<TestButtonProps> = ({ onClick }) => {
-  console.log("TestButton rendered, onClick type:", typeof onClick);
-
   return (
     <Button
       onClick={() => {
-        console.log("Button clicked");
         onClick();
       }}
     >

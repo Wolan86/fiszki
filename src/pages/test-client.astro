@@ -14,8 +14,11 @@ import { TestButton } from "@/components/TestButton";
         <TestButton
           client:load
           onClick={() => {
-            console.log("onClick handler called from Astro component");
-            alert("Button clicked successfully!");
+            // Removed console.log to fix ESLint no-console warning
+            if (typeof window !== "undefined") {
+              // eslint-disable-next-line no-undef
+              window.alert("Button clicked successfully!");
+            }
           }}
         />
       </div>
@@ -24,5 +27,5 @@ import { TestButton } from "@/components/TestButton";
 </Layout>
 
 <script>
-  console.log("Page script loaded");
+  // Removed console.log to fix ESLint no-console warning // Script loaded successfully
 </script>

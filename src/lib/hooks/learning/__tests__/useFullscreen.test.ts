@@ -1,12 +1,12 @@
-import { renderHook, act } from '@testing-library/react';
-import { describe, it, expect, vi, beforeEach, afterEach, type MockInstance } from 'vitest';
-import { useFullscreen } from '../useFullscreen';
+import { renderHook, act } from "@testing-library/react";
+import { describe, it, expect, vi, beforeEach, afterEach, type MockInstance } from "vitest";
+import { useFullscreen } from "../useFullscreen";
 
 // Mock the fullscreen API
 const mockRequestFullscreen = vi.fn().mockResolvedValue(undefined);
 const mockExitFullscreen = vi.fn().mockResolvedValue(undefined);
 
-describe('useFullscreen', () => {
+describe("useFullscreen", () => {
   let addEventListenerSpy: MockInstance;
   let removeEventListenerSpy: MockInstance;
 
@@ -17,26 +17,26 @@ describe('useFullscreen', () => {
     mockExitFullscreen.mockClear();
 
     // Setup DOM spies
-    addEventListenerSpy = vi.spyOn(document, 'addEventListener');
-    removeEventListenerSpy = vi.spyOn(document, 'removeEventListener');
+    addEventListenerSpy = vi.spyOn(document, "addEventListener");
+    removeEventListenerSpy = vi.spyOn(document, "removeEventListener");
 
     // Mock fullscreen API on document
-    Object.defineProperty(document, 'fullscreenEnabled', {
+    Object.defineProperty(document, "fullscreenEnabled", {
       value: true,
       writable: true,
-      configurable: true
+      configurable: true,
     });
 
-    Object.defineProperty(document, 'fullscreenElement', {
+    Object.defineProperty(document, "fullscreenElement", {
       value: null,
       writable: true,
-      configurable: true
+      configurable: true,
     });
 
-    Object.defineProperty(document, 'exitFullscreen', {
+    Object.defineProperty(document, "exitFullscreen", {
       value: mockExitFullscreen,
       writable: true,
-      configurable: true
+      configurable: true,
     });
 
     // Mock requestFullscreen on a test element
@@ -47,8 +47,8 @@ describe('useFullscreen', () => {
     vi.restoreAllMocks();
   });
 
-  describe('initialization', () => {
-    it('should initialize with correct default state when fullscreen is supported', () => {
+  describe("initialization", () => {
+    it("should initialize with correct default state when fullscreen is supported", () => {
       const { result } = renderHook(() => useFullscreen());
 
       expect(result.current.isActive).toBe(false);
@@ -56,14 +56,14 @@ describe('useFullscreen', () => {
       expect(result.current.isTransitioning).toBe(false);
     });
 
-    it('should initialize with isSupported false when fullscreen is not supported', () => {
+    it("should initialize with isSupported false when fullscreen is not supported", () => {
       // Remove fullscreen support
-      Object.defineProperty(document, 'fullscreenEnabled', {
+      Object.defineProperty(document, "fullscreenEnabled", {
         value: false,
         writable: true,
-        configurable: true
+        configurable: true,
       });
-      delete (Element.prototype as any).requestFullscreen;
+      delete (Element.prototype as unknown as Record<string, unknown>).requestFullscreen;
 
       const { result } = renderHook(() => useFullscreen());
 
@@ -71,43 +71,43 @@ describe('useFullscreen', () => {
     });
   });
 
-  describe('event listeners', () => {
-    it('should add event listeners on mount', () => {
+  describe("event listeners", () => {
+    it("should add event listeners on mount", () => {
       renderHook(() => useFullscreen());
 
-      expect(addEventListenerSpy).toHaveBeenCalledWith('fullscreenchange', expect.any(Function));
-      expect(addEventListenerSpy).toHaveBeenCalledWith('fullscreenerror', expect.any(Function));
+      expect(addEventListenerSpy).toHaveBeenCalledWith("fullscreenchange", expect.any(Function));
+      expect(addEventListenerSpy).toHaveBeenCalledWith("fullscreenerror", expect.any(Function));
     });
 
-    it('should remove event listeners on unmount', () => {
+    it("should remove event listeners on unmount", () => {
       const { unmount } = renderHook(() => useFullscreen());
 
       unmount();
 
-      expect(removeEventListenerSpy).toHaveBeenCalledWith('fullscreenchange', expect.any(Function));
-      expect(removeEventListenerSpy).toHaveBeenCalledWith('fullscreenerror', expect.any(Function));
+      expect(removeEventListenerSpy).toHaveBeenCalledWith("fullscreenchange", expect.any(Function));
+      expect(removeEventListenerSpy).toHaveBeenCalledWith("fullscreenerror", expect.any(Function));
     });
   });
 
-  describe('fullscreen state detection', () => {
-    it('should detect when fullscreen is active', () => {
+  describe("fullscreen state detection", () => {
+    it("should detect when fullscreen is active", () => {
       const { result } = renderHook(() => useFullscreen());
 
       // Simulate fullscreen change
-      Object.defineProperty(document, 'fullscreenElement', {
-        value: document.createElement('div'),
+      Object.defineProperty(document, "fullscreenElement", {
+        value: document.createElement("div"),
         writable: true,
-        configurable: true
+        configurable: true,
       });
 
       // Trigger fullscreen change event
       act(() => {
         const fullscreenChangeHandler = addEventListenerSpy.mock.calls.find(
-          call => call[0] === 'fullscreenchange'
+          (call) => call[0] === "fullscreenchange"
         )?.[1] as EventListener;
-        
+
         if (fullscreenChangeHandler) {
-          fullscreenChangeHandler(new Event('fullscreenchange'));
+          fullscreenChangeHandler(new Event("fullscreenchange"));
         }
       });
 
@@ -115,8 +115,8 @@ describe('useFullscreen', () => {
     });
   });
 
-  describe('entering fullscreen', () => {
-    it('should enter fullscreen successfully', async () => {
+  describe("entering fullscreen", () => {
+    it("should enter fullscreen successfully", async () => {
       const { result } = renderHook(() => useFullscreen());
 
       await act(async () => {
@@ -126,9 +126,9 @@ describe('useFullscreen', () => {
       expect(mockRequestFullscreen).toHaveBeenCalledWith();
     });
 
-    it('should handle fullscreen request errors', async () => {
-      mockRequestFullscreen.mockRejectedValueOnce(new Error('Fullscreen failed'));
-      
+    it("should handle fullscreen request errors", async () => {
+      mockRequestFullscreen.mockRejectedValueOnce(new Error("Fullscreen failed"));
+
       const { result } = renderHook(() => useFullscreen());
 
       await act(async () => {
@@ -140,25 +140,25 @@ describe('useFullscreen', () => {
     });
   });
 
-  describe('exiting fullscreen', () => {
-    it('should exit fullscreen successfully', async () => {
+  describe("exiting fullscreen", () => {
+    it("should exit fullscreen successfully", async () => {
       const { result } = renderHook(() => useFullscreen());
 
       // First simulate being in fullscreen
-      Object.defineProperty(document, 'fullscreenElement', {
-        value: document.createElement('div'),
+      Object.defineProperty(document, "fullscreenElement", {
+        value: document.createElement("div"),
         writable: true,
-        configurable: true
+        configurable: true,
       });
 
       // Trigger fullscreen change to update state
       act(() => {
         const fullscreenChangeHandler = addEventListenerSpy.mock.calls.find(
-          call => call[0] === 'fullscreenchange'
+          (call) => call[0] === "fullscreenchange"
         )?.[1] as EventListener;
-        
+
         if (fullscreenChangeHandler) {
-          fullscreenChangeHandler(new Event('fullscreenchange'));
+          fullscreenChangeHandler(new Event("fullscreenchange"));
         }
       });
 
@@ -169,26 +169,26 @@ describe('useFullscreen', () => {
       expect(mockExitFullscreen).toHaveBeenCalledWith();
     });
 
-    it('should handle exit fullscreen errors', async () => {
-      mockExitFullscreen.mockRejectedValueOnce(new Error('Exit failed'));
-      
+    it("should handle exit fullscreen errors", async () => {
+      mockExitFullscreen.mockRejectedValueOnce(new Error("Exit failed"));
+
       const { result } = renderHook(() => useFullscreen());
 
       // First simulate being in fullscreen
-      Object.defineProperty(document, 'fullscreenElement', {
-        value: document.createElement('div'),
+      Object.defineProperty(document, "fullscreenElement", {
+        value: document.createElement("div"),
         writable: true,
-        configurable: true
+        configurable: true,
       });
 
       // Trigger fullscreen change to update state
       act(() => {
         const fullscreenChangeHandler = addEventListenerSpy.mock.calls.find(
-          call => call[0] === 'fullscreenchange'
+          (call) => call[0] === "fullscreenchange"
         )?.[1] as EventListener;
-        
+
         if (fullscreenChangeHandler) {
-          fullscreenChangeHandler(new Event('fullscreenchange'));
+          fullscreenChangeHandler(new Event("fullscreenchange"));
         }
       });
 
@@ -201,8 +201,8 @@ describe('useFullscreen', () => {
     });
   });
 
-  describe('toggle functionality', () => {
-    it('should toggle to fullscreen when not active', async () => {
+  describe("toggle functionality", () => {
+    it("should toggle to fullscreen when not active", async () => {
       const { result } = renderHook(() => useFullscreen());
 
       await act(async () => {
@@ -212,24 +212,24 @@ describe('useFullscreen', () => {
       expect(mockRequestFullscreen).toHaveBeenCalledWith();
     });
 
-    it('should toggle out of fullscreen when active', async () => {
+    it("should toggle out of fullscreen when active", async () => {
       const { result } = renderHook(() => useFullscreen());
-      
+
       // Set fullscreen as active
-      Object.defineProperty(document, 'fullscreenElement', {
-        value: document.createElement('div'),
+      Object.defineProperty(document, "fullscreenElement", {
+        value: document.createElement("div"),
         writable: true,
-        configurable: true
+        configurable: true,
       });
 
       // Trigger fullscreen change to update state
       act(() => {
         const fullscreenChangeHandler = addEventListenerSpy.mock.calls.find(
-          call => call[0] === 'fullscreenchange'
+          (call) => call[0] === "fullscreenchange"
         )?.[1] as EventListener;
-        
+
         if (fullscreenChangeHandler) {
-          fullscreenChangeHandler(new Event('fullscreenchange'));
+          fullscreenChangeHandler(new Event("fullscreenchange"));
         }
       });
 
@@ -241,23 +241,24 @@ describe('useFullscreen', () => {
     });
   });
 
-  describe('browser compatibility', () => {
-    it('should work with webkit prefixed methods', async () => {
+  describe("browser compatibility", () => {
+    it("should work with webkit prefixed methods", async () => {
       // Remove standard methods
-      delete (document as any).exitFullscreen;
-      delete (Element.prototype as any).requestFullscreen;
+      delete (document as unknown as Record<string, unknown>).exitFullscreen;
+      delete (Element.prototype as unknown as Record<string, unknown>).requestFullscreen;
 
       // Add webkit methods
       const mockWebkitExitFullscreen = vi.fn().mockResolvedValue(undefined);
       const mockWebkitRequestFullscreen = vi.fn().mockResolvedValue(undefined);
 
-      Object.defineProperty(document, 'webkitExitFullscreen', {
+      Object.defineProperty(document, "webkitExitFullscreen", {
         value: mockWebkitExitFullscreen,
         writable: true,
-        configurable: true
+        configurable: true,
       });
 
-      (document.documentElement as any).webkitRequestFullscreen = mockWebkitRequestFullscreen;
+      (document.documentElement as unknown as Record<string, unknown>).webkitRequestFullscreen =
+        mockWebkitRequestFullscreen;
 
       const { result } = renderHook(() => useFullscreen());
 
@@ -268,4 +269,4 @@ describe('useFullscreen', () => {
       expect(mockWebkitRequestFullscreen).toHaveBeenCalledWith();
     });
   });
-}); 
+});

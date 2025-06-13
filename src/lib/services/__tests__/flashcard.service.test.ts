@@ -19,8 +19,8 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 
 // Mock Supabase client type
 interface MockSupabaseClient {
-  from: MockedFunction<any>;
-  rpc: MockedFunction<any>;
+  from: MockedFunction<(table: string) => unknown>;
+  rpc: MockedFunction<(fn: string, params?: Record<string, unknown>) => Promise<{ data: unknown; error: unknown }>>;
 }
 
 describe("flashcard.service", () => {
@@ -393,7 +393,7 @@ describe("flashcard.service", () => {
     it("gets flashcards with default parameters", async () => {
       // Arrange
       const queryParams: FlashcardListQueryParams = {};
-      
+
       const mockQuery = {
         eq: vi.fn().mockReturnThis(),
         order: vi.fn().mockReturnThis(),
@@ -437,7 +437,7 @@ describe("flashcard.service", () => {
         sort: "front_content",
         order: "asc",
       };
-      
+
       const mockQuery = {
         eq: vi.fn().mockReturnThis(),
         order: vi.fn().mockReturnThis(),
@@ -472,7 +472,7 @@ describe("flashcard.service", () => {
     it("handles database errors", async () => {
       // Arrange
       const queryParams: FlashcardListQueryParams = {};
-      
+
       const mockQuery = {
         eq: vi.fn().mockReturnThis(),
         order: vi.fn().mockReturnThis(),
@@ -488,8 +488,9 @@ describe("flashcard.service", () => {
       });
 
       // Act & Assert
-      await expect(getFlashcards(mockSupabase as unknown as SupabaseClient, queryParams, mockUserId))
-        .rejects.toThrow("DATABASE_ERROR: Database connection failed");
+      await expect(getFlashcards(mockSupabase as unknown as SupabaseClient, queryParams, mockUserId)).rejects.toThrow(
+        "DATABASE_ERROR: Database connection failed"
+      );
     });
   });
 
@@ -614,7 +615,7 @@ describe("flashcard.service", () => {
     it("gets random flashcards for learning with default parameters", async () => {
       // Arrange
       const queryParams: FlashcardLearningQueryParams = {};
-      
+
       const mockCountQuery = {
         eq: vi.fn().mockReturnThis(),
         count: 5,
@@ -647,7 +648,7 @@ describe("flashcard.service", () => {
     it("gets random flashcards with custom limit", async () => {
       // Arrange
       const queryParams: FlashcardLearningQueryParams = { limit: 20 };
-      
+
       const mockCountQuery = {
         eq: vi.fn().mockReturnThis(),
         count: 15,
@@ -677,7 +678,7 @@ describe("flashcard.service", () => {
     it("filters flashcards by source_text_id", async () => {
       // Arrange
       const queryParams: FlashcardLearningQueryParams = { source_text_id: "source-123" };
-      
+
       // Mock source text validation query
       const mockSourceTextQuery = {
         eq: vi.fn().mockReturnThis(),
@@ -720,7 +721,7 @@ describe("flashcard.service", () => {
     it("throws error when source_text_id does not belong to user", async () => {
       // Arrange
       const queryParams: FlashcardLearningQueryParams = { source_text_id: "source-123" };
-      
+
       // Mock source text validation query to return error (not found)
       const mockSourceTextQuery = {
         eq: vi.fn().mockReturnThis(),
@@ -735,28 +736,30 @@ describe("flashcard.service", () => {
       });
 
       // Act & Assert
-      await expect(getFlashcardsForLearning(mockSupabase as unknown as SupabaseClient, queryParams, mockUserId))
-        .rejects.toThrow("SOURCE_TEXT_NOT_FOUND");
+      await expect(
+        getFlashcardsForLearning(mockSupabase as unknown as SupabaseClient, queryParams, mockUserId)
+      ).rejects.toThrow("SOURCE_TEXT_NOT_FOUND");
     });
 
     it("handles database RPC errors", async () => {
       // Arrange
       const queryParams: FlashcardLearningQueryParams = {};
-      
+
       mockSupabase.rpc = vi.fn().mockResolvedValue({
         data: null,
         error: { message: "RPC function failed" },
       });
 
       // Act & Assert
-      await expect(getFlashcardsForLearning(mockSupabase as unknown as SupabaseClient, queryParams, mockUserId))
-        .rejects.toThrow("DATABASE_ERROR: RPC function failed");
+      await expect(
+        getFlashcardsForLearning(mockSupabase as unknown as SupabaseClient, queryParams, mockUserId)
+      ).rejects.toThrow("DATABASE_ERROR: RPC function failed");
     });
 
     it("handles count query errors", async () => {
       // Arrange
       const queryParams: FlashcardLearningQueryParams = {};
-      
+
       const mockCountQuery = {
         eq: vi.fn().mockReturnThis(),
         count: null,
@@ -773,8 +776,9 @@ describe("flashcard.service", () => {
       });
 
       // Act & Assert
-      await expect(getFlashcardsForLearning(mockSupabase as unknown as SupabaseClient, queryParams, mockUserId))
-        .rejects.toThrow("DATABASE_ERROR: Count query failed");
+      await expect(
+        getFlashcardsForLearning(mockSupabase as unknown as SupabaseClient, queryParams, mockUserId)
+      ).rejects.toThrow("DATABASE_ERROR: Count query failed");
     });
   });
 
@@ -811,9 +815,9 @@ describe("flashcard.service", () => {
 
     it("validates source_text_id", () => {
       // Arrange
-      const queryParams = { 
+      const queryParams = {
         limit: "15",
-        source_text_id: "123e4567-e89b-12d3-a456-426614174000" 
+        source_text_id: "123e4567-e89b-12d3-a456-426614174000",
       };
 
       // Act
@@ -884,11 +888,13 @@ describe("flashcard.service", () => {
         }),
       });
 
-      mockSupabase.from.mockReturnValueOnce({
-        select: mockSelect,
-      }).mockReturnValueOnce({
-        delete: mockDelete,
-      });
+      mockSupabase.from
+        .mockReturnValueOnce({
+          select: mockSelect,
+        })
+        .mockReturnValueOnce({
+          delete: mockDelete,
+        });
 
       // Act
       await deleteFlashcard(mockSupabase as unknown as SupabaseClient, flashcardId, mockUserId);
@@ -918,8 +924,9 @@ describe("flashcard.service", () => {
       });
 
       // Act & Assert
-      await expect(deleteFlashcard(mockSupabase as unknown as SupabaseClient, flashcardId, mockUserId))
-        .rejects.toThrow("FLASHCARD_NOT_FOUND");
+      await expect(deleteFlashcard(mockSupabase as unknown as SupabaseClient, flashcardId, mockUserId)).rejects.toThrow(
+        "FLASHCARD_NOT_FOUND"
+      );
     });
 
     it("throws DATABASE_ERROR when deletion fails", async () => {
@@ -947,15 +954,18 @@ describe("flashcard.service", () => {
         }),
       });
 
-      mockSupabase.from.mockReturnValueOnce({
-        select: mockSelect,
-      }).mockReturnValueOnce({
-        delete: mockDelete,
-      });
+      mockSupabase.from
+        .mockReturnValueOnce({
+          select: mockSelect,
+        })
+        .mockReturnValueOnce({
+          delete: mockDelete,
+        });
 
       // Act & Assert
-      await expect(deleteFlashcard(mockSupabase as unknown as SupabaseClient, flashcardId, mockUserId))
-        .rejects.toThrow("DATABASE_ERROR: Database connection failed");
+      await expect(deleteFlashcard(mockSupabase as unknown as SupabaseClient, flashcardId, mockUserId)).rejects.toThrow(
+        "DATABASE_ERROR: Database connection failed"
+      );
     });
   });
 });

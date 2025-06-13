@@ -11,7 +11,9 @@ vi.mock("@/lib/services/api-service", () => ({
   createFlashcard: vi.fn(),
 }));
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const mockUpdateFlashcard = vi.mocked(apiService.updateFlashcard);
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const mockRegenerateFlashcard = vi.mocked(apiService.regenerateFlashcard);
 const mockCreateFlashcard = vi.mocked(apiService.createFlashcard);
 
@@ -38,7 +40,7 @@ describe("useFlashcardGeneration", () => {
     it("loads flashcards from API response", () => {
       // Arrange
       const { result } = renderHook(() => useFlashcardGeneration());
-      
+
       const mockFlashcard: UnsavedFlashcardDto = {
         id: "temp-1",
         front_content: "Question 1",
@@ -46,7 +48,7 @@ describe("useFlashcardGeneration", () => {
         source_text_id: "source-1",
         accepted: null,
         creation_type: "ai_generated",
-        user_id: "user-1", 
+        user_id: "user-1",
         created_at: "2024-01-01T00:00:00Z",
         updated_at: "2024-01-01T00:00:00Z",
         generation_time_ms: 1000,
@@ -117,7 +119,7 @@ describe("useFlashcardGeneration", () => {
     it("updates flashcard content locally", () => {
       // Arrange
       const { result } = renderHook(() => useFlashcardGeneration());
-      
+
       const mockFlashcard: UnsavedFlashcardDto = {
         id: "temp-1",
         front_content: "Original Question",
@@ -126,7 +128,7 @@ describe("useFlashcardGeneration", () => {
         accepted: null,
         creation_type: "ai_generated",
         user_id: "user-1",
-        created_at: "2024-01-01T00:00:00Z", 
+        created_at: "2024-01-01T00:00:00Z",
         updated_at: "2024-01-01T00:00:00Z",
         generation_time_ms: 1000,
       };
@@ -156,7 +158,7 @@ describe("useFlashcardGeneration", () => {
       });
 
       // Assert
-      const flashcard = result.current.flashcards.find(f => f.id === "temp-1");
+      const flashcard = result.current.flashcards.find((f) => f.id === "temp-1");
       expect(flashcard?.front_content).toBe("Updated Question");
       expect(flashcard?.back_content).toBe("Updated Answer");
     });
@@ -166,7 +168,7 @@ describe("useFlashcardGeneration", () => {
     it("updates flashcard with acceptance status", async () => {
       // Arrange
       const { result } = renderHook(() => useFlashcardGeneration());
-      
+
       const mockFlashcard: UnsavedFlashcardDto = {
         id: "temp-1",
         front_content: "Question 1",
@@ -176,7 +178,7 @@ describe("useFlashcardGeneration", () => {
         creation_type: "ai_generated",
         user_id: "user-1",
         created_at: "2024-01-01T00:00:00Z",
-        updated_at: "2024-01-01T00:00:00Z", 
+        updated_at: "2024-01-01T00:00:00Z",
         generation_time_ms: 1000,
       };
 
@@ -205,7 +207,7 @@ describe("useFlashcardGeneration", () => {
       });
 
       // Assert
-      const flashcard = result.current.flashcards.find(f => f.id === "temp-1");
+      const flashcard = result.current.flashcards.find((f) => f.id === "temp-1");
       expect(flashcard?.accepted).toBe(true);
     });
   });
@@ -214,7 +216,7 @@ describe("useFlashcardGeneration", () => {
     it("saves accepted flashcard to database", async () => {
       // Arrange
       const { result } = renderHook(() => useFlashcardGeneration());
-      
+
       const mockFlashcard: UnsavedFlashcardDto = {
         id: "temp-1",
         front_content: "Question 1",
@@ -273,8 +275,8 @@ describe("useFlashcardGeneration", () => {
         back_content: "Answer 1",
         source_text_id: "source-1",
       });
-      
-      const flashcard = result.current.flashcards.find(f => f.id === "real-1");
+
+      const flashcard = result.current.flashcards.find((f) => f.id === "real-1");
       expect(flashcard).toBeDefined();
     });
   });
@@ -283,7 +285,7 @@ describe("useFlashcardGeneration", () => {
     it("resets all state to initial values", () => {
       // Arrange
       const { result } = renderHook(() => useFlashcardGeneration());
-      
+
       const mockResponse: CreateSourceTextResponse = {
         source_text: {
           id: "source-1",
@@ -291,18 +293,20 @@ describe("useFlashcardGeneration", () => {
           user_id: "user-1",
           created_at: "2024-01-01T00:00:00Z",
         },
-        flashcards: [{
-          id: "temp-1",
-          front_content: "Question 1",
-          back_content: "Answer 1",
-          source_text_id: "source-1",
-          accepted: null,
-          creation_type: "ai_generated",
-          user_id: "user-1",
-          created_at: "2024-01-01T00:00:00Z",
-          updated_at: "2024-01-01T00:00:00Z", 
-          generation_time_ms: 1000,
-        }],
+        flashcards: [
+          {
+            id: "temp-1",
+            front_content: "Question 1",
+            back_content: "Answer 1",
+            source_text_id: "source-1",
+            accepted: null,
+            creation_type: "ai_generated",
+            user_id: "user-1",
+            created_at: "2024-01-01T00:00:00Z",
+            updated_at: "2024-01-01T00:00:00Z",
+            generation_time_ms: 1000,
+          },
+        ],
         generation_stats: {
           requested_count: 1,
           generated_count: 1,
@@ -327,4 +331,4 @@ describe("useFlashcardGeneration", () => {
       expect(result.current.savingFlashcardIds).toEqual([]);
     });
   });
-}); 
+});

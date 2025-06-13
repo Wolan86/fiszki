@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, useRef } from "react";
 import type { SourceTextDto, CreateSourceTextResponse } from "@/types";
 import type { UseSourceTextOptions, UseSourceTextResult } from "../types";
 import { saveSourceText } from "@/lib/services/api-service";
@@ -15,7 +15,7 @@ export const useSourceText = ({
   const [isSaving, setIsSaving] = useState<boolean>(false);
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
   const [errors, setErrors] = useState<string[]>([]);
-  const [saveTimer, setSaveTimer] = useState<ReturnType<typeof setTimeout> | null>(null);
+  const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [lastSavedContent, setLastSavedContent] = useState<string>(initialContent);
   const [isGeneratingFlashcards, setIsGeneratingFlashcards] = useState<boolean>(false);
 
@@ -54,27 +54,36 @@ export const useSourceText = ({
     // Autosave z lepszą logiką - tylko gdy nie generujemy fiszek
     if (content !== lastSavedContent && content.trim() !== "" && !isGeneratingFlashcards && !isSaving) {
       // Resetujemy poprzedni timer jeśli istnieje
-      if (saveTimer) {
-        clearTimeout(saveTimer);
+      if (saveTimerRef.current) {
+        clearTimeout(saveTimerRef.current);
       }
 
-      // Ustawiamy nowy timer do autosave z dłuższym opóźnieniem
-      const timer = setTimeout(() => {
+      // Ustawiamy nowy timer do autosave z opóźnieniem określonym w opcjach
+      saveTimerRef.current = setTimeout(() => {
         if (content.trim() !== "" && content !== lastSavedContent && !isGeneratingFlashcards && !isSaving) {
           handleSaveSourceText();
         }
       }, autosaveDelay);
-
-      setSaveTimer(timer);
     }
 
-    // Cleanup
+    // Cleanup – wykonuje się przy odmontowaniu lub gdy któryś z zależności się zmieni.
     return () => {
-      if (saveTimer) {
-        clearTimeout(saveTimer);
+      if (saveTimerRef.current) {
+        clearTimeout(saveTimerRef.current);
+        saveTimerRef.current = null;
       }
     };
-  }, [content, lastSavedContent, minWordCount, maxWordCount, autosaveDelay, isGeneratingFlashcards, isSaving]);
+  }, [
+    content,
+    lastSavedContent,
+    minWordCount,
+    maxWordCount,
+    autosaveDelay,
+    isGeneratingFlashcards,
+    isSaving,
+    countWords,
+    validateContent,
+  ]);
 
   // Funkcja do zapisywania tekstu źródłowego (bez generowania fiszek)
   const handleSaveSourceText = async (): Promise<SourceTextDto | null> => {
@@ -109,13 +118,13 @@ export const useSourceText = ({
       // Zapisujemy również kopię w localStorage jako backup
       try {
         localStorage.setItem("source_text_backup", content);
-      } catch (error) {
-        console.error("Failed to save backup to localStorage", error);
+      } catch {
+        // Failed to save backup to localStorage - handled silently
       }
 
       return response.source_text;
-    } catch (error) {
-      console.error("Failed to save source text", error);
+    } catch {
+      // Failed to save source text - handled silently
       return null;
     } finally {
       setIsSaving(false);
@@ -126,11 +135,11 @@ export const useSourceText = ({
   const saveSourceTextAndGenerateFlashcards = async (
     flashcardCount?: number
   ): Promise<CreateSourceTextResponse | null> => {
-    try {
-      // Zatrzymujemy autosave podczas generowania
-      setIsGeneratingFlashcards(true);
-      setIsSaving(true);
+    // Zatrzymujemy autosave podczas generowania
+    setIsGeneratingFlashcards(true);
+    setIsSaving(true);
 
+    try {
       // Jeśli tekst jest pusty, nie zapisujemy
       if (content.trim() === "") {
         setIsSaving(false);
@@ -157,14 +166,11 @@ export const useSourceText = ({
       // Zapisujemy również kopię w localStorage jako backup
       try {
         localStorage.setItem("source_text_backup", content);
-      } catch (error) {
-        console.error("Failed to save backup to localStorage", error);
+      } catch {
+        // Failed to save backup to localStorage - handled silently
       }
 
       return response;
-    } catch (error) {
-      console.error("Failed to save source text and generate flashcards", error);
-      throw error; // Re-throw error so calling component can handle it
     } finally {
       setIsSaving(false);
       setIsGeneratingFlashcards(false);
@@ -184,8 +190,8 @@ export const useSourceText = ({
     // Usuwamy również kopię z localStorage
     try {
       localStorage.removeItem("source_text_backup");
-    } catch (error) {
-      console.error("Failed to remove backup from localStorage", error);
+    } catch {
+      // Failed to remove backup from localStorage - handled silently
     }
   };
 

@@ -74,7 +74,6 @@ export const FlashcardContent: React.FC<FlashcardContentProps> = ({
                 onChange={(e) => onEditBackContent(e.target.value)}
                 className="w-full text-lg p-2 border border-neutral-300 rounded resize-none min-h-[80px]"
                 placeholder="Wprowadź odpowiedź..."
-                autoFocus
                 data-testid="flashcard-back-edit-input"
               />
             ) : (
@@ -89,7 +88,6 @@ export const FlashcardContent: React.FC<FlashcardContentProps> = ({
                 onChange={(e) => onEditFrontContent(e.target.value)}
                 className="w-full text-lg font-medium p-2 border border-neutral-300 rounded resize-none min-h-[80px]"
                 placeholder="Wprowadź pytanie..."
-                autoFocus
                 data-testid="flashcard-front-edit-input"
               />
             ) : (

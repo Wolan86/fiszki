@@ -13,16 +13,10 @@ const ErrorMessage = ({ message, onRetry }: ErrorMessageProps) => {
         <AlertCircle className="w-6 h-6" />
         <h3 className="text-lg font-medium">Wystąpił błąd</h3>
       </div>
-      
-      <p className="text-sm text-muted-foreground text-center max-w-md">
-        {message}
-      </p>
-      
-      <Button 
-        onClick={onRetry}
-        variant="outline"
-        className="flex items-center space-x-2"
-      >
+
+      <p className="text-sm text-muted-foreground text-center max-w-md">{message}</p>
+
+      <Button onClick={onRetry} variant="outline" className="flex items-center space-x-2">
         <RefreshCw className="w-4 h-4" />
         <span>Spróbuj ponownie</span>
       </Button>
@@ -30,4 +24,4 @@ const ErrorMessage = ({ message, onRetry }: ErrorMessageProps) => {
   );
 };
 
-export default ErrorMessage; 
+export default ErrorMessage;

@@ -1,12 +1,4 @@
-import type {
-  CreateSourceTextCommand,
-  CreateSourceTextResponse,
-  FlashcardDto,
-  SourceTextDto,
-  UpdateFlashcardCommand,
-  UnsavedFlashcardDto,
-  FlashcardCreationType,
-} from "@/types";
+import type { CreateSourceTextResponse, SourceTextDto, UpdateFlashcardCommand, FlashcardCreationType } from "@/types";
 
 export interface SourceTextFormViewModel {
   content: string;

@@ -53,19 +53,21 @@ export const POST: APIRoute = async ({ request, cookies }) => {
 
     // Log the response for debugging
     console.log("Supabase signUp response:", {
-      user: data.user ? { 
-        id: data.user.id, 
-        email: data.user.email, 
-        email_confirmed_at: data.user.email_confirmed_at,
-        confirmed_at: data.user.confirmed_at 
-      } : null,
+      user: data.user
+        ? {
+            id: data.user.id,
+            email: data.user.email,
+            email_confirmed_at: data.user.email_confirmed_at,
+            confirmed_at: data.user.confirmed_at,
+          }
+        : null,
       session: data.session ? { access_token: "***", user: data.session.user.id } : null,
-      error: error ? error.message : null
+      error: error ? error.message : null,
     });
 
     if (error) {
       console.error("Supabase registration error:", error);
-      
+
       // Handle specific error cases
       if (error.message.includes("User already registered") || error.message.includes("already been registered")) {
         return new Response(
@@ -76,7 +78,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
           { status: 400, headers: { "Content-Type": "application/json" } }
         );
       }
-      
+
       if (error.message.includes("Password")) {
         return new Response(
           JSON.stringify({

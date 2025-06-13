@@ -81,10 +81,7 @@ export async function seedTestData() {
     }));
 
     // Insert flashcards
-    const { data, error: insertError } = await supabase
-      .from("flashcards")
-      .insert(flashcardsToInsert)
-      .select("*");
+    const { data, error: insertError } = await supabase.from("flashcards").insert(flashcardsToInsert).select("*");
 
     if (insertError) {
       console.error("Error inserting flashcards:", insertError);
@@ -171,4 +168,4 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     console.error("Failed to seed test data:", error);
     process.exit(1);
   });
-} 
+}

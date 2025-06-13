@@ -25,12 +25,17 @@ test.describe("Flashcard Creator", () => {
     await creatorPage.sourceTextInput.fill(sampleText);
 
     // Assert
-    const inputValue = await creatorPage.sourceTextInput.inputValue();
-    expect(inputValue).toBe(sampleText);
+    // Wait until the controlled textarea reflects what we typed
+    await expect(creatorPage.sourceTextInput).toHaveValue(sampleText, {
+      timeout: 3000,
+    });
   });
 
   // New test for validation and happy path
-  test("should validate minimum word count then allow generation when requirements met", async ({ page, cleanupTestData }) => {
+  test("should validate minimum word count then allow generation when requirements met", async ({
+    page,
+    cleanupTestData,
+  }) => {
     // Arrange
     const creatorPage = new CreatorPage(page);
     const insufficientText = generateSampleText(50); // Less than 1000 words
@@ -168,7 +173,7 @@ test.describe("Flashcard Creator", () => {
       await flashcard.accept();
 
       // Verify the flashcard shows accepted status (instead of checking disabled button)
-      const acceptedStatus = flashcard.locator.locator('text=Zaakceptowana');
+      const acceptedStatus = flashcard.locator.locator("text=Zaakceptowana");
       await expect(acceptedStatus).toBeVisible({ timeout: 10000 });
     } else {
       // If no items found with our new selector, try an alternative approach
@@ -222,7 +227,7 @@ test.describe("Flashcard Creator", () => {
       await flashcard.accept();
 
       // Verify the flashcard shows accepted status (instead of checking disabled button)
-      const acceptedStatus = flashcard.locator.locator('text=Zaakceptowana');
+      const acceptedStatus = flashcard.locator.locator("text=Zaakceptowana");
       await expect(acceptedStatus).toBeVisible({ timeout: 10000 });
 
       // Wait a bit between actions to avoid race conditions

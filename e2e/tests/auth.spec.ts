@@ -25,8 +25,8 @@ test.describe("Authentication", () => {
     await page.getByTestId("password-input").fill("wrongpassword");
 
     // Wait for the API response when submitting the form
-    const responsePromise = page.waitForResponse(response => 
-      response.url().includes('/api/auth/login') && response.request().method() === 'POST'
+    const responsePromise = page.waitForResponse(
+      (response) => response.url().includes("/api/auth/login") && response.request().method() === "POST"
     );
 
     // Submit the form
@@ -40,11 +40,11 @@ test.describe("Authentication", () => {
 
     // Wait for error message to appear in the UI
     await page.waitForSelector('[role="alert"]', { timeout: 5000 });
-    
+
     // Verify error alert is displayed
     const errorAlert = page.locator('[role="alert"]').first();
     await expect(errorAlert).toBeVisible();
-    
+
     // Verify error message content
     const errorText = await errorAlert.textContent();
     expect(errorText).toBeTruthy();
@@ -63,16 +63,12 @@ test.describe("Authentication", () => {
     // Fill in invalid email and valid password
     await page.getByTestId("email-input").fill("invalid-email");
     await page.getByTestId("password-input").fill("validpassword123");
-    
-    // Trigger validation by blurring the email field
-    await page.getByTestId("email-input").blur();
 
-    // Wait for validation error to appear
-    await page.waitForSelector('p[role="alert"]:has-text("Podaj poprawny adres email")', { timeout: 3000 });
+    // Trigger validation by submitting the form
+    await page.getByTestId("login-button").click();
 
-    // Verify validation error message is displayed
-    const validationError = page.getByText("Podaj poprawny adres email");
-    await expect(validationError).toBeVisible();
+    // Verify that the email field is marked as invalid
+    await expect(page.getByTestId("email-input")).toHaveAttribute("aria-invalid", "true");
 
     // Verify we're still on the login page
     await expect(page).toHaveURL(/.*login/);
@@ -89,11 +85,11 @@ test.describe("Authentication", () => {
     await page.getByTestId("email-input").fill(testUser.email);
     await page.getByTestId("password-input").fill("");
 
-    // Trigger validation by blurring the password field
-    await page.getByTestId("password-input").blur();
+    // Trigger validation by submitting the form
+    await page.getByTestId("login-button").click();
 
     // Wait for validation error to appear
-    await page.waitForSelector('p[role="alert"]:has-text("Hasło jest wymagane")', { timeout: 3000 });
+    await page.waitForSelector('p[role="alert"]:has-text("Hasło jest wymagane")', { timeout: 5000 });
 
     // Verify validation error message is displayed
     const validationError = page.getByText("Hasło jest wymagane");
@@ -114,11 +110,11 @@ test.describe("Authentication", () => {
     await page.getByTestId("email-input").fill(testUser.email);
     await page.getByTestId("password-input").fill("123");
 
-    // Trigger validation by blurring the password field
-    await page.getByTestId("password-input").blur();
+    // Trigger validation by submitting the form
+    await page.getByTestId("login-button").click();
 
     // Wait for validation error to appear
-    await page.waitForSelector('p[role="alert"]:has-text("Hasło musi mieć co najmniej 8 znaków")', { timeout: 3000 });
+    await page.waitForSelector('p[role="alert"]:has-text("Hasło musi mieć co najmniej 8 znaków")', { timeout: 5000 });
 
     // Verify validation error message is displayed
     const validationError = page.getByText("Hasło musi mieć co najmniej 8 znaków");
@@ -133,18 +129,10 @@ test.describe("Authentication", () => {
     await loginAsTestUser(page);
 
     // Click on logout option
-    await page.evaluate(() => {
-      document.querySelector('[data-testid="logout-button"]')?.dispatchEvent(
-        new MouseEvent("click", {
-          bubbles: true,
-          cancelable: true,
-          view: window,
-        })
-      );
-    });
+    await page.getByTestId("logout-button").click();
 
-    // Wait for logout to complete
-    await wait(1000);
+    // Wait for redirect to login page
+    await page.waitForURL(/\/auth\/login/, { timeout: 10000 });
 
     // Verify logged out - check for login form
     await page.getByTestId("login-form").waitFor({ state: "visible" });

@@ -15,15 +15,15 @@ export const test = base.extend<{}, { cleanupTestData: void }>({
     async ({}, use) => {
       // Setup code (runs before tests)
       console.log("Test cleanup fixture initialized");
-      
+
       // Pass control to the test
       await use();
-      
+
       // Teardown code (runs after tests)
       console.log("Cleaning up test data after test completion...");
-      
+
       const supabase = createClient(supabaseUrl, supabaseKey);
-      
+
       try {
         // Authenticate as the test user
         const { error: authError } = await supabase.auth.signInWithPassword({
@@ -62,15 +62,15 @@ export const test = base.extend<{}, { cleanupTestData: void }>({
 
         // Sign out after cleanup
         await supabase.auth.signOut();
-        
+
         console.log("Test cleanup completed");
       } catch (error) {
         console.error("Error during test cleanup:", error);
         // Don't throw to avoid breaking test results
       }
     },
-    { scope: "worker" } // Run cleanup after each worker completes
+    { scope: "worker" }, // Run cleanup after each worker completes
   ],
 });
 
-export { expect } from "@playwright/test"; 
+export { expect } from "@playwright/test";

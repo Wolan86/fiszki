@@ -1,7 +1,6 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Check, X, RefreshCw, Save, Edit, Ban } from "lucide-react";
-import { cn } from "@/lib/utils";
 
 interface FlashcardActionsProps {
   onAccept: () => void;

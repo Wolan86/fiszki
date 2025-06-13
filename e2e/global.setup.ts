@@ -14,9 +14,9 @@ const storageStatePath = path.join(__dirname, "auth", "storageState.json");
 /**
  * Wait for the server to be available
  */
-async function waitForServer(url: string, timeout: number = 30000): Promise<void> {
+async function waitForServer(url: string, timeout = 30000): Promise<void> {
   const startTime = Date.now();
-  
+
   while (Date.now() - startTime < timeout) {
     try {
       const response = await fetch(url);
@@ -27,10 +27,10 @@ async function waitForServer(url: string, timeout: number = 30000): Promise<void
     } catch (error) {
       // Server not ready yet, continue waiting
     }
-    
-    await new Promise(resolve => setTimeout(resolve, 1000));
+
+    await new Promise((resolve) => setTimeout(resolve, 1000));
   }
-  
+
   throw new Error(`Server at ${url} did not become available within ${timeout}ms`);
 }
 
@@ -41,10 +41,10 @@ async function waitForServer(url: string, timeout: number = 30000): Promise<void
 async function globalSetup(config: FullConfig) {
   // Debug: Check if environment variables are loaded
   console.log("Environment variables check:");
-  console.log(`E2E_USERNAME: ${process.env.E2E_USERNAME || 'NOT SET'}`);
-  console.log(`E2E_PASSWORD: ${process.env.E2E_PASSWORD ? '[SET]' : 'NOT SET'}`);
-  console.log(`E2E_USERNAME_ID: ${process.env.E2E_USERNAME_ID || 'NOT SET'}`);
-  
+  console.log(`E2E_USERNAME: ${process.env.E2E_USERNAME || "NOT SET"}`);
+  console.log(`E2E_PASSWORD: ${process.env.E2E_PASSWORD ? "[SET]" : "NOT SET"}`);
+  console.log(`E2E_USERNAME_ID: ${process.env.E2E_USERNAME_ID || "NOT SET"}`);
+
   // Wait for the server to be available
   console.log("Waiting for server to be available...");
   await waitForServer("http://localhost:3000");
@@ -66,7 +66,7 @@ async function globalSetup(config: FullConfig) {
   // Launch browser for authentication
   const browser = await chromium.launch();
   const context = await browser.newContext({
-    baseURL: "http://localhost:3000"
+    baseURL: "http://localhost:3000",
   });
   const page = await context.newPage();
 
@@ -84,7 +84,6 @@ async function globalSetup(config: FullConfig) {
     console.log("Creating test data...");
     await seedTestData();
     console.log("Test data created successfully!");
-
   } catch (error) {
     console.error("Global setup failed:", error);
 

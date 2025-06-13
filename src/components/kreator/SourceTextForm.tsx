@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Card } from "@/components/ui/card";
 import { SourceTextInput } from "./SourceTextInput";
 import { WordCounter } from "./WordCounter";
@@ -14,48 +14,24 @@ interface SourceTextFormProps {
   onGenerationEnd?: () => void;
 }
 
-export const SourceTextForm: React.FC<SourceTextFormProps> = ({ 
-  onTextSaved, 
+export const SourceTextForm: React.FC<SourceTextFormProps> = ({
+  onTextSaved,
   onFlashcardsGenerated,
   isGenerating = false,
   onGenerationStart,
-  onGenerationEnd
+  onGenerationEnd,
 }) => {
   const MIN_WORD_COUNT = 1000;
   const MAX_WORD_COUNT = 10000;
 
-  const [sourceTextId, setSourceTextId] = useState<string | null>(null);
+  const { content, setContent, wordCount, isValid, isSaving, lastSaved, errors, saveSourceTextAndGenerateFlashcards } =
+    useSourceText({
+      minWordCount: MIN_WORD_COUNT,
+      maxWordCount: MAX_WORD_COUNT,
+      autosaveDelay: 2000,
+    });
 
-  const {
-    content,
-    setContent,
-    wordCount,
-    isValid,
-    isSaving,
-    lastSaved,
-    errors,
-    saveSourceText,
-    saveSourceTextAndGenerateFlashcards,
-  } = useSourceText({
-    minWordCount: MIN_WORD_COUNT,
-    maxWordCount: MAX_WORD_COUNT,
-    autosaveDelay: 2000,
-  });
-
-  // Obsługa ręcznego zapisu tekstu
-  const handleSave = async () => {
-    // Nie zapisujemy podczas generowania fiszek
-    if (isGenerating) {
-      console.log("Skipping manual save during flashcard generation");
-      return;
-    }
-
-    const savedText = await saveSourceText();
-    if (savedText) {
-      setSourceTextId(savedText.id);
-      onTextSaved(savedText);
-    }
-  };
+  // Manual save functionality removed - auto-save is preferred
 
   // Obsługa żądania generowania fiszek - teraz wszystko w jednym calu
   const handleGenerateRequest = async () => {
@@ -73,12 +49,11 @@ export const SourceTextForm: React.FC<SourceTextFormProps> = ({
       const response = await saveSourceTextAndGenerateFlashcards(5); // Default 5 flashcards
 
       if (response) {
-        setSourceTextId(response.source_text.id);
         onTextSaved(response.source_text);
         onFlashcardsGenerated(response);
       }
-    } catch (error) {
-      console.error("Error generating flashcards:", error);
+    } catch {
+      // Error generating flashcards - handled silently
     } finally {
       onGenerationEnd?.();
     }
@@ -111,7 +86,9 @@ export const SourceTextForm: React.FC<SourceTextFormProps> = ({
         <SourceTextInput
           value={content}
           onChange={setContent}
-          onBlur={() => {}}
+          onBlur={() => {
+            // Blur event handled by auto-save mechanism
+          }}
           isValid={isValid}
           errors={errors}
           data-testid="source-text-input"

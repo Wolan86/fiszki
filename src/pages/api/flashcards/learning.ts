@@ -1,8 +1,5 @@
 import type { APIContext } from "astro";
-import {
-  getFlashcardsForLearning,
-  flashcardLearningQuerySchema,
-} from "../../../lib/services/flashcard.service";
+import { getFlashcardsForLearning, flashcardLearningQuerySchema } from "../../../lib/services/flashcard.service";
 import type { FlashcardLearningQueryParams } from "../../../types";
 import { createSupabaseServerInstance } from "../../../db/supabase.client";
 import { ApiErrorHandler, ApiLogger, RequestTimer } from "../../../lib/utils";
@@ -68,7 +65,7 @@ export async function GET({ request, cookies }: APIContext) {
   try {
     // Parse query parameters from URL
     const url = new URL(request.url);
-    const queryParams: Record<string, any> = {};
+    const queryParams: Record<string, string> = {};
 
     // Extract all query parameters
     for (const [key, value] of url.searchParams.entries()) {
@@ -133,4 +130,4 @@ export async function GET({ request, cookies }: APIContext) {
     timer.end(500);
     return ApiErrorHandler.internalServerError(error);
   }
-} 
+}

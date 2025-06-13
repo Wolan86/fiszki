@@ -339,7 +339,15 @@ describe("FlashcardActions", () => {
 
       // Assert
       const container = screen.getByTestId("flashcard-actions");
-      expect(container).toHaveClass("flex", "justify-center", "space-x-2", "p-3", "bg-neutral-50", "border-t", "border-neutral-200");
+      expect(container).toHaveClass(
+        "flex",
+        "justify-center",
+        "space-x-2",
+        "p-3",
+        "bg-neutral-50",
+        "border-t",
+        "border-neutral-200"
+      );
     });
 
     it("applies correct button styling classes", () => {
@@ -363,7 +371,7 @@ describe("FlashcardActions", () => {
 
       // Assert
       const container = screen.getByTestId("flashcard-actions");
-      
+
       // Check for Lucide React icons by looking for SVG elements
       const svgElements = container.querySelectorAll("svg");
       expect(svgElements.length).toBeGreaterThan(0);
@@ -373,11 +381,11 @@ describe("FlashcardActions", () => {
   describe("state combinations and edge cases", () => {
     it("prioritizes editing state over other states", () => {
       // Arrange - Multiple states set to true, but editing should take precedence
-      const props = { 
-        ...defaultProps, 
-        isEditing: true, 
-        isAccepted: true, 
-        isRejected: true 
+      const props = {
+        ...defaultProps,
+        isEditing: true,
+        isAccepted: true,
+        isRejected: true,
       };
 
       // Act
@@ -392,10 +400,10 @@ describe("FlashcardActions", () => {
 
     it("prioritizes accepted state over rejected state", () => {
       // Arrange - Both accepted and rejected set to true
-      const props = { 
-        ...defaultProps, 
-        isAccepted: true, 
-        isRejected: true 
+      const props = {
+        ...defaultProps,
+        isAccepted: true,
+        isRejected: true,
       };
 
       // Act
@@ -427,7 +435,7 @@ describe("FlashcardActions", () => {
 
       // Act & Assert - Should not throw
       expect(() => render(<FlashcardActions {...propsWithoutCallbacks} />)).not.toThrow();
-      
+
       // Should still show basic accept/reject buttons
       expect(screen.getByTestId("accept-flashcard-button")).toBeInTheDocument();
       expect(screen.getByTestId("reject-flashcard-button")).toBeInTheDocument();
@@ -436,10 +444,10 @@ describe("FlashcardActions", () => {
 
     it("handles both regenerating and saving states simultaneously", () => {
       // Arrange
-      const props = { 
-        ...defaultProps, 
-        isRegenerating: true, 
-        isSaving: true 
+      const props = {
+        ...defaultProps,
+        isRegenerating: true,
+        isSaving: true,
       };
 
       // Act
@@ -462,12 +470,7 @@ describe("FlashcardActions", () => {
 
       combinations.forEach(({ showSaveButton, onSave, shouldShow }) => {
         const { unmount } = render(
-          <FlashcardActions 
-            {...defaultProps} 
-            isAccepted={true} 
-            showSaveButton={showSaveButton} 
-            onSave={onSave} 
-          />
+          <FlashcardActions {...defaultProps} isAccepted={true} showSaveButton={showSaveButton} onSave={onSave} />
         );
 
         if (shouldShow) {
@@ -480,4 +483,4 @@ describe("FlashcardActions", () => {
       });
     });
   });
-}); 
+});

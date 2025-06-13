@@ -1,7 +1,7 @@
-import { renderHook, act, waitFor } from "@testing-library/react";
+import { renderHook, act } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { useFlashcardCreation } from "../useFlashcardCreation";
-import type { CreateFlashcardCommand, FlashcardDto, ApiErrorResponse } from "@/types";
+import type { CreateFlashcardCommand, FlashcardDto } from "@/types";
 
 // Mock the API service
 vi.mock("@/lib/services/api-service", () => ({
@@ -54,9 +54,7 @@ describe("useFlashcardCreation", () => {
       const onError = vi.fn();
 
       // Act
-      const { result } = renderHook(() => 
-        useFlashcardCreation({ onSuccess, onError })
-      );
+      const { result } = renderHook(() => useFlashcardCreation({ onSuccess, onError }));
 
       // Assert
       expect(result.current.isCreating).toBe(false);
@@ -87,9 +85,7 @@ describe("useFlashcardCreation", () => {
       // Arrange
       mockCreateFlashcard.mockResolvedValue(mockFlashcardResponse);
       const onSuccess = vi.fn();
-      const { result } = renderHook(() => 
-        useFlashcardCreation({ onSuccess })
-      );
+      const { result } = renderHook(() => useFlashcardCreation({ onSuccess }));
 
       // Act
       await act(async () => {
@@ -102,9 +98,7 @@ describe("useFlashcardCreation", () => {
 
     it("clears previous errors on successful creation", async () => {
       // Arrange
-      mockCreateFlashcard
-        .mockRejectedValueOnce(new Error("First error"))
-        .mockResolvedValueOnce(mockFlashcardResponse);
+      mockCreateFlashcard.mockRejectedValueOnce(new Error("First error")).mockResolvedValueOnce(mockFlashcardResponse);
 
       const { result } = renderHook(() => useFlashcardCreation());
 
@@ -145,7 +139,7 @@ describe("useFlashcardCreation", () => {
 
       // Complete API call
       await act(async () => {
-        resolveApiCall!(mockFlashcardResponse);
+        resolveApiCall(mockFlashcardResponse);
         await apiPromise;
       });
 
@@ -169,7 +163,7 @@ describe("useFlashcardCreation", () => {
 
     it("handles concurrent API calls properly", async () => {
       // Arrange
-      const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+      const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
       mockCreateFlashcard
         .mockImplementationOnce(async () => {
           await delay(50);
@@ -190,7 +184,7 @@ describe("useFlashcardCreation", () => {
       const promise2 = act(async () => {
         return result.current.createNewFlashcard({
           ...mockFlashcardCommand,
-          front_content: "Different question"
+          front_content: "Different question",
         });
       });
 
@@ -248,9 +242,7 @@ describe("useFlashcardCreation", () => {
       const errorMessage = "API Error";
       mockCreateFlashcard.mockRejectedValue(new Error(errorMessage));
       const onError = vi.fn();
-      const { result } = renderHook(() => 
-        useFlashcardCreation({ onError })
-      );
+      const { result } = renderHook(() => useFlashcardCreation({ onError }));
 
       // Act
       await act(async () => {
@@ -462,8 +454,8 @@ describe("useFlashcardCreation", () => {
 
       // Assert
       expect(createdFlashcard).not.toBeNull();
-      expect(createdFlashcard!.source_text_id).toBeNull();
+      expect(createdFlashcard).toHaveProperty("source_text_id", null);
       expect(mockCreateFlashcard).toHaveBeenCalledWith(commandWithoutSource);
     });
   });
-}); 
+});
