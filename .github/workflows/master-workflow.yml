@@ -134,8 +134,23 @@ jobs:
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
 
+      - name: Debug environment variables
+        run: |
+          echo "Checking environment variables..."
+          echo "SUPABASE_URL: ${SUPABASE_URL:0:20}..."
+          echo "SUPABASE_PUBLIC_KEY: ${SUPABASE_PUBLIC_KEY:0:20}..."
+          echo "E2E_USERNAME_ID: $E2E_USERNAME_ID"
+          echo "E2E_USERNAME: $E2E_USERNAME"
+          echo "E2E_PASSWORD: ${E2E_PASSWORD:0:5}..."
+
       - name: Run E2E tests
         run: npm run test:e2e
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_PUBLIC_KEY: ${{ secrets.SUPABASE_PUBLIC_KEY }}
+          E2E_USERNAME_ID: ${{ secrets.E2E_USERNAME_ID }}
+          E2E_USERNAME: ${{ secrets.E2E_USERNAME }}
+          E2E_PASSWORD: ${{ secrets.E2E_PASSWORD }}
 
       - name: Upload Playwright report
         uses: actions/upload-artifact@v4
