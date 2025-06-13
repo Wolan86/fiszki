@@ -39,6 +39,12 @@ async function waitForServer(url: string, timeout: number = 30000): Promise<void
  * This performs an actual login for E2E testing and seeds the database
  */
 async function globalSetup(config: FullConfig) {
+  // Debug: Check if environment variables are loaded
+  console.log("Environment variables check:");
+  console.log(`E2E_USERNAME: ${process.env.E2E_USERNAME || 'NOT SET'}`);
+  console.log(`E2E_PASSWORD: ${process.env.E2E_PASSWORD ? '[SET]' : 'NOT SET'}`);
+  console.log(`E2E_USERNAME_ID: ${process.env.E2E_USERNAME_ID || 'NOT SET'}`);
+  
   // Wait for the server to be available
   console.log("Waiting for server to be available...");
   await waitForServer("http://localhost:3000");

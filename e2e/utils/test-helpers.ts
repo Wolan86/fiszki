@@ -78,30 +78,109 @@ export async function loginAsTestUser(page: Page): Promise<void> {
   
   console.log('Starting authentication process...');
   
+  // Debug: Check what credentials we're using
+  console.log(`[loginAsTestUser] Using credentials:`);
+  console.log(`[loginAsTestUser] Email: ${process.env.E2E_USERNAME || 'NOT SET'}`);
+  console.log(`[loginAsTestUser] Password: ${process.env.E2E_PASSWORD ? '[SET]' : 'NOT SET'}`);
+  
   // Navigate to login page
+  console.log('Navigating to /auth/login...');
   await page.goto('/auth/login');
   await page.waitForLoadState('networkidle');
   
+  // Check if page loaded correctly
+  const currentUrl = page.url();
+  console.log(`[loginAsTestUser] Current URL after navigation: ${currentUrl}`);
+  
+  // Check if the page has any content
+  const pageContent = await page.textContent('body');
+  console.log(`[loginAsTestUser] Page content length: ${pageContent?.length || 0}`);
+  
   // Wait for the login form to be visible
-  await page.waitForSelector('[data-testid="login-form"]', { timeout: 5000 });
+  console.log('Waiting for login form...');
+  try {
+    await page.waitForSelector('[data-testid="login-form"]', { timeout: 5000 });
+    console.log('Login form found!');
+  } catch (error) {
+    console.error('Login form not found:', error);
+    // Take a screenshot for debugging
+    await page.screenshot({ path: 'login-form-not-found.png' });
+    throw error;
+  }
+  
+  // Check if inputs are present
+  const emailInput = await page.locator('[data-testid="email-input"]');
+  const passwordInput = await page.locator('[data-testid="password-input"]');
+  const loginButton = await page.locator('[data-testid="login-button"]');
+  
+  console.log(`Email input visible: ${await emailInput.isVisible()}`);
+  console.log(`Password input visible: ${await passwordInput.isVisible()}`);
+  console.log(`Login button visible: ${await loginButton.isVisible()}`);
   
   // Fill in login form using the correct test IDs
+  console.log('Filling form fields...');
   await page.fill('[data-testid="email-input"]', process.env.E2E_USERNAME!);
   await page.fill('[data-testid="password-input"]', process.env.E2E_PASSWORD!);
   
-  // Submit the form using the login button
-  await page.click('[data-testid="login-button"]');
+  // Wait for the API response when submitting the form
+  const responsePromise = page.waitForResponse(response => 
+    response.url().includes('/api/auth/login') && response.request().method() === 'POST'
+  );
   
-  // Wait a moment and check what URL we're on
-  await page.waitForTimeout(3000);
-  const currentUrl = page.url();
-  console.log(`[loginAsTestUser] Current URL after form submission: ${currentUrl}`);
+  // Submit the form to trigger the JavaScript event listener
+  console.log('Submitting form...');
+  await page.locator('[data-testid="login-form"]').evaluate((form) => {
+    const submitEvent = new Event('submit', {
+      bubbles: true,
+      cancelable: true
+    });
+    form.dispatchEvent(submitEvent);
+  });
+  
+  // Wait for the login API response
+  const response = await responsePromise;
+  
+  console.log(`[loginAsTestUser] API Response status: ${response.status()}`);
+  console.log(`[loginAsTestUser] API Response headers:`, await response.allHeaders());
+  
+  let responseBody;
+  try {
+    // Check if response has content-type header indicating JSON
+    const contentType = response.headers()['content-type'] || '';
+    if (contentType.includes('application/json')) {
+      responseBody = await response.json();
+    } else {
+      // If not JSON, get as text for debugging
+      const responseText = await response.text();
+      console.log(`[loginAsTestUser] Non-JSON response body:`, responseText);
+      responseBody = { error: 'Non-JSON response received', text: responseText };
+    }
+  } catch (error) {
+    console.error(`[loginAsTestUser] Failed to parse response body:`, error);
+    
+    // Try to get response as text for debugging
+    try {
+      const responseText = await response.text();
+      console.log(`[loginAsTestUser] Response text:`, responseText);
+      responseBody = { error: 'Failed to parse JSON', text: responseText };
+    } catch (textError) {
+      console.error(`[loginAsTestUser] Could not get response as text:`, textError);
+      responseBody = { error: 'Could not parse response at all' };
+    }
+  }
+  
+  console.log(`[loginAsTestUser] API Response body:`, responseBody);
+  
+  if (!response.ok()) {
+    throw new Error(`Login API failed: ${response.status()} - ${JSON.stringify(responseBody)}`);
+  }
   
   // Check if there are any error messages on the page
   const errorAlert = await page.locator('[role="alert"]').first();
   if (await errorAlert.isVisible()) {
     const errorText = await errorAlert.textContent();
     console.log(`[loginAsTestUser] Error message found: ${errorText}`);
+    throw new Error(`Login failed with error: ${errorText}`);
   }
   
   // Wait for redirect after successful login (should go to /kreator)

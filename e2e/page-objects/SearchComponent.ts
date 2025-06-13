@@ -35,6 +35,9 @@ export class SearchComponent {
     await this.searchInput.clear();
     await this.searchInput.fill(query);
     
+    // Wait a bit for the debounced input to update
+    await this.page.waitForTimeout(100);
+    
     // Trigger search by pressing Enter or waiting for debounce
     await this.searchInput.press("Enter");
     
@@ -105,18 +108,44 @@ export class SearchComponent {
   }
 
   /**
+   * Type text naturally (character by character) - better for debounced inputs
+   */
+  async typeNaturally(text: string) {
+    await this.searchInput.clear();
+    
+    // Type character by character with small delays
+    for (const char of text) {
+      await this.searchInput.type(char);
+      await this.page.waitForTimeout(50); // Small delay between characters
+    }
+  }
+
+  /**
    * Focus on search input
    */
   async focus() {
-    await this.searchInput.focus();
-    // Wait longer for focus to be actually set
-    await this.page.waitForTimeout(200);
+    // First ensure the search input is visible
+    await this.searchInput.waitFor({ state: "visible" });
+    
+    // Click on the search input to ensure focus
+    await this.searchInput.click();
+    
+    // Wait a bit for focus to be set
+    await this.page.waitForTimeout(300);
     
     // Verify focus was set, retry if needed
     const isFocused = await this.isFocused();
     if (!isFocused) {
-      await this.searchInput.click();
-      await this.page.waitForTimeout(100);
+      // Try focusing again
+      await this.searchInput.focus();
+      await this.page.waitForTimeout(200);
+      
+      // If still not focused, try clicking again
+      const stillNotFocused = !(await this.isFocused());
+      if (stillNotFocused) {
+        await this.searchInput.click();
+        await this.page.waitForTimeout(100);
+      }
     }
   }
 

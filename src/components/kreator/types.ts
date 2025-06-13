@@ -73,6 +73,7 @@ export interface UseFlashcardGenerationResult {
   flashcards: FlashcardViewModel[];
   generationStats: GenerationStatsViewModel | null;
   error: ApiErrorResponse | null;
+  isGenerating: boolean;
   savingFlashcardIds: string[];
   loadFlashcardsFromResponse: (response: CreateSourceTextResponse) => void;
   updateFlashcard: (id: string, update: UpdateFlashcardCommand) => Promise<void>;

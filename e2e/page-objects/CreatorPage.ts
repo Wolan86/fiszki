@@ -61,7 +61,19 @@ export class CreatorPage extends BasePage {
     // Ensure user is authenticated before accessing the creator page
     await this.ensureAuthenticated();
 
-    // Navigate to the creator page
+    // Check if we're already on the kreator page (after successful login)
+    const currentUrl = this.page.url();
+    console.log(`[CreatorPage.goto] Current URL after authentication: ${currentUrl}`);
+    
+    if (currentUrl.includes('/kreator')) {
+      console.log('[CreatorPage.goto] Already on kreator page, skipping navigation');
+      // Just wait for the creator view to be ready
+      await this.waitForCreatorView();
+      return;
+    }
+
+    // Only navigate if we're not already on the kreator page
+    console.log('[CreatorPage.goto] Navigating to kreator page...');
     await this.page.goto("/kreator");
     await this.waitForCreatorView();
   }

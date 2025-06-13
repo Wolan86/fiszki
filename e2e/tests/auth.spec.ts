@@ -6,7 +6,7 @@ test.describe("Authentication", () => {
     await loginAsTestUser(page);
 
     // Verify user is logged in
-    await page.getByTestId("user-menu-button").waitFor({ state: "visible" });
+    await page.getByTestId("logout-button").waitFor({ state: "visible" });
 
     // Verify user email is displayed somewhere on the page
     const userInfo = await page.locator(".text-sm.font-medium").filter({ hasText: testUser.email });
@@ -20,38 +20,59 @@ test.describe("Authentication", () => {
     // Wait for the login form to be visible
     await page.getByTestId("login-form").waitFor({ state: "visible" });
 
-    // Set up console message listener before filling the form
-    const consoleMessages: string[] = [];
-    page.on("console", (msg) => {
-      consoleMessages.push(msg.text());
-    });
-
     // Fill in login form with invalid credentials
-    await page.getByTestId("email-input").click();
-    await page.getByTestId("email-input").clear();
     await page.getByTestId("email-input").fill("invalid@example.com");
-    await page.getByTestId("password-input").click();
-    await page.getByTestId("password-input").clear();
     await page.getByTestId("password-input").fill("wrongpassword");
 
-    // Submit the form
-    await page.evaluate(() => {
-      document.querySelector('[data-testid="login-button"]')?.dispatchEvent(
-        new MouseEvent("click", {
-          bubbles: true,
-          cancelable: true,
-          view: window,
-        })
-      );
-    });
-
-    await wait(1000);
-
-    // Check for error in console messages
-    const hasErrorMessage = consoleMessages.some(
-      (message) => message.includes("Invalid login credentials") || message.includes("Login error")
+    // Wait for the API response when submitting the form
+    const responsePromise = page.waitForResponse(response => 
+      response.url().includes('/api/auth/login') && response.request().method() === 'POST'
     );
-    expect(hasErrorMessage).toBeTruthy();
+
+    // Submit the form
+    await page.getByTestId("login-button").click();
+
+    // Wait for the login API response
+    const response = await responsePromise;
+
+    // Verify the API returned an error status
+    expect(response.status()).not.toBe(200);
+
+    // Wait for error message to appear in the UI
+    await page.waitForSelector('[role="alert"]', { timeout: 5000 });
+    
+    // Verify error alert is displayed
+    const errorAlert = page.locator('[role="alert"]').first();
+    await expect(errorAlert).toBeVisible();
+    
+    // Verify error message content
+    const errorText = await errorAlert.textContent();
+    expect(errorText).toBeTruthy();
+
+    // Verify we're still on the login page
+    await expect(page).toHaveURL(/.*login/);
+  });
+
+  test("should display validation error when email is invalid", async ({ page }) => {
+    // Navigate to login page
+    await page.goto("/auth/login");
+
+    // Wait for the login form to be visible
+    await page.getByTestId("login-form").waitFor({ state: "visible" });
+
+    // Fill in invalid email and valid password
+    await page.getByTestId("email-input").fill("invalid-email");
+    await page.getByTestId("password-input").fill("validpassword123");
+    
+    // Trigger validation by blurring the email field
+    await page.getByTestId("email-input").blur();
+
+    // Wait for validation error to appear
+    await page.waitForSelector('p[role="alert"]:has-text("Podaj poprawny adres email")', { timeout: 3000 });
+
+    // Verify validation error message is displayed
+    const validationError = page.getByText("Podaj poprawny adres email");
+    await expect(validationError).toBeVisible();
 
     // Verify we're still on the login page
     await expect(page).toHaveURL(/.*login/);
@@ -68,11 +89,39 @@ test.describe("Authentication", () => {
     await page.getByTestId("email-input").fill(testUser.email);
     await page.getByTestId("password-input").fill("");
 
-    // Submit the form
-    await page.getByTestId("login-button").click();
+    // Trigger validation by blurring the password field
+    await page.getByTestId("password-input").blur();
+
+    // Wait for validation error to appear
+    await page.waitForSelector('p[role="alert"]:has-text("Hasło jest wymagane")', { timeout: 3000 });
 
     // Verify validation error message is displayed
-    const validationError = await page.getByText("Hasło jest wymagane");
+    const validationError = page.getByText("Hasło jest wymagane");
+    await expect(validationError).toBeVisible();
+
+    // Verify we're still on the login page
+    await expect(page).toHaveURL(/.*login/);
+  });
+
+  test("should display validation error when password is too short", async ({ page }) => {
+    // Navigate to login page
+    await page.goto("/auth/login");
+
+    // Wait for the login form to be visible
+    await page.getByTestId("login-form").waitFor({ state: "visible" });
+
+    // Fill in email and short password
+    await page.getByTestId("email-input").fill(testUser.email);
+    await page.getByTestId("password-input").fill("123");
+
+    // Trigger validation by blurring the password field
+    await page.getByTestId("password-input").blur();
+
+    // Wait for validation error to appear
+    await page.waitForSelector('p[role="alert"]:has-text("Hasło musi mieć co najmniej 8 znaków")', { timeout: 3000 });
+
+    // Verify validation error message is displayed
+    const validationError = page.getByText("Hasło musi mieć co najmniej 8 znaków");
     await expect(validationError).toBeVisible();
 
     // Verify we're still on the login page
@@ -85,7 +134,7 @@ test.describe("Authentication", () => {
 
     // Click on logout option
     await page.evaluate(() => {
-      document.querySelector('[data-testid="user-menu-button"]')?.dispatchEvent(
+      document.querySelector('[data-testid="logout-button"]')?.dispatchEvent(
         new MouseEvent("click", {
           bubbles: true,
           cancelable: true,

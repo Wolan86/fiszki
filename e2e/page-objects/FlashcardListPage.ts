@@ -72,7 +72,7 @@ export class FlashcardListPage extends BasePage {
    */
   async navigateToCreator() {
     await this.navKreatorLink.click();
-    await this.page.waitForURL("**/creator");
+    await this.page.waitForURL("**/kreator");
   }
 
   /**
@@ -80,7 +80,7 @@ export class FlashcardListPage extends BasePage {
    */
   async navigateToLearning() {
     await this.navNaukaLink.click();
-    await this.page.waitForURL("**/learn");
+    await this.page.waitForURL("**/nauka");
   }
 
   /**
@@ -92,17 +92,29 @@ export class FlashcardListPage extends BasePage {
     
     // Wait for loading to finish first
     try {
-      await this.loadingGrid.waitFor({ state: "visible", timeout: 1000 });
-      await this.loadingGrid.waitFor({ state: "hidden", timeout: 10000 });
+      await this.loadingGrid.waitFor({ state: "visible", timeout: 2000 });
+      await this.loadingGrid.waitFor({ state: "hidden", timeout: 15000 });
     } catch {
       // Loading grid might not appear if data loads quickly
     }
     
     // Wait for either grid with flashcards or empty state
-    await Promise.race([
-      this.flashcardGrid.waitFor({ state: "visible" }),
-      this.emptyGrid.waitFor({ state: "visible" })
-    ]);
+    try {
+      await Promise.race([
+        this.flashcardGrid.waitFor({ state: "visible", timeout: 10000 }),
+        this.emptyGrid.waitFor({ state: "visible", timeout: 10000 })
+      ]);
+    } catch (error) {
+      // If neither state appears, check if we have any flashcard items at all
+      const flashcardCount = await this.getFlashcardCount();
+      if (flashcardCount === 0) {
+        // If no flashcards, empty state should be visible
+        await this.emptyGrid.waitFor({ state: "visible", timeout: 5000 });
+      } else {
+        // If we have flashcards, grid should be visible
+        await this.flashcardGrid.waitFor({ state: "visible", timeout: 5000 });
+      }
+    }
   }
 
   /**

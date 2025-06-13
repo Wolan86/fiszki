@@ -54,8 +54,16 @@ import { RegisterForm } from '@/components/auth/RegisterForm';
             throw new Error(data.error || 'Wystąpił błąd podczas rejestracji');
           }
           
-          // Redirect to login page after successful registration
-          window.location.href = '/auth/login?registered=true';
+          // Handle successful registration
+          if (data.requiresEmailConfirmation) {
+            // Show message about email confirmation
+            alert('Rejestracja zakończona sukcesem! Sprawdź swoją skrzynkę pocztową i potwierdź adres email, aby aktywować konto.');
+            // Redirect to login page with email confirmation info
+            window.location.href = '/auth/login?confirmation=true';
+          } else {
+            // Redirect to login page after successful registration
+            window.location.href = '/auth/login?registered=true';
+          }
         } catch (error) {
           console.error('Registration error:', error);
           alert(error instanceof Error ? error.message : 'Wystąpił błąd podczas rejestracji');

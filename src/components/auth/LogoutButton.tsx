@@ -40,7 +40,7 @@ export const LogoutButton: React.FC<LogoutButtonProps> = ({ className = "" }) =>
       onClick={handleLogout}
       disabled={isLoading}
       className={className}
-      data-testid="user-menu-button"
+      data-testid="logout-button"
     >
       {isLoading ? (
         "Wylogowywanie..."

@@ -1,0 +1,173 @@
+name: master workflow Pipeline
+
+on:
+  # Automatyczne uruchamianie po push do main (zgodnie z aktualnym branch)
+  push:
+    branches: [main]
+  
+  # Automatyczne uruchamianie na pull request do main
+  pull_request:
+    branches: [main]
+  
+  # Możliwość manualnego uruchamiania
+  workflow_dispatch:
+
+jobs:
+  # Job 1: Lint i formatowanie kodu
+  code-quality:
+    name: Code Quality & Linting
+    runs-on: ubuntu-latest
+    
+    env:
+      NODE_VERSION: '22.14.0'
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+          
+      - name: Install dependencies
+        run: npm ci
+        
+      - name: Run ESLint
+        run: npm run lint
+        
+      - name: Check Prettier formatting
+        run: npx prettier --check .
+
+  # Job 2: Testy jednostkowe z Vitest
+  unit-tests:
+    name: Unit Tests (Vitest)
+    runs-on: ubuntu-latest
+    needs: code-quality
+    
+    env:
+      NODE_VERSION: '22.14.0'
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+          
+      - name: Install dependencies
+        run: npm ci
+        
+      - name: Run unit tests
+        run: npm run test -- --run --coverage
+        
+      - name: Upload test coverage
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: coverage-report
+          path: coverage/
+
+  # Job 3: Build aplikacji
+  build:
+    name: Production Build
+    runs-on: ubuntu-latest
+    needs: code-quality
+    
+    env:
+      NODE_VERSION: '22.14.0'
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+          
+      - name: Install dependencies
+        run: npm ci
+        
+      - name: Build application
+        run: npm run build
+        
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-files
+          path: dist/
+
+  # Job 4: Testy E2E z Playwright
+  e2e-tests:
+    name: E2E Tests (Playwright)
+    runs-on: ubuntu-latest
+    needs: [build, unit-tests]
+    
+    env:
+      NODE_VERSION: '22.14.0'
+      CI: true
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+          
+      - name: Install dependencies
+        run: npm ci
+        
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+        
+      - name: Run E2E tests
+        run: npm run test:e2e
+          
+      - name: Upload Playwright report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-report
+          path: playwright-report/
+          
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-results
+          path: test-results/
+
+  # Job 5: Podsumowanie wyników
+  summary:
+    name: Pipeline Summary
+    runs-on: ubuntu-latest
+    needs: [code-quality, unit-tests, build, e2e-tests]
+    if: always()
+    
+    steps:
+      - name: Check pipeline status
+        run: |
+          echo "Pipeline completed!"
+          echo "Code Quality: ${{ needs.code-quality.result }}"
+          echo "Unit Tests: ${{ needs.unit-tests.result }}"
+          echo "Build: ${{ needs.build.result }}"
+          echo "E2E Tests: ${{ needs.e2e-tests.result }}"
+          
+          if [ "${{ needs.code-quality.result }}" != "success" ] || 
+             [ "${{ needs.unit-tests.result }}" != "success" ] || 
+             [ "${{ needs.build.result }}" != "success" ] || 
+             [ "${{ needs.e2e-tests.result }}" != "success" ]; then
+            echo "❌ Pipeline failed!"
+            exit 1
+          else
+            echo "✅ All checks passed!"
+          fi 

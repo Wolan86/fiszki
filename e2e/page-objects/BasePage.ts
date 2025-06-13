@@ -33,10 +33,10 @@ export class BasePage {
     }
 
     try {
-      // Check if already logged in by looking for user menu or logout button
+      // Check if already logged in by looking for logout button
       const isAuthenticated = await Promise.race([
         this.page
-          .getByTestId("user-menu-button")
+          .getByTestId("logout-button")
           .isVisible()
           .then((visible) => visible)
           .catch(() => false),
@@ -76,14 +76,7 @@ export class BasePage {
       } else if (await logoutByText.isVisible()) {
         await logoutByText.click();
       } else {
-        // Try user menu button first if available
-        const userMenuButton = this.page.getByTestId("user-menu-button");
-        if (await userMenuButton.isVisible()) {
-          await userMenuButton.click();
-          await this.page.getByTestId("logout-button").click();
-        } else {
-          throw new Error("No logout mechanism found");
-        }
+        throw new Error("No logout mechanism found");
       }
 
       // Wait for logout to complete

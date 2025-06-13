@@ -28,10 +28,25 @@ export const POST: APIRoute = async ({ request, cookies, redirect }) => {
   });
 
   if (error) {
+    console.error("Login error:", error);
+    
+    // Handle specific error cases with user-friendly messages
+    let errorMessage = error.message;
+    
+    if (error.message.includes("Email not confirmed")) {
+      errorMessage = "Adres email nie został potwierdzony. Sprawdź swoją skrzynkę pocztową i kliknij link potwierdzający.";
+    } else if (error.message.includes("Invalid login credentials")) {
+      errorMessage = "Niepoprawny email lub hasło.";
+    } else if (error.message.includes("Too many requests")) {
+      errorMessage = "Zbyt wiele prób logowania. Spróbuj ponownie za chwilę.";
+    } else if (error.message.includes("User not found")) {
+      errorMessage = "Użytkownik o podanym adresie email nie istnieje.";
+    }
+    
     return new Response(
       JSON.stringify({
         success: false,
-        error: error.message,
+        error: errorMessage,
       }),
       { status: 400 }
     );

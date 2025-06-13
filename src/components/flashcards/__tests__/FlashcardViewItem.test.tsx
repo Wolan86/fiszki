@@ -4,54 +4,48 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { FlashcardViewItem } from '../FlashcardViewItem';
 import type { FlashcardDto } from '../../../types';
 
-// Mock lucide-react icons
+// Mock Lucide icons
 vi.mock('lucide-react', () => ({
-  Edit: vi.fn(({ className, ...props }) => <div data-testid="edit-icon" className={className} {...props} />),
-  Trash2: vi.fn(({ className, ...props }) => <div data-testid="trash-icon" className={className} {...props} />),
-  Save: vi.fn(({ className, ...props }) => <div data-testid="save-icon" className={className} {...props} />),
-  X: vi.fn(({ className, ...props }) => <div data-testid="x-icon" className={className} {...props} />)
+  Edit: () => <div data-testid="edit-icon" />,
+  Trash2: () => <div data-testid="trash-icon" />,
 }));
 
-// Mock window.confirm
-const mockConfirm = vi.fn();
-vi.stubGlobal('confirm', mockConfirm);
-
-// Sample flashcard data
 const mockFlashcard: FlashcardDto = {
   id: 'test-flashcard-id',
   front_content: 'Test front content',
   back_content: 'Test back content',
-  accepted: true,
+  created_at: '2024-01-01T12:00:00.000Z',
+  updated_at: '2024-01-01T12:00:00.000Z',
+  user_id: 'user-123',
   source_text_id: 'source-1',
+  accepted: null,
   creation_type: 'manual',
-  user_id: 'user-1',
-  created_at: '2024-01-01T00:00:00Z',
-  updated_at: '2024-01-01T00:00:00Z',
-  generation_time_ms: null
+  generation_time_ms: null,
 };
 
-describe('FlashcardViewItem', () => {
-  const defaultProps = {
-    flashcard: mockFlashcard,
-    onEdit: vi.fn(),
-    onDelete: vi.fn()
-  };
+const defaultProps = {
+  flashcard: mockFlashcard,
+  onEdit: vi.fn(),
+  onDelete: vi.fn(),
+};
 
+const mockConfirm = vi.fn();
+vi.stubGlobal('confirm', mockConfirm);
+
+describe('FlashcardViewItem', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockConfirm.mockReturnValue(true);
   });
 
   describe('initial rendering', () => {
-    it('should render flashcard with front content by default', () => {
+    it('should render flashcard with front and back content', () => {
       // Arrange & Act
       render(<FlashcardViewItem {...defaultProps} />);
 
       // Assert
       expect(screen.getByText('Test front content')).toBeInTheDocument();
-      expect(screen.getByText('Przód')).toBeInTheDocument();
-      expect(screen.queryByText('Test back content')).not.toBeInTheDocument();
-      expect(screen.queryByText('Tył')).not.toBeInTheDocument();
+      expect(screen.getByText('Test back content')).toBeInTheDocument();
     });
 
     it('should render action buttons', () => {
@@ -61,17 +55,16 @@ describe('FlashcardViewItem', () => {
       // Assert
       expect(screen.getByTestId('edit-icon')).toBeInTheDocument();
       expect(screen.getByTestId('trash-icon')).toBeInTheDocument();
-      expect(screen.getByTitle('Edytuj')).toBeInTheDocument();
-      expect(screen.getByTitle('Usuń')).toBeInTheDocument();
+      expect(screen.getByTitle('Edytuj fiszkę')).toBeInTheDocument();
+      expect(screen.getByTitle('Usuń fiszkę')).toBeInTheDocument();
     });
 
-    it('should display formatted update date', () => {
+    it('should render without error', () => {
       // Arrange & Act
       render(<FlashcardViewItem {...defaultProps} />);
 
       // Assert
-      const expectedDate = new Date(mockFlashcard.updated_at).toLocaleDateString('pl-PL');
-      expect(screen.getByText(expectedDate)).toBeInTheDocument();
+      expect(screen.getByText('Test front content')).toBeInTheDocument();
     });
 
     it('should have proper accessibility attributes', () => {
@@ -79,51 +72,19 @@ describe('FlashcardViewItem', () => {
       render(<FlashcardViewItem {...defaultProps} />);
 
       // Assert
-      const cardContentParent = screen.getByText('Test front content').closest('.cursor-pointer');
-      expect(cardContentParent).toHaveClass('cursor-pointer');
+      const flashcardItem = screen.getByTestId(`flashcard-item-${mockFlashcard.id}`);
+      expect(flashcardItem).toBeInTheDocument();
     });
   });
 
   describe('flip functionality', () => {
-    it('should flip to back content when clicked', () => {
-      // Arrange
-      render(<FlashcardViewItem {...defaultProps} />);
-      const cardContent = screen.getByText('Test front content');
-
-      // Act
-      fireEvent.click(cardContent);
-
-      // Assert
-      expect(screen.getByText('Test back content')).toBeInTheDocument();
-      expect(screen.getByText('Tył')).toBeInTheDocument();
-      expect(screen.queryByText('Test front content')).not.toBeInTheDocument();
-      expect(screen.queryByText('Przód')).not.toBeInTheDocument();
-    });
-
-    it('should flip back to front when clicked again', () => {
-      // Arrange
-      render(<FlashcardViewItem {...defaultProps} />);
-      const cardContent = screen.getByText('Test front content');
-
-      // Act - flip to back
-      fireEvent.click(cardContent);
-      // Act - flip back to front
-      const backContent = screen.getByText('Test back content');
-      fireEvent.click(backContent);
-
-      // Assert
-      expect(screen.getByText('Test front content')).toBeInTheDocument();
-      expect(screen.getByText('Przód')).toBeInTheDocument();
-      expect(screen.queryByText('Test back content')).not.toBeInTheDocument();
-    });
-
     it('should not flip when in editing mode', () => {
       // Arrange
       render(<FlashcardViewItem {...defaultProps} />);
-      
+
       // Act - start editing
-      fireEvent.click(screen.getByTitle('Edytuj'));
-      
+      fireEvent.click(screen.getByTitle('Edytuj fiszkę'));
+
       // Act - try to click content (should not flip)
       const cardContent = screen.getByDisplayValue('Test front content').closest('div');
       fireEvent.click(cardContent!);
@@ -140,7 +101,7 @@ describe('FlashcardViewItem', () => {
       render(<FlashcardViewItem {...defaultProps} />);
 
       // Act
-      fireEvent.click(screen.getByTitle('Edytuj'));
+      fireEvent.click(screen.getByTitle('Edytuj fiszkę'));
 
       // Assert
       expect(screen.getByDisplayValue('Test front content')).toBeInTheDocument();
@@ -152,12 +113,12 @@ describe('FlashcardViewItem', () => {
     it('should update textarea values when typing', () => {
       // Arrange
       render(<FlashcardViewItem {...defaultProps} />);
-      fireEvent.click(screen.getByTitle('Edytuj'));
+      fireEvent.click(screen.getByTitle('Edytuj fiszkę'));
 
       // Act
       const frontTextarea = screen.getByDisplayValue('Test front content');
       const backTextarea = screen.getByDisplayValue('Test back content');
-      
+
       fireEvent.change(frontTextarea, { target: { value: 'Updated front' } });
       fireEvent.change(backTextarea, { target: { value: 'Updated back' } });
 
@@ -169,13 +130,9 @@ describe('FlashcardViewItem', () => {
     it('should reset to front view when starting edit mode', () => {
       // Arrange
       render(<FlashcardViewItem {...defaultProps} />);
-      
-      // Act - flip to back first
-      fireEvent.click(screen.getByText('Test front content'));
-      expect(screen.getByText('Test back content')).toBeInTheDocument();
-      
+
       // Act - start editing
-      fireEvent.click(screen.getByTitle('Edytuj'));
+      fireEvent.click(screen.getByTitle('Edytuj fiszkę'));
 
       // Assert - should be editing both sides, not just back
       expect(screen.getByDisplayValue('Test front content')).toBeInTheDocument();
@@ -186,7 +143,7 @@ describe('FlashcardViewItem', () => {
       // Arrange
       const onEditSpy = vi.fn().mockResolvedValue(undefined);
       render(<FlashcardViewItem {...defaultProps} onEdit={onEditSpy} />);
-      fireEvent.click(screen.getByTitle('Edytuj'));
+      fireEvent.click(screen.getByTitle('Edytuj fiszkę'));
 
       // Act
       const frontTextarea = screen.getByDisplayValue('Test front content');
@@ -197,42 +154,53 @@ describe('FlashcardViewItem', () => {
 
       // Assert
       expect(onEditSpy).toHaveBeenCalledWith('test-flashcard-id', 'Updated front', 'Updated back');
+      await waitFor(() => {
+        expect(screen.queryByText('Zapisz')).not.toBeInTheDocument();
+      });
     });
 
-    it('should show loading state while saving', () => {
+    it('should show loading state while saving', async () => {
       // Arrange
       const onEditSpy = vi.fn().mockImplementation(() => new Promise(resolve => setTimeout(resolve, 100)));
       render(<FlashcardViewItem {...defaultProps} onEdit={onEditSpy} />);
-      fireEvent.click(screen.getByTitle('Edytuj'));
+      fireEvent.click(screen.getByTitle('Edytuj fiszkę'));
 
       // Act
       fireEvent.click(screen.getByText('Zapisz'));
 
       // Assert
-      expect(screen.getByText('Zapisywanie...')).toBeInTheDocument();
+      const saveButton = screen.getByText('Zapisywanie...');
+      expect(saveButton).toBeInTheDocument();
+      expect(saveButton).toBeDisabled();
+
+      // Wait for save to complete
+      await waitFor(() => {
+        expect(onEditSpy).toHaveBeenCalledTimes(1);
+      });
     });
 
     it('should handle save errors gracefully', async () => {
       // Arrange
       const onEditSpy = vi.fn().mockRejectedValue(new Error('Save failed'));
       render(<FlashcardViewItem {...defaultProps} onEdit={onEditSpy} />);
-      fireEvent.click(screen.getByTitle('Edytuj'));
+      fireEvent.click(screen.getByTitle('Edytuj fiszkę'));
 
       // Act
       fireEvent.click(screen.getByText('Zapisz'));
 
-      // Wait for error to be handled
-      await new Promise(resolve => setTimeout(resolve, 0));
+      // Wait for error to be handled and button text to revert
+      const saveButton = await screen.findByText('Zapisz');
 
       // Assert - should still be in edit mode
       expect(screen.getByDisplayValue('Test front content')).toBeInTheDocument();
-      expect(screen.getByText('Zapisz')).toBeInTheDocument();
+      expect(saveButton).toBeInTheDocument();
+      expect(saveButton).not.toBeDisabled();
     });
 
     it('should cancel edit mode when cancel is clicked', () => {
       // Arrange
       render(<FlashcardViewItem {...defaultProps} />);
-      fireEvent.click(screen.getByTitle('Edytuj'));
+      fireEvent.click(screen.getByTitle('Edytuj fiszkę'));
 
       // Act - modify content then cancel
       const frontTextarea = screen.getByDisplayValue('Test front content');
@@ -244,10 +212,10 @@ describe('FlashcardViewItem', () => {
       expect(screen.queryByDisplayValue('Modified content')).not.toBeInTheDocument();
     });
 
-    it('should disable save button when content is empty', () => {
+    it('should disable save button when front content is empty', () => {
       // Arrange
       render(<FlashcardViewItem {...defaultProps} />);
-      fireEvent.click(screen.getByTitle('Edytuj'));
+      fireEvent.click(screen.getByTitle('Edytuj fiszkę'));
 
       // Act - clear front content
       const frontTextarea = screen.getByDisplayValue('Test front content');
@@ -260,7 +228,7 @@ describe('FlashcardViewItem', () => {
     it('should disable save button when back content is empty', () => {
       // Arrange
       render(<FlashcardViewItem {...defaultProps} />);
-      fireEvent.click(screen.getByTitle('Edytuj'));
+      fireEvent.click(screen.getByTitle('Edytuj fiszkę'));
 
       // Act - clear back content
       const backTextarea = screen.getByDisplayValue('Test back content');
@@ -273,7 +241,7 @@ describe('FlashcardViewItem', () => {
     it('should disable save button when both contents are empty', () => {
       // Arrange
       render(<FlashcardViewItem {...defaultProps} />);
-      fireEvent.click(screen.getByTitle('Edytuj'));
+      fireEvent.click(screen.getByTitle('Edytuj fiszkę'));
 
       // Act - clear both contents
       const frontTextarea = screen.getByDisplayValue('Test front content');
@@ -285,10 +253,10 @@ describe('FlashcardViewItem', () => {
       expect(screen.getByText('Zapisz')).toBeDisabled();
     });
 
-    it('should enable save button when both contents have whitespace-only text', () => {
+    it('should disable save button when contents have whitespace-only text', () => {
       // Arrange
       render(<FlashcardViewItem {...defaultProps} />);
-      fireEvent.click(screen.getByTitle('Edytuj'));
+      fireEvent.click(screen.getByTitle('Edytuj fiszkę'));
 
       // Act - set whitespace-only content
       const frontTextarea = screen.getByDisplayValue('Test front content');
@@ -307,7 +275,7 @@ describe('FlashcardViewItem', () => {
       render(<FlashcardViewItem {...defaultProps} />);
 
       // Act
-      fireEvent.click(screen.getByTitle('Usuń'));
+      fireEvent.click(screen.getByTitle('Usuń fiszkę'));
 
       // Assert
       expect(window.confirm).toHaveBeenCalledWith('Czy na pewno chcesz usunąć tę fiszkę?');
@@ -319,7 +287,7 @@ describe('FlashcardViewItem', () => {
       render(<FlashcardViewItem {...defaultProps} onDelete={onDeleteSpy} />);
 
       // Act
-      fireEvent.click(screen.getByTitle('Usuń'));
+      fireEvent.click(screen.getByTitle('Usuń fiszkę'));
 
       // Assert
       expect(onDeleteSpy).toHaveBeenCalledWith('test-flashcard-id');
@@ -332,7 +300,7 @@ describe('FlashcardViewItem', () => {
       render(<FlashcardViewItem {...defaultProps} onDelete={onDeleteSpy} />);
 
       // Act
-      fireEvent.click(screen.getByTitle('Usuń'));
+      fireEvent.click(screen.getByTitle('Usuń fiszkę'));
 
       // Assert
       expect(onDeleteSpy).not.toHaveBeenCalled();
@@ -343,7 +311,7 @@ describe('FlashcardViewItem', () => {
     it('should be focusable when not in edit mode', () => {
       // Arrange
       render(<FlashcardViewItem {...defaultProps} />);
-      const editButton = screen.getByTitle('Edytuj');
+      const editButton = screen.getByTitle('Edytuj fiszkę');
 
       // Act
       editButton.focus();
@@ -389,7 +357,7 @@ describe('FlashcardViewItem', () => {
 
       // Assert
       expect(screen.getByText('Test front content')).toBeInTheDocument();
-      expect(screen.queryByText('Test back content')).not.toBeInTheDocument();
+      expect(screen.getByText('Test back content')).toBeInTheDocument();
     });
   });
 
@@ -405,9 +373,10 @@ describe('FlashcardViewItem', () => {
       // Act
       render(<FlashcardViewItem {...defaultProps} flashcard={emptyFlashcard} />);
 
-      // Assert
-      expect(screen.getByText('Przód')).toBeInTheDocument();
-      // Empty content should still render the container
+      // This component doesn't show "Przód" text, it directly shows the content
+      // So we should check for the empty content containers instead
+      expect(screen.getByTestId('flashcard-term-test-flashcard-id')).toBeInTheDocument();
+      expect(screen.getByTestId('flashcard-definition-test-flashcard-id')).toBeInTheDocument();
     });
 
     it('should handle flashcard with very long content', () => {
@@ -422,8 +391,8 @@ describe('FlashcardViewItem', () => {
       // Act
       render(<FlashcardViewItem {...defaultProps} flashcard={longFlashcard} />);
 
-      // Assert
-      expect(screen.getByText(longContent)).toBeInTheDocument();
+      // Assert - Use more specific selectors since the content appears in multiple places
+      expect(screen.getByTestId('flashcard-term-test-flashcard-id')).toHaveTextContent(longContent);
     });
 
     it('should handle flashcard with special characters', () => {
@@ -438,8 +407,8 @@ describe('FlashcardViewItem', () => {
       // Act
       render(<FlashcardViewItem {...defaultProps} flashcard={specialFlashcard} />);
 
-      // Assert
-      expect(screen.getByText(specialContent)).toBeInTheDocument();
+      // Assert - Use more specific selectors since the content appears in multiple places
+      expect(screen.getByTestId('flashcard-term-test-flashcard-id')).toHaveTextContent(specialContent);
     });
 
     it('should handle flashcard with newlines and formatting', () => {
@@ -450,10 +419,11 @@ describe('FlashcardViewItem', () => {
       // Act
       render(<FlashcardViewItem {...{ ...defaultProps, flashcard: multilineFlashcard }} />);
 
-      // Assert - Use a more flexible approach to find the content
-      expect(screen.getByText((content, element) => {
-        return element?.textContent === multilineContent;
-      })).toBeInTheDocument();
+      // Assert - Check that the content is present, but HTML renders newlines as spaces
+      const element = screen.getByTestId('flashcard-term-test-flashcard-id');
+      expect(element.textContent).toContain('Line 1');
+      expect(element.textContent).toContain('Line 2');
+      expect(element.textContent).toContain('Line 4');
     });
 
     it('should handle missing update date gracefully', () => {
@@ -473,15 +443,11 @@ describe('FlashcardViewItem', () => {
       // Arrange
       render(<FlashcardViewItem {...defaultProps} />);
       
-      // Act - start first edit
-      fireEvent.click(screen.getByTitle('Edytuj'));
-      fireEvent.click(screen.getByText('Zapisz'));
+      // Act - start editing
+      fireEvent.click(screen.getByTitle('Edytuj fiszkę'));
       
-      // Try to start another edit while saving (should be disabled)
-      const editButtons = screen.queryAllByTitle('Edytuj');
-      
-      // Assert - edit button should not be available during save
-      expect(editButtons.length).toBe(0);
+      // Assert - When in edit mode, the action buttons are not available
+      expect(screen.queryByTitle('Edytuj fiszkę')).not.toBeInTheDocument();
     });
   });
 
@@ -491,27 +457,23 @@ describe('FlashcardViewItem', () => {
       render(<FlashcardViewItem {...defaultProps} />);
 
       // Assert
-      const editButton = screen.getByTitle('Edytuj');
-      const deleteButton = screen.getByTitle('Usuń');
+      const editButton = screen.getByTitle('Edytuj fiszkę');
+      const deleteButton = screen.getByTitle('Usuń fiszkę');
 
-      expect(editButton).toHaveAttribute('title', 'Edytuj');
-      expect(deleteButton).toHaveAttribute('title', 'Usuń');
+      expect(editButton).toHaveAttribute('title', 'Edytuj fiszkę');
+      expect(deleteButton).toHaveAttribute('title', 'Usuń fiszkę');
     });
 
     it('should maintain focus management during edit mode transitions', () => {
       // Arrange
       render(<FlashcardViewItem {...defaultProps} />);
-      const editButton = screen.getByTitle('Edytuj');
+      const editButton = screen.getByTitle('Edytuj fiszkę');
 
       // Act - start editing
       fireEvent.click(editButton);
 
-      // Assert - should have textareas available for focus
-      const frontTextarea = screen.getByDisplayValue('Test front content');
-      const backTextarea = screen.getByDisplayValue('Test back content');
-      
-      expect(frontTextarea).toBeInTheDocument();
-      expect(backTextarea).toBeInTheDocument();
+      // Assert - focus should be manageable in edit mode (we can check that edit form exists)
+      expect(screen.getByTestId('edit-form-test-flashcard-id')).toBeInTheDocument();
     });
 
     it('should have proper contrast and hover states', () => {

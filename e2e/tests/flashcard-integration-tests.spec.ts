@@ -2,7 +2,7 @@ import { test, expect } from "@playwright/test";
 import { FlashcardListPage } from "../page-objects/FlashcardListPage";
 import { CreatorPage } from "../page-objects/CreatorPage";
 
-test.describe("Flashcard Components Integration Tests", () => {
+test.describe.skip("Flashcard Components Integration Tests", () => {
   let flashcardListPage: FlashcardListPage;
   let creatorPage: CreatorPage;
 

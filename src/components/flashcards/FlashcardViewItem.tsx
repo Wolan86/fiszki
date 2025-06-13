@@ -117,10 +117,11 @@ export const FlashcardViewItem: React.FC<FlashcardViewItemProps> = ({
                 </button>
                 <button
                   onClick={handleSaveEdit}
-                  className="px-3 py-1 text-xs text-white bg-blue-600 rounded-md hover:bg-blue-700 transition-colors"
+                  className="px-3 py-1 text-xs text-white bg-blue-600 rounded-md hover:bg-blue-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
                   data-testid={`save-edit-button-${flashcard.id}`}
+                  disabled={editState.isSaving || !editState.editableFrontContent.trim() || !editState.editableBackContent.trim()}
                 >
-                  Zapisz
+                  {editState.isSaving ? 'Zapisywanie...' : 'Zapisz'}
                 </button>
               </div>
             </div>

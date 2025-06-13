@@ -30,6 +30,12 @@ export const SimpleFlashcardSearch: React.FC<SimpleFlashcardSearchProps> = ({
     onSearchChange('');
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Escape' && debouncedQuery) {
+      handleClear();
+    }
+  };
+
   return (
     <div className="relative max-w-md" data-testid="flashcard-search-container">
       <div className="relative">
@@ -41,6 +47,7 @@ export const SimpleFlashcardSearch: React.FC<SimpleFlashcardSearchProps> = ({
           placeholder="Szukaj w fiszkach..."
           value={debouncedQuery}
           onChange={(e) => setDebouncedQuery(e.target.value)}
+          onKeyDown={handleKeyDown}
           disabled={loading}
           className="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed"
           data-testid="search-input"

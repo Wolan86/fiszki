@@ -8,8 +8,8 @@ const supabaseAnonKey = import.meta.env.SUPABASE_PUBLIC_KEY;
 
 export const cookieOptions: CookieOptionsWithName = {
   path: "/",
-  secure: true,
-  httpOnly: true,
+  secure: import.meta.env.PROD,
+  httpOnly: import.meta.env.PROD,
   sameSite: "lax",
 };
 

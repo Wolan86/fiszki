@@ -27,3 +27,5 @@ pnpm-debug.log*
 playwright-report/
 test-results/
 .env.test
+middleware-debug.log
+e2e/auth/auth-failure.png

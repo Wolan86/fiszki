@@ -1,86 +1,39 @@
-import React, { useState } from "react";
-import type { ChangeEvent } from "react";
+import React from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
+import { registerSchema, type RegisterFormData } from "../../lib/validations/auth";
+import { useRegister } from "./hooks/useRegister";
 
 interface RegisterFormProps {
   isLoading?: boolean;
   error?: string;
 }
 
-export const RegisterForm: React.FC<RegisterFormProps> = ({ isLoading = false, error }) => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [validationErrors, setValidationErrors] = useState<{
-    email?: string;
-    password?: string;
-    confirmPassword?: string;
-  }>({});
+export const RegisterForm: React.FC<RegisterFormProps> = ({ isLoading: externalLoading = false, error: externalError }) => {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<RegisterFormData>({
+    resolver: zodResolver(registerSchema),
+    mode: "onBlur",
+  });
 
-  // Client-side validation only
-  const validateForm = (): boolean => {
-    const errors: {
-      email?: string;
-      password?: string;
-      confirmPassword?: string;
-    } = {};
-    let isValid = true;
+  const { register: registerUser, isLoading: registerLoading, error: registerError, clearError } = useRegister();
 
-    // Walidacja email
-    if (!email) {
-      errors.email = "Email jest wymagany";
-      isValid = false;
-    } else if (!/\S+@\S+\.\S+/.test(email)) {
-      errors.email = "Podaj poprawny adres email";
-      isValid = false;
-    }
-
-    // Walidacja hasła
-    if (!password) {
-      errors.password = "Hasło jest wymagane";
-      isValid = false;
-    } else if (password.length < 8) {
-      errors.password = "Hasło musi mieć co najmniej 8 znaków";
-      isValid = false;
-    } else if (!/(?=.*\d)(?=.*[!@#$%^&*])/.test(password)) {
-      errors.password = "Hasło musi zawierać przynajmniej jedną cyfrę i jeden znak specjalny";
-      isValid = false;
-    }
-
-    // Walidacja potwierdzenia hasła
-    if (!confirmPassword) {
-      errors.confirmPassword = "Potwierdzenie hasła jest wymagane";
-      isValid = false;
-    } else if (confirmPassword !== password) {
-      errors.confirmPassword = "Hasła nie są identyczne";
-      isValid = false;
-    }
-
-    setValidationErrors(errors);
-    return isValid;
+  const onSubmit = async (data: RegisterFormData) => {
+    clearError();
+    await registerUser(data);
   };
 
-  // Check validation on blur
-  const handleBlur = () => {
-    validateForm();
-  };
-
-  const handleEmailChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setEmail(e.target.value);
-  };
-
-  const handlePasswordChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setPassword(e.target.value);
-  };
-
-  const handleConfirmPasswordChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setConfirmPassword(e.target.value);
-  };
+  const isFormDisabled = externalLoading || isSubmitting || registerLoading;
+  const displayError = externalError || registerError;
 
   return (
     <Card className="w-full max-w-md mx-auto">
@@ -89,11 +42,11 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ isLoading = false, e
         <CardDescription>Utwórz konto, aby móc tworzyć i zapisywać swoje fiszki</CardDescription>
       </CardHeader>
       <CardContent>
-        <form className="space-y-4">
-          {error && (
+        <form className="space-y-4" data-testid="register-form" onSubmit={handleSubmit(onSubmit)}>
+          {displayError && (
             <Alert variant="destructive">
               <AlertCircle className="h-4 w-4" />
-              <AlertDescription>{error}</AlertDescription>
+              <AlertDescription>{displayError}</AlertDescription>
             </Alert>
           )}
 
@@ -103,13 +56,16 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ isLoading = false, e
               id="email"
               type="email"
               placeholder="twoj@email.pl"
-              value={email}
-              onChange={handleEmailChange}
-              onBlur={handleBlur}
-              disabled={isLoading}
-              aria-invalid={!!validationErrors.email}
+              disabled={isFormDisabled}
+              aria-invalid={!!errors.email}
+              data-testid="email-input"
+              {...register("email")}
             />
-            {validationErrors.email && <p className="text-sm text-red-500 mt-1">{validationErrors.email}</p>}
+            {errors.email && (
+              <p className="text-sm text-red-500 mt-1" role="alert">
+                {errors.email.message}
+              </p>
+            )}
           </div>
 
           <div className="space-y-2">
@@ -118,13 +74,16 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ isLoading = false, e
               id="password"
               type="password"
               placeholder="••••••••"
-              value={password}
-              onChange={handlePasswordChange}
-              onBlur={handleBlur}
-              disabled={isLoading}
-              aria-invalid={!!validationErrors.password}
+              disabled={isFormDisabled}
+              aria-invalid={!!errors.password}
+              data-testid="password-input"
+              {...register("password")}
             />
-            {validationErrors.password && <p className="text-sm text-red-500 mt-1">{validationErrors.password}</p>}
+            {errors.password && (
+              <p className="text-sm text-red-500 mt-1" role="alert">
+                {errors.password.message}
+              </p>
+            )}
             <p className="text-xs text-gray-500">
               Hasło musi zawierać minimum 8 znaków, w tym przynajmniej jedną cyfrę i jeden znak specjalny.
             </p>
@@ -136,19 +95,20 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ isLoading = false, e
               id="confirmPassword"
               type="password"
               placeholder="••••••••"
-              value={confirmPassword}
-              onChange={handleConfirmPasswordChange}
-              onBlur={handleBlur}
-              disabled={isLoading}
-              aria-invalid={!!validationErrors.confirmPassword}
+              disabled={isFormDisabled}
+              aria-invalid={!!errors.confirmPassword}
+              data-testid="confirm-password-input"
+              {...register("confirmPassword")}
             />
-            {validationErrors.confirmPassword && (
-              <p className="text-sm text-red-500 mt-1">{validationErrors.confirmPassword}</p>
+            {errors.confirmPassword && (
+              <p className="text-sm text-red-500 mt-1" role="alert">
+                {errors.confirmPassword.message}
+              </p>
             )}
           </div>
 
-          <Button type="submit" className="w-full" disabled={isLoading}>
-            {isLoading ? "Rejestracja..." : "Zarejestruj się"}
+          <Button type="submit" className="w-full" disabled={isFormDisabled} data-testid="register-button">
+            {isFormDisabled ? "Rejestracja..." : "Zarejestruj się"}
           </Button>
         </form>
       </CardContent>

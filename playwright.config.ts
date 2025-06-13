@@ -70,19 +70,9 @@ export default defineConfig({
   /* Configure projects for different scenarios */
   projects: [
     {
-      name: "authenticated",
-      testMatch: /flashcard-creator\.spec\.ts/,
+      name: "all-tests",
       use: {
         ...devices["Desktop Chrome"],
-        storageState: storageStatePath,
-      },
-    },
-    {
-      name: "unauthenticated",
-      testMatch: /auth\.spec\.ts/,
-      use: {
-        ...devices["Desktop Chrome"],
-        storageState: emptyStatePath,
       },
     },
   ],

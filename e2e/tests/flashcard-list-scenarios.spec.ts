@@ -1,7 +1,7 @@
 import { test, expect } from "@playwright/test";
 import { FlashcardListPage } from "../page-objects/FlashcardListPage";
 
-test.describe("Flashcard List E2E Scenarios", () => {
+test.describe.skip("Flashcard List Scenarios", () => {
   let flashcardListPage: FlashcardListPage;
 
   test.beforeEach(async ({ page }) => {

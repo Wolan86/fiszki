@@ -19,6 +19,7 @@ export const useFlashcardGeneration = (): UseFlashcardGenerationResult => {
   const [flashcards, setFlashcards] = useState<FlashcardViewModel[]>([]);
   const [generationStats, setGenerationStats] = useState<GenerationStatsViewModel | null>(null);
   const [error, setError] = useState<ApiErrorResponse | null>(null);
+  const [isGenerating, setIsGenerating] = useState<boolean>(false);
   const [savingFlashcardIds, setSavingFlashcardIds] = useState<string[]>([]);
 
   // Funkcja formatująca czas w milisekundach na czytelny format
@@ -33,6 +34,7 @@ export const useFlashcardGeneration = (): UseFlashcardGenerationResult => {
     options?: UseFlashcardGenerationOptions
   ): Promise<void> => {
     try {
+      setIsGenerating(true);
       setError(null);
 
       // Czyścimy poprzednie wyniki
@@ -67,6 +69,8 @@ export const useFlashcardGeneration = (): UseFlashcardGenerationResult => {
         message: error.message || "Nie udało się wygenerować fiszek",
         code: "GENERATION_FAILED",
       });
+    } finally {
+      setIsGenerating(false);
     }
   };
 
@@ -271,6 +275,7 @@ export const useFlashcardGeneration = (): UseFlashcardGenerationResult => {
     setFlashcards([]);
     setGenerationStats(null);
     setError(null);
+    setIsGenerating(false);
     setSavingFlashcardIds([]);
   };
 
@@ -278,6 +283,7 @@ export const useFlashcardGeneration = (): UseFlashcardGenerationResult => {
     flashcards,
     generationStats,
     error,
+    isGenerating,
     savingFlashcardIds,
     loadFlashcardsFromResponse,
     updateFlashcard: handleUpdateFlashcard,
