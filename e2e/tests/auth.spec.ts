@@ -1,5 +1,5 @@
 import { test, expect } from "../utils/test-fixtures";
-import { testUser, loginAsTestUser, wait } from "../utils/test-helpers";
+import { testUser, loginAsTestUser } from "../utils/test-helpers";
 
 test.describe("Authentication", () => {
   test("should allow user to log in", async ({ page }) => {

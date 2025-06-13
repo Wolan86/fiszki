@@ -1,4 +1,3 @@
-import type { Page } from "@playwright/test";
 import { expect } from "@playwright/test";
 import { BasePage } from "./BasePage";
 
@@ -6,10 +5,6 @@ import { BasePage } from "./BasePage";
  * Page Object Model for the Flashcard Creator page
  */
 export class CreatorPage extends BasePage {
-  constructor(page: Page) {
-    super(page);
-  }
-
   // Main container locators
   get creatorView() {
     return this.page.getByTestId("flashcard-creator-view");
@@ -63,17 +58,14 @@ export class CreatorPage extends BasePage {
 
     // Check if we're already on the kreator page (after successful login)
     const currentUrl = this.page.url();
-    console.log(`[CreatorPage.goto] Current URL after authentication: ${currentUrl}`);
 
     if (currentUrl.includes("/kreator")) {
-      console.log("[CreatorPage.goto] Already on kreator page, skipping navigation");
       // Just wait for the creator view to be ready
       await this.waitForCreatorView();
       return;
     }
 
     // Only navigate if we're not already on the kreator page
-    console.log("[CreatorPage.goto] Navigating to kreator page...");
     await this.page.goto("/kreator");
     await this.waitForCreatorView();
   }
@@ -110,11 +102,8 @@ export class CreatorPage extends BasePage {
 
       // Wait for auto-save to complete with increased timeout
       await this.page.waitForTimeout(3500); // Increased from 2500ms
-
-      console.log("Source text entered successfully");
     } catch (error) {
-      console.error("Error entering source text:", error);
-      throw error;
+      throw new Error(`Failed to enter source text: ${error instanceof Error ? error.message : String(error)}`);
     }
   }
 
@@ -164,8 +153,6 @@ export class CreatorPage extends BasePage {
   async getAllFlashcards() {
     // Wait for the flashcard grid to be visible
     await this.flashcardGrid.waitFor({ state: "visible", timeout: 10000 });
-
-    console.log("Looking for flashcard items with data-testid pattern flashcard-item-*");
 
     // Use the more specific selector for flashcard items
     return this.page.locator('[data-testid^="flashcard-item-"]').all();

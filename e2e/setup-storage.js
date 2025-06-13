@@ -4,6 +4,10 @@
  * Helper script to set up storage state for Playwright tests
  */
 
+/* eslint-env node */
+/* eslint-disable no-console */
+/* global console, process */
+
 import fs from "fs";
 import path from "path";
 import { execSync } from "child_process";

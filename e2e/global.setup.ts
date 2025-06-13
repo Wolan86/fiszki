@@ -24,7 +24,7 @@ async function waitForServer(url: string, timeout = 30000): Promise<void> {
         console.log(`Server is available at ${url}`);
         return;
       }
-    } catch (error) {
+    } catch {
       // Server not ready yet, continue waiting
     }
 
@@ -38,7 +38,8 @@ async function waitForServer(url: string, timeout = 30000): Promise<void> {
  * Global setup to authenticate once before all tests and create test data
  * This performs an actual login for E2E testing and seeds the database
  */
-async function globalSetup(config: FullConfig) {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+async function globalSetup(_config: FullConfig) {
   // Debug: Check if environment variables are loaded
   console.log("Environment variables check:");
   console.log(`E2E_USERNAME: ${process.env.E2E_USERNAME || "NOT SET"}`);

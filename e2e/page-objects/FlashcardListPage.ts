@@ -1,4 +1,4 @@
-import type { Locator, Page } from "@playwright/test";
+import type { Page } from "@playwright/test";
 import { BasePage } from "./BasePage";
 import { FlashcardListItem } from "./FlashcardListItem";
 import { SearchComponent } from "./SearchComponent";
@@ -104,7 +104,7 @@ export class FlashcardListPage extends BasePage {
         this.flashcardGrid.waitFor({ state: "visible", timeout: 10000 }),
         this.emptyGrid.waitFor({ state: "visible", timeout: 10000 }),
       ]);
-    } catch (error) {
+    } catch {
       // If neither state appears, check if we have any flashcard items at all
       const flashcardCount = await this.getFlashcardCount();
       if (flashcardCount === 0) {

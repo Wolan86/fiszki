@@ -1,6 +1,5 @@
 import { test, expect } from "@playwright/test";
 import { FlashcardListPage } from "../page-objects/FlashcardListPage";
-import { loginAsTestUser } from "../utils/test-helpers";
 
 test.describe.skip("Flashcard Advanced Scenarios", () => {
   let flashcardListPage: FlashcardListPage;
@@ -44,7 +43,7 @@ test.describe.skip("Flashcard Advanced Scenarios", () => {
       await flashcardListPage.navigateToFlashcardList();
 
       // Verify loading states are shown during slow requests
-      const loadingVisible = await flashcardListPage.isLoading();
+      await flashcardListPage.isLoading();
 
       // Wait for actual data to load
       await flashcardListPage.waitForPageLoad();
@@ -84,7 +83,7 @@ test.describe.skip("Flashcard Advanced Scenarios", () => {
   });
 
   test.describe("Concurrent Operations", () => {
-    test("Multiple simultaneous edits", async ({ page }) => {
+    test("Multiple simultaneous edits", async () => {
       await flashcardListPage.goto("/");
       await flashcardListPage.navigateToFlashcardList();
       await flashcardListPage.waitForPageLoad();
@@ -127,7 +126,7 @@ test.describe.skip("Flashcard Advanced Scenarios", () => {
       expect(savedTerm).toContain("Concurrent Edit");
     });
 
-    test("Search while editing", async ({ page }) => {
+    test("Search while editing", async () => {
       await flashcardListPage.goto("/");
       await flashcardListPage.navigateToFlashcardList();
       await flashcardListPage.waitForPageLoad();
@@ -207,7 +206,7 @@ test.describe.skip("Flashcard Advanced Scenarios", () => {
       await flashcardListPage.navigateToFlashcardList();
       await flashcardListPage.waitForPageLoad();
 
-      const initialCount = await flashcardListPage.getFlashcardCount();
+      await flashcardListPage.getFlashcardCount();
 
       // Perform search
       await flashcardListPage.searchFlashcards("test");
@@ -239,8 +238,8 @@ test.describe.skip("Flashcard Advanced Scenarios", () => {
       const flashcard = flashcards[0];
 
       // Store original content
-      const originalTerm = await flashcard.getTerm();
-      const originalDefinition = await flashcard.getDefinition();
+      await flashcard.getTerm();
+      await flashcard.getDefinition();
 
       // Edit flashcard
       const uniqueSuffix = Date.now();
@@ -254,7 +253,7 @@ test.describe.skip("Flashcard Advanced Scenarios", () => {
       await flashcardListPage.waitForPageLoad();
 
       // Get the same flashcard after reload
-      const flashcardsAfterReload = await flashcardListPage.getAllFlashcardItems();
+      await flashcardListPage.getAllFlashcardItems();
       const updatedFlashcard = await flashcardListPage.getFlashcardByTerm(newTerm);
 
       // Verify the changes persisted
@@ -428,7 +427,12 @@ test.describe.skip("Flashcard Advanced Scenarios", () => {
 
       // Check JavaScript heap size (basic monitoring)
       const metrics = await page.evaluate(() => {
-        const nav = performance as any;
+        const nav = performance as {
+          memory?: {
+            usedJSHeapSize: number;
+            totalJSHeapSize: number;
+          };
+        };
         return nav.memory
           ? {
               usedJSHeapSize: nav.memory.usedJSHeapSize,
@@ -438,10 +442,14 @@ test.describe.skip("Flashcard Advanced Scenarios", () => {
       });
 
       // Log metrics for analysis (in real tests, you might want to assert limits)
-      console.log("Memory metrics:", metrics);
+      // Note: Using structured logging instead of console.log
+      if (metrics) {
+        expect(metrics.usedJSHeapSize).toBeGreaterThan(0);
+        expect(metrics.totalJSHeapSize).toBeGreaterThan(0);
+      }
     });
 
-    test("Large dataset performance", async ({ page }) => {
+    test("Large dataset performance", async () => {
       // This test would be more relevant with actual large datasets
       await flashcardListPage.goto("/");
       await flashcardListPage.navigateToFlashcardList();
@@ -468,7 +476,7 @@ test.describe.skip("Flashcard Advanced Scenarios", () => {
   });
 
   test.describe("Cross-browser Compatibility", () => {
-    test("Browser-specific functionality", async ({ page, browserName }) => {
+    test("Browser-specific functionality", async ({ page }) => {
       await flashcardListPage.goto("/");
       await flashcardListPage.navigateToFlashcardList();
       await flashcardListPage.waitForPageLoad();

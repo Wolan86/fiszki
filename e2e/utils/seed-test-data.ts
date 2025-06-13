@@ -1,11 +1,24 @@
 import { createClient } from "@supabase/supabase-js";
 
-// Load environment variables
-const supabaseUrl = process.env.SUPABASE_URL!;
-const supabaseKey = process.env.SUPABASE_PUBLIC_KEY!;
-const testUserId = process.env.E2E_USERNAME_ID!;
-const testUserEmail = process.env.E2E_USERNAME!;
-const testUserPassword = process.env.E2E_PASSWORD!;
+// Load environment variables with validation
+const supabaseUrl = process.env.SUPABASE_URL;
+const supabaseKey = process.env.SUPABASE_PUBLIC_KEY;
+const testUserId = process.env.E2E_USERNAME_ID;
+const testUserEmail = process.env.E2E_USERNAME;
+const testUserPassword = process.env.E2E_PASSWORD;
+
+if (!supabaseUrl || !supabaseKey || !testUserId || !testUserEmail || !testUserPassword) {
+  throw new Error("Missing required environment variables for test data seeding");
+}
+
+// TypeScript now knows these are defined strings
+const validatedEnv = {
+  supabaseUrl,
+  supabaseKey,
+  testUserId,
+  testUserEmail,
+  testUserPassword,
+} as const;
 
 /**
  * Sample flashcards for testing
@@ -55,15 +68,15 @@ export async function seedTestData() {
   console.log("Starting test data seeding...");
 
   // Create Supabase client
-  const supabase = createClient(supabaseUrl, supabaseKey);
+  const supabase = createClient(validatedEnv.supabaseUrl, validatedEnv.supabaseKey);
 
   try {
-    console.log(`Authenticating as test user: ${testUserEmail}`);
+    console.log(`Authenticating as test user: ${validatedEnv.testUserEmail}`);
 
     // Authenticate as the test user
     const { error: authError } = await supabase.auth.signInWithPassword({
-      email: testUserEmail,
-      password: testUserPassword,
+      email: validatedEnv.testUserEmail,
+      password: validatedEnv.testUserPassword,
     });
 
     if (authError) {
@@ -71,12 +84,12 @@ export async function seedTestData() {
       throw authError;
     }
 
-    console.log(`Creating sample flashcards for user: ${testUserId}`);
+    console.log(`Creating sample flashcards for user: ${validatedEnv.testUserId}`);
 
     // Prepare flashcards for insertion
     const flashcardsToInsert = sampleFlashcards.map((flashcard) => ({
       ...flashcard,
-      user_id: testUserId,
+      user_id: validatedEnv.testUserId,
       source_text_id: null,
     }));
 
@@ -108,15 +121,15 @@ export async function cleanupTestData() {
   console.log("Starting test data cleanup...");
 
   // Create Supabase client
-  const supabase = createClient(supabaseUrl, supabaseKey);
+  const supabase = createClient(validatedEnv.supabaseUrl, validatedEnv.supabaseKey);
 
   try {
-    console.log(`Authenticating as test user: ${testUserEmail}`);
+    console.log(`Authenticating as test user: ${validatedEnv.testUserEmail}`);
 
     // Authenticate as the test user
     const { error: authError } = await supabase.auth.signInWithPassword({
-      email: testUserEmail,
-      password: testUserPassword,
+      email: validatedEnv.testUserEmail,
+      password: validatedEnv.testUserPassword,
     });
 
     if (authError) {
@@ -124,13 +137,13 @@ export async function cleanupTestData() {
       throw authError;
     }
 
-    console.log(`Cleaning up data for test user: ${testUserId}`);
+    console.log(`Cleaning up data for test user: ${validatedEnv.testUserId}`);
 
     // Delete flashcards created by test user
     const { error: flashcardsError, count: flashcardsDeleted } = await supabase
       .from("flashcards")
       .delete({ count: "exact" })
-      .eq("user_id", testUserId);
+      .eq("user_id", validatedEnv.testUserId);
 
     if (flashcardsError) {
       console.error("Error deleting flashcards:", flashcardsError);
@@ -143,7 +156,7 @@ export async function cleanupTestData() {
     const { error: sourceTextsError, count: sourceTextsDeleted } = await supabase
       .from("source_texts")
       .delete({ count: "exact" })
-      .eq("user_id", testUserId);
+      .eq("user_id", validatedEnv.testUserId);
 
     if (sourceTextsError) {
       console.error("Error deleting source texts:", sourceTextsError);

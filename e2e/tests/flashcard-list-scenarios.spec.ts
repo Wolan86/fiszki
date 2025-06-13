@@ -9,26 +9,33 @@ test.describe.skip("Flashcard List Scenarios", () => {
   });
 
   test("Debug: Check home page redirect", async ({ page }) => {
+    // eslint-disable-next-line no-console
     console.log("Starting debug test...");
 
     // Navigate to home page
     await flashcardListPage.goto("/");
+    // eslint-disable-next-line no-console
     console.log(`Navigated to home page, current URL: ${page.url()}`);
 
     // Wait a bit to see if there's any redirect
     await page.waitForTimeout(1000);
+    // eslint-disable-next-line no-console
     console.log(`After wait, current URL: ${page.url()}`);
 
     // Check final URL
+    // eslint-disable-next-line no-console
     console.log(`Final URL: ${page.url()}`);
 
     // Check if navigation is visible
     const navVisible = await page.getByTestId("nav-moje-fiszki").isVisible();
+    // eslint-disable-next-line no-console
     console.log(`Nav 'Moje fiszki' visible: ${navVisible}`);
 
     if (!navVisible) {
+      // eslint-disable-next-line no-console
       console.log("Navigation is not visible, checking if on login page");
       const loginFormVisible = await page.locator('form[action="/api/auth/login"]').isVisible();
+      // eslint-disable-next-line no-console
       console.log(`Login form visible: ${loginFormVisible}`);
     }
 
@@ -37,19 +44,25 @@ test.describe.skip("Flashcard List Scenarios", () => {
   });
 
   test("Debug: Check cookie in requests", async ({ page }) => {
+    // eslint-disable-next-line no-console
     console.log("Starting cookie debug test...");
 
     // Listen to all requests to see cookies
     page.on("request", (request) => {
       const cookies = request.headers()["cookie"];
       if (cookies && cookies.includes("sb-ctckruhijobdabxvrwxi-auth-token")) {
+        // eslint-disable-next-line no-console
         console.log(`Request to ${request.url()} has auth cookie`);
+        // eslint-disable-next-line no-console
         console.log(`Cookie header: ${cookies.substring(0, 100)}...`);
       } else {
+        // eslint-disable-next-line no-console
         console.log(`Request to ${request.url()} has NO auth cookie`);
         if (cookies) {
+          // eslint-disable-next-line no-console
           console.log(`Available cookies: ${cookies.substring(0, 100)}...`);
         } else {
+          // eslint-disable-next-line no-console
           console.log(`No cookies at all`);
         }
       }
@@ -57,10 +70,12 @@ test.describe.skip("Flashcard List Scenarios", () => {
 
     // Navigate to home page
     await flashcardListPage.goto("/");
+    // eslint-disable-next-line no-console
     console.log(`Navigated to home page, current URL: ${page.url()}`);
 
     // Wait for any redirects
     await page.waitForTimeout(2000);
+    // eslint-disable-next-line no-console
     console.log(`Final URL: ${page.url()}`);
   });
 
@@ -69,8 +84,10 @@ test.describe.skip("Flashcard List Scenarios", () => {
 
     // Debug: Check cookies before navigation
     const cookies = await page.context().cookies();
+    // eslint-disable-next-line no-console
     console.log(`[Test] Cookies available: ${cookies.length}`);
     cookies.forEach((cookie, index) => {
+      // eslint-disable-next-line no-console
       console.log(
         `[Test] Cookie ${index + 1}: ${cookie.name} = ${cookie.value.substring(0, 50)}... (domain: ${cookie.domain})`
       );
@@ -78,10 +95,12 @@ test.describe.skip("Flashcard List Scenarios", () => {
 
     // Navigate to home page first
     await page.goto("/");
+    // eslint-disable-next-line no-console
     console.log(`[Test] Navigated to home, current URL: ${page.url()}`);
 
     // Check if we're redirected to login (which would indicate auth failure)
     if (page.url().includes("/auth/login")) {
+      // eslint-disable-next-line no-console
       console.log(`[Test] ERROR: Redirected to login page - authentication failed`);
 
       // Take a screenshot for debugging
@@ -104,7 +123,7 @@ test.describe.skip("Flashcard List Scenarios", () => {
     await expect(flashcardListPage.pageTitle).toBeVisible();
   });
 
-  test("Scenario 2: Edit a flashcard", async ({ page }) => {
+  test("Scenario 2: Edit a flashcard", async () => {
     // Navigate to flashcard list
     await flashcardListPage.goto("/");
     await flashcardListPage.navigateToFlashcardList();
@@ -117,10 +136,6 @@ test.describe.skip("Flashcard List Scenarios", () => {
     // Get the first flashcard
     const flashcardItems = await flashcardListPage.getAllFlashcardItems();
     const firstFlashcard = flashcardItems[0];
-
-    // Store original content
-    const originalTerm = await firstFlashcard.getTerm();
-    const originalDefinition = await firstFlashcard.getDefinition();
 
     // Edit the flashcard
     const newTerm = `Edited Term ${Date.now()}`;
@@ -140,7 +155,7 @@ test.describe.skip("Flashcard List Scenarios", () => {
     expect(isEditing).toBeFalsy();
   });
 
-  test("Scenario 3: Search for an edited flashcard", async ({ page }) => {
+  test("Scenario 3: Search for an edited flashcard", async () => {
     // Navigate to flashcard list
     await flashcardListPage.goto("/");
     await flashcardListPage.navigateToFlashcardList();
@@ -157,6 +172,7 @@ test.describe.skip("Flashcard List Scenarios", () => {
 
     if (!searchTerm) {
       test.skip(true, "Flashcard has no term to search for");
+      return; // This line will never be reached, but helps TypeScript understand
     }
 
     // Perform search with partial term
@@ -179,7 +195,7 @@ test.describe.skip("Flashcard List Scenarios", () => {
     expect(foundFlashcard).toBeTruthy();
   });
 
-  test("Scenario 4: Delete a flashcard", async ({ page }) => {
+  test("Scenario 4: Delete a flashcard", async () => {
     // Navigate to flashcard list
     await flashcardListPage.goto("/");
     await flashcardListPage.navigateToFlashcardList();
@@ -208,7 +224,7 @@ test.describe.skip("Flashcard List Scenarios", () => {
     await expect(deletedFlashcard.locator).not.toBeVisible();
   });
 
-  test("Complete E2E Flow: Navigate → Edit → Search → Delete", async ({ page }) => {
+  test("Complete E2E Flow: Navigate → Edit → Search → Delete", async () => {
     // Step 1: Navigate to flashcard list
     await flashcardListPage.goto("/");
     await flashcardListPage.navigateToFlashcardList();
@@ -258,7 +274,7 @@ test.describe.skip("Flashcard List Scenarios", () => {
     }
   });
 
-  test("Search functionality edge cases", async ({ page }) => {
+  test("Search functionality edge cases", async () => {
     await flashcardListPage.goto("/");
     await flashcardListPage.navigateToFlashcardList();
     await flashcardListPage.waitForPageLoad();
@@ -281,7 +297,7 @@ test.describe.skip("Flashcard List Scenarios", () => {
     expect(searchQuery).toBe("");
   });
 
-  test("Edit flashcard with cancel action", async ({ page }) => {
+  test("Edit flashcard with cancel action", async () => {
     await flashcardListPage.goto("/");
     await flashcardListPage.navigateToFlashcardList();
     await flashcardListPage.waitForPageLoad();
@@ -314,7 +330,7 @@ test.describe.skip("Flashcard List Scenarios", () => {
     expect(currentDefinition).toBe(originalDefinition);
   });
 
-  test("Delete flashcard with cancel action", async ({ page }) => {
+  test("Delete flashcard with cancel action", async () => {
     await flashcardListPage.goto("/");
     await flashcardListPage.navigateToFlashcardList();
     await flashcardListPage.waitForPageLoad();
@@ -336,12 +352,9 @@ test.describe.skip("Flashcard List Scenarios", () => {
     await expect(flashcard.locator).toBeVisible();
   });
 
-  test("Page loading states and error handling", async ({ page }) => {
+  test("Page loading states and error handling", async () => {
     await flashcardListPage.goto("/");
     await flashcardListPage.navigateToFlashcardList();
-
-    // Verify loading state appears initially
-    const isLoading = await flashcardListPage.isLoading();
 
     // Wait for page to finish loading
     await flashcardListPage.waitForPageLoad();
@@ -377,7 +390,7 @@ test.describe.skip("Flashcard List Scenarios", () => {
     expect(isAccessible).toBeTruthy();
   });
 
-  test("Multiple flashcard operations", async ({ page }) => {
+  test("Multiple flashcard operations", async () => {
     await flashcardListPage.goto("/");
     await flashcardListPage.navigateToFlashcardList();
     await flashcardListPage.waitForPageLoad();
@@ -407,7 +420,7 @@ test.describe.skip("Flashcard List Scenarios", () => {
     await flashcardListPage.waitForSearchResults();
   });
 
-  test("Search functionality with special characters", async ({ page }) => {
+  test("Search functionality with special characters", async () => {
     await flashcardListPage.goto("/");
     await flashcardListPage.navigateToFlashcardList();
     await flashcardListPage.waitForPageLoad();
@@ -429,7 +442,7 @@ test.describe.skip("Flashcard List Scenarios", () => {
     }
   });
 
-  test("Edit validation - empty fields", async ({ page }) => {
+  test("Edit validation - empty fields", async () => {
     await flashcardListPage.goto("/");
     await flashcardListPage.navigateToFlashcardList();
     await flashcardListPage.waitForPageLoad();
@@ -496,7 +509,7 @@ test.describe.skip("Flashcard List Scenarios", () => {
     await expect(flashcardListPage.searchComponent.container).toBeVisible();
   });
 
-  test("Performance test - loading large number of flashcards", async ({ page }) => {
+  test("Performance test - loading large number of flashcards", async () => {
     await flashcardListPage.goto("/");
     await flashcardListPage.navigateToFlashcardList();
 
@@ -523,34 +536,43 @@ test.describe.skip("Flashcard List Scenarios", () => {
   });
 
   test("Debug: Direct navigation to protected page", async ({ page }) => {
+    // eslint-disable-next-line no-console
     console.log("[Test] Starting direct navigation test...");
 
     // Check cookies before navigation
     const cookies = await page.context().cookies();
+    // eslint-disable-next-line no-console
     console.log(`[Test] Cookies available: ${cookies.length}`);
     cookies.forEach((cookie, index) => {
+      // eslint-disable-next-line no-console
       console.log(
         `[Test] Cookie ${index + 1}: ${cookie.name} = ${cookie.value.substring(0, 50)}... (domain: ${cookie.domain})`
       );
     });
 
     // Navigate directly to a protected page
+    // eslint-disable-next-line no-console
     console.log("[Test] Navigating directly to /kreator...");
     const response = await page.goto("http://localhost:3000/kreator");
+    // eslint-disable-next-line no-console
     console.log(`[Test] Response status: ${response?.status()}`);
+    // eslint-disable-next-line no-console
     console.log(`[Test] Final URL: ${page.url()}`);
 
     // Wait a bit for any redirects
     await page.waitForTimeout(2000);
+    // eslint-disable-next-line no-console
     console.log(`[Test] URL after wait: ${page.url()}`);
 
     // Check if we're on the login page
     if (page.url().includes("/auth/login")) {
+      // eslint-disable-next-line no-console
       console.log("[Test] ERROR: Redirected to login page - authentication failed");
       await page.screenshot({ path: "test-results/auth-debug-direct.png" });
       throw new Error("Authentication failed - user was redirected to login page");
     }
 
+    // eslint-disable-next-line no-console
     console.log("[Test] SUCCESS: Stayed on protected page");
   });
 });

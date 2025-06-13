@@ -1,14 +1,11 @@
 import { test, expect } from "@playwright/test";
 import { FlashcardListPage } from "../page-objects/FlashcardListPage";
-import { CreatorPage } from "../page-objects/CreatorPage";
 
 test.describe.skip("Flashcard Components Integration Tests", () => {
   let flashcardListPage: FlashcardListPage;
-  let creatorPage: CreatorPage;
 
   test.beforeEach(async ({ page }) => {
     flashcardListPage = new FlashcardListPage(page);
-    creatorPage = new CreatorPage(page);
   });
 
   test.describe("Navigation Flow Integration", () => {
@@ -144,7 +141,7 @@ test.describe.skip("Flashcard Components Integration Tests", () => {
   });
 
   test.describe("Search and Edit Integration", () => {
-    test("Search, edit, and verify search results update", async ({ page }) => {
+    test("Search, edit, and verify search results update", async () => {
       await flashcardListPage.goto("/");
       await flashcardListPage.navigateToFlashcardList();
       await flashcardListPage.waitForPageLoad();
@@ -158,6 +155,7 @@ test.describe.skip("Flashcard Components Integration Tests", () => {
       const originalTerm = await targetFlashcard.getTerm();
       if (!originalTerm) {
         test.skip(true, "Flashcard has no term");
+        return;
       }
 
       // Search for the original term
@@ -322,7 +320,10 @@ test.describe.skip("Flashcard Components Integration Tests", () => {
         await page.getByTestId("nav-moje-fiszki").click();
         await flashcardListPage.verifyUrl();
 
-        console.log(`✓ Integration tests passed for ${viewport.name} (${viewport.width}x${viewport.height})`);
+        test.info().attach(`Integration tests passed for ${viewport.name} (${viewport.width}x${viewport.height})`, {
+          contentType: "text/plain",
+          body: `✓ Integration tests passed for ${viewport.name} (${viewport.width}x${viewport.height})`,
+        });
       }
     });
   });
@@ -354,7 +355,10 @@ test.describe.skip("Flashcard Components Integration Tests", () => {
         // Navigation should be reasonably fast
         expect(navTime).toBeLessThan(5000);
 
-        console.log(`Navigation from ${navTest.from} to ${navTest.to}: ${navTime}ms`);
+        test.info().attach(`Navigation from ${navTest.from} to ${navTest.to}: ${navTime}ms`, {
+          contentType: "text/plain",
+          body: `Navigation from ${navTest.from} to ${navTest.to}: ${navTime}ms`,
+        });
       }
     });
   });

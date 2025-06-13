@@ -1,4 +1,4 @@
-import type { Locator, Page } from "@playwright/test";
+import type { Page } from "@playwright/test";
 
 /**
  * Component class for interacting with the search functionality
@@ -94,7 +94,7 @@ export class SearchComponent {
     // Wait for loading indicator to disappear if it was visible
     try {
       await this.loadingIndicator.waitFor({ state: "hidden", timeout: 5000 });
-    } catch (error) {
+    } catch {
       // Loading indicator might not have appeared, which is fine
     }
   }

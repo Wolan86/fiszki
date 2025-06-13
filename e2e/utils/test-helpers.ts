@@ -63,9 +63,8 @@ export const sampleFlashcard = {
  * Test user credentials
  */
 export const testUser = {
-  // Use string type assertion to avoid linter errors with process.env
-  email: (process.env as any).E2E_USERNAME || "test@example.com",
-  password: (process.env as any).E2E_PASSWORD || "test123456",
+  email: process.env.E2E_USERNAME || "test@example.com",
+  password: process.env.E2E_PASSWORD || "test123456",
   name: "Test User",
 };
 
@@ -119,8 +118,15 @@ export async function loginAsTestUser(page: Page): Promise<void> {
 
   // Fill in login form using the correct test IDs
   console.log("Filling form fields...");
-  await page.fill('[data-testid="email-input"]', process.env.E2E_USERNAME!);
-  await page.fill('[data-testid="password-input"]', process.env.E2E_PASSWORD!);
+  const username = process.env.E2E_USERNAME;
+  const password = process.env.E2E_PASSWORD;
+
+  if (!username || !password) {
+    throw new Error("Missing E2E_USERNAME or E2E_PASSWORD environment variables");
+  }
+
+  await page.fill('[data-testid="email-input"]', username);
+  await page.fill('[data-testid="password-input"]', password);
 
   // Wait for the API response when submitting the form
   const responsePromise = page.waitForResponse(
