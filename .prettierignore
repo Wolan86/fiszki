@@ -1,0 +1,29 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+dist/
+build/
+.astro/
+
+# Auto-generated files
+e2e/auth/storageState.json
+playwright-report/
+test-results/
+
+# Environment files
+.env
+.env.local
+.env.production
+
+# Package manager files
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/settings.json 
