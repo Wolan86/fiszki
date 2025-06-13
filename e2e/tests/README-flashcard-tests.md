@@ -7,6 +7,7 @@ Ten katalog zawiera kompleksowe testy end-to-end dla komponentu "Moje fiszki" ap
 ## Struktura testów
 
 ### 📋 `flashcard-list-scenarios.spec.ts`
+
 **Podstawowe scenariusze funkcjonalne**
 
 - ✅ Nawigacja do listy fiszek przez "Moje fiszki"
@@ -25,32 +26,39 @@ Ten katalog zawiera kompleksowe testy end-to-end dla komponentu "Moje fiszki" ap
 - ✅ Testy wydajności
 
 ### 🔧 `flashcard-advanced-scenarios.spec.ts`
+
 **Zaawansowane scenariusze techniczne**
 
 - ⚡ **Integracja sieciowa i API**
+
   - Obsługa błędów sieciowych
   - Wolne odpowiedzi API
   - Mechanizmy retry dla błędów API
 
 - 🔄 **Operacje współbieżne**
+
   - Wieloczesne edycje fiszek
   - Wyszukiwanie podczas edycji
 
 - 🎯 **Edge cases UX**
+
   - Szybkie kolejne operacje
   - Nawigacja wstecz/naprzód w przeglądarce
   - Persistence sesji i przeładowanie
 
 - 📊 **Integralność danych**
+
   - Konsystencja operacji edycji
   - Konsystencja operacji usuwania
 
 - ♿ **Dostępność i UX**
+
   - Kompatybilność ze screen readerami
   - Tryb wysokiego kontrastu
   - Nawigacja tylko klawiaturą
 
 - ⚡ **Wydajność i obciążenie**
+
   - Monitoring użycia pamięci
   - Wydajność z dużymi zestawami danych
 
@@ -58,29 +66,37 @@ Ten katalog zawiera kompleksowe testy end-to-end dla komponentu "Moje fiszki" ap
   - Funkcjonalności specyficzne dla przeglądarek
 
 ### 🔗 `flashcard-integration-tests.spec.ts`
+
 **Testy integracji między komponentami**
 
 - 🧭 **Integracja nawigacji**
+
   - Pełny flow nawigacji między sekcjami
   - Preservacja kontekstu użytkownika
 
 - 🔨 **Integracja Kreator → Lista**
+
   - Tworzenie fiszki i weryfikacja w liście
 
 - 🎓 **Integracja Lista → Nauka**
+
   - Wybór fiszek do sesji nauki
 
 - 🔍 **Integracja Wyszukiwanie → Edycja**
+
   - Edycja fiszek w wynikach wyszukiwania
 
 - ❌ **Obsługa błędów między komponentami**
+
   - Graceful handling błędów w nawigacji
   - Stan uwierzytelnienia
 
 - 🔄 **Synchronizacja danych**
+
   - Konsystencja danych między kartami
 
 - 📱 **Responsywna integracja**
+
   - Działanie na różnych rozmiarach ekranu
 
 - ⚡ **Wydajność integracji**
@@ -135,21 +151,27 @@ npx playwright test --config=e2e/playwright.config.flashcards.ts --headed
 Testy wykorzystują wzorzec Page Object Model dla maintainable kodowania:
 
 ### 🏠 `FlashcardListPage`
+
 Główna klasa dla strony listy fiszek
+
 - Nawigacja i weryfikacja URL
 - Operacje na liście fiszek
 - Integracja z komponentem wyszukiwania
 - Zarządzanie stanami ładowania
 
 ### 📝 `FlashcardListItem`
+
 Klasa dla pojedynczej fiszki
+
 - Operacje edycji (start, save, cancel)
 - Operacje usuwania z obsługą dialogów
 - Pobieranie zawartości fiszki
 - Weryfikacja stanów
 
 ### 🔍 `SearchComponent`
+
 Komponent wyszukiwania
+
 - Wykonywanie wyszukiwań
 - Czyszczenie wyszukiwania
 - Weryfikacja dostępności
@@ -216,18 +238,19 @@ test.skip(flashcardCount === 0, "No flashcards available");
 await page.waitForTimeout(5000);
 
 // ❌ Nie polegaj na selektorach CSS
-const button = page.locator('.btn-primary');
+const button = page.locator(".btn-primary");
 
 // ❌ Nie ignoruj błędów asynchronicznych
 flashcard.edit("term", "def"); // Missing await
 
 // ❌ Nie zakładaj porządku elementów
-const firstFlashcard = page.locator('.flashcard').first();
+const firstFlashcard = page.locator(".flashcard").first();
 ```
 
 ## Data testowe
 
 Testy są zaprojektowane do pracy z istniejącymi danymi użytkownika:
+
 - **Zero-state**: Obsługa pustych list fiszek
 - **Populated-state**: Operacje na istniejących fiszkach
 - **Mixed-state**: Kombinacja różnych scenariuszy
@@ -268,6 +291,7 @@ npx playwright test --headed --debug
 ## Metrics i monitorowanie
 
 Testy zbierają metryki wydajności:
+
 - Czas ładowania strony
 - Czas nawigacji
 - Czas wyszukiwania
@@ -285,4 +309,4 @@ Przy dodawaniu nowych testów:
 
 ---
 
-**📝 Uwaga**: Te testy wymagają uruchomionego serwera deweloperskiego na `localhost:4321` oraz odpowiednio skonfigurowanej bazy danych z danymi testowymi. 
+**📝 Uwaga**: Te testy wymagają uruchomionego serwera deweloperskiego na `localhost:4321` oraz odpowiednio skonfigurowanej bazy danych z danymi testowymi.

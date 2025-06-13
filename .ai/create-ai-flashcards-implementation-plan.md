@@ -1,9 +1,11 @@
 # API Endpoint Implementation Plan: Generate Flashcards from Source Text
 
 ## 1. Przegląd punktu końcowego
+
 Endpoint służy do generowania fiszek edukacyjnych z wykorzystaniem sztucznej inteligencji na podstawie istniejącego tekstu źródłowego. Wywołanie punktu końcowego spowoduje utworzenie określonej liczby fiszek w systemie, które użytkownik będzie mógł następnie zaakceptować lub odrzucić.
 
 ## 2. Szczegóły żądania
+
 - **Metoda HTTP**: POST
 - **Struktura URL**: `/api/source-texts/{id}/generate-flashcards`
 - **Parametry**:
@@ -17,6 +19,7 @@ Endpoint służy do generowania fiszek edukacyjnych z wykorzystaniem sztucznej i
   ```
 
 ## 3. Wykorzystywane typy
+
 ```typescript
 // Input Command
 import type { GenerateFlashcardsCommand } from "../../../types";
@@ -26,6 +29,7 @@ import type { GenerateFlashcardsResponse, FlashcardDto, ApiErrorResponse } from 
 ```
 
 ## 4. Szczegóły odpowiedzi
+
 - **Sukces** (200 OK):
   ```typescript
   {
@@ -44,6 +48,7 @@ import type { GenerateFlashcardsResponse, FlashcardDto, ApiErrorResponse } from 
   - 503 Service Unavailable: Usługa AI jest niedostępna
 
 ## 5. Przepływ danych
+
 1. Walidacja danych wejściowych (id tekstu źródłowego, opcjonalny parametr count)
 2. Pobranie tekstu źródłowego z bazy danych
 3. Sprawdzenie, czy tekst należy do zalogowanego użytkownika
@@ -70,9 +75,10 @@ sequenceDiagram
 ```
 
 ## 6. Względy bezpieczeństwa
+
 - **Uwierzytelnienie**: Endpoint wymaga, aby użytkownik był zalogowany
 - **Autoryzacja**: Tylko właściciel tekstu źródłowego może generować fiszki
-- **Walidacja danych**: 
+- **Walidacja danych**:
   - ID tekstu źródłowego musi być poprawnym UUID
   - Parametr count musi być liczbą całkowitą większą od zera
 - **Ochrona przed nadużyciem**:
@@ -80,8 +86,11 @@ sequenceDiagram
   - Maksymalna liczba fiszek do wygenerowania na żądanie
 
 ## 7. Obsługa błędów
+
 - **401 Unauthorized**:
+
   - Użytkownik nie jest zalogowany
+
   ```json
   {
     "message": "Aby wykonać tę operację, musisz być zalogowany",
@@ -90,14 +99,18 @@ sequenceDiagram
   ```
 
 - **404 Not Found**:
+
   - Tekst źródłowy nie istnieje
+
   ```json
   {
     "message": "Tekst źródłowy o podanym identyfikatorze nie został znaleziony",
     "code": "SOURCE_TEXT_NOT_FOUND"
   }
   ```
+
   - Tekst źródłowy nie należy do zalogowanego użytkownika
+
   ```json
   {
     "message": "Nie masz dostępu do tego tekstu źródłowego",
@@ -106,7 +119,9 @@ sequenceDiagram
   ```
 
 - **422 Unprocessable Entity**:
+
   - Błąd podczas generowania fiszek przez AI
+
   ```json
   {
     "message": "Nie udało się wygenerować fiszek z podanego tekstu",
@@ -116,7 +131,9 @@ sequenceDiagram
     }
   }
   ```
+
   - Niepoprawny parametr count
+
   ```json
   {
     "message": "Parametr 'count' musi być liczbą całkowitą większą od zera",
@@ -134,6 +151,7 @@ sequenceDiagram
   ```
 
 ## 8. Rozważania dotyczące wydajności
+
 - **Cache**: Zastosowanie cache dla wygenerowanych fiszek, aby uniknąć wielokrotnego generowania tych samych fiszek
 - **Optymalizacja zapytań do bazy danych**: Minimalizacja liczby zapytań do bazy danych podczas operacji generowania fiszek
 - **Asynchroniczne generowanie**: Możliwość generowania fiszek asynchronicznie w przypadku długich tekstów źródłowych
@@ -142,8 +160,8 @@ sequenceDiagram
 ## 9. Etapy wdrożenia
 
 ### 1. Utworzenie pliku endpointu
-Utworzenie pliku `src/pages/api/source-texts/[id]/generate-flashcards.ts`:
 
+Utworzenie pliku `src/pages/api/source-texts/[id]/generate-flashcards.ts`:
 
 ### 2. Implementacja usługi AI (src/lib/services/ai.service.ts)
 
@@ -151,11 +169,10 @@ Na obecna chwile wystarczy mock takiej usługi
 
 ### 3. Rozszerzenie istniejącej usługi flashcard (src/lib/services/flashcard.service.ts)
 
-
 ### 4. Rozszerzenie istniejącej usługi source-text (src/lib/services/source-text.service.ts)
 
-
 ### 5. Dodanie zmiennych środowiskowych
+
 Dodanie w pliku `.env` oraz `.env.example`:
 
 ```
@@ -164,7 +181,9 @@ OPENROUTER_MODEL_ID=openai/o3-mini
 ```
 
 ### 6. Dodanie testów jednostkowych
+
 Utworzenie testów dla endpointu i usług.
 
 ### 7. Dokumentacja API
+
 Zaktualizowanie dokumentacji API z uwzględnieniem nowego endpointu.

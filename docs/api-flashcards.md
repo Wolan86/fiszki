@@ -36,8 +36,9 @@ This endpoint allows authenticated users to create flashcards manually. Flashcar
 ```
 
 **Fields:**
+
 - `front_content` - The content displayed on the front of the flashcard (required, 1-2000 characters)
-- `back_content` - The content displayed on the back of the flashcard (required, 1-2000 characters)  
+- `back_content` - The content displayed on the back of the flashcard (required, 1-2000 characters)
 - `source_text_id` - Optional UUID of a source text to link this flashcard to
 
 #### Responses
@@ -50,7 +51,7 @@ This endpoint allows authenticated users to create flashcards manually. Flashcar
   "user_id": "uuid",
   "source_text_id": "uuid | null",
   "front_content": "string",
-  "back_content": "string", 
+  "back_content": "string",
   "creation_type": "manual",
   "accepted": true,
   "generation_time_ms": null,
@@ -62,6 +63,7 @@ This endpoint allows authenticated users to create flashcards manually. Flashcar
 ##### Error Responses
 
 **400 Bad Request - Validation Error**
+
 ```json
 {
   "message": "Validation error",
@@ -75,14 +77,16 @@ This endpoint allows authenticated users to create flashcards manually. Flashcar
 ```
 
 **401 Unauthorized**
+
 ```json
 {
-  "message": "Authentication required", 
+  "message": "Authentication required",
   "code": "UNAUTHORIZED"
 }
 ```
 
 **404 Not Found - Source Text Not Found**
+
 ```json
 {
   "message": "Source text not found",
@@ -91,6 +95,7 @@ This endpoint allows authenticated users to create flashcards manually. Flashcar
 ```
 
 **500 Internal Server Error**
+
 ```json
 {
   "message": "Internal server error",
@@ -103,15 +108,15 @@ This endpoint allows authenticated users to create flashcards manually. Flashcar
 ##### Create Standalone Flashcard
 
 ```javascript
-const response = await fetch('/api/flashcards', {
-  method: 'POST',
+const response = await fetch("/api/flashcards", {
+  method: "POST",
   headers: {
-    'Content-Type': 'application/json'
+    "Content-Type": "application/json",
   },
   body: JSON.stringify({
-    front_content: 'What is React?',
-    back_content: 'A JavaScript library for building user interfaces'
-  })
+    front_content: "What is React?",
+    back_content: "A JavaScript library for building user interfaces",
+  }),
 });
 
 const flashcard = await response.json();
@@ -120,16 +125,16 @@ const flashcard = await response.json();
 ##### Create Flashcard Linked to Source Text
 
 ```javascript
-const response = await fetch('/api/flashcards', {
-  method: 'POST', 
+const response = await fetch("/api/flashcards", {
+  method: "POST",
   headers: {
-    'Content-Type': 'application/json'
+    "Content-Type": "application/json",
   },
   body: JSON.stringify({
-    front_content: 'What is React?',
-    back_content: 'A JavaScript library for building user interfaces',
-    source_text_id: '123e4567-e89b-12d3-a456-426614174000'
-  })
+    front_content: "What is React?",
+    back_content: "A JavaScript library for building user interfaces",
+    source_text_id: "123e4567-e89b-12d3-a456-426614174000",
+  }),
 });
 
 const flashcard = await response.json();
@@ -164,7 +169,7 @@ The API uses structured error responses with standardized error codes:
 - `VALIDATION_ERROR` - Input validation failed
 - `UNAUTHORIZED` - Authentication required or invalid
 - `NOT_FOUND` - Requested resource not found
-- `DATABASE_ERROR` - Database operation failed  
+- `DATABASE_ERROR` - Database operation failed
 - `INTERNAL_SERVER_ERROR` - Unexpected server error
 
 All errors include descriptive messages and appropriate HTTP status codes.
@@ -178,6 +183,6 @@ All errors include descriptive messages and appropriate HTTP status codes.
 ## Security
 
 - Row Level Security (RLS) enforces user data isolation
-- Input validation prevents malicious data injection  
+- Input validation prevents malicious data injection
 - Source text ownership verification prevents unauthorized access
-- Structured error responses avoid information leakage 
+- Structured error responses avoid information leakage

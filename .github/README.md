@@ -5,10 +5,12 @@ Minimalny setup CI/CD dla projektu Astro z kompletnym przepływem testowania i b
 ## Uruchamianie Pipeline
 
 ### Automatyczne uruchamianie
-- **Po push do main**: Pipeline uruchamia się automatycznie  
+
+- **Po push do main**: Pipeline uruchamia się automatycznie
 - **Na pull request do main**: Pipeline weryfikuje zmiany przed merge
 
 ### Manualne uruchamianie
+
 1. Idź do zakładki "Actions" w repozytorium GitHub
 2. Wybierz workflow "CI/CD Pipeline"
 3. Kliknij "Run workflow"
@@ -19,29 +21,34 @@ Minimalny setup CI/CD dla projektu Astro z kompletnym przepływem testowania i b
 Pipeline składa się z 5 jobów uruchamianych w następującej kolejności:
 
 ### 1. Code Quality & Linting
+
 - Sprawdza jakość kodu z ESLint
 - Weryfikuje formatowanie z Prettier
 - **Wymagania**: Wszystkie pliki muszą przejść linting bez errors
 
 ### 2. Unit Tests (Vitest)
+
 - Uruchamia testy jednostkowe z Vitest
 - Generuje raport pokrycia kodu
 - **Zależności**: Code Quality
 - **Wymagania**: Wszystkie testy muszą przejść
 
 ### 3. Production Build
+
 - Buduje aplikację w wersji produkcyjnej
 - Weryfikuje poprawność buildu
 - **Zależności**: Code Quality
 - **Wymagania**: Build musi się zakończyć sukcesem
 
 ### 4. E2E Tests (Playwright)
+
 - Uruchamia testy end-to-end z Playwright
 - Testuje tylko na przeglądarce Chromium (zgodnie z konfiguracją)
 - **Zależności**: Build + Unit Tests
 - **Wymagania**: Wszystkie testy E2E muszą przejść
 
 ### 5. Pipeline Summary
+
 - Podsumowuje wyniki wszystkich jobów
 - **Status**: Pokazuje czy cały pipeline przeszedł pomyślnie
 
@@ -57,6 +64,7 @@ Pipeline generuje następujące artefakty:
 ## Najlepsze praktyki zastosowane
 
 ### GitHub Actions Standards
+
 - ✅ **Deterministic dependencies**: Używa `npm ci` zamiast `npm install`
 - ✅ **Node version from file**: Pobiera wersję z `.nvmrc` zamiast hardkodowania
 - ✅ **Job-level env variables**: Zmienne środowiskowe na poziomie jobów
@@ -76,17 +84,20 @@ Pipeline generuje następujące artefakty:
 ## Rozwiązywanie problemów
 
 ### Pipeline nie przechodzi
+
 1. Sprawdź logi konkretnego joba w GitHub Actions
 2. Uruchom testy lokalnie: `npm run test` i `npm run test:e2e`
 3. Sprawdź linting: `npm run lint`
 4. Zweryfikuj build: `npm run build`
 
 ### Playwright testy nie działają
+
 - Upewnij się, że masz plik `.env.test` z odpowiednimi zmiennymi
 - Sprawdź czy aplikacja startuje poprawnie na porcie 3000
 - Zweryfikuj konfigurację w `playwright.config.ts`
 
 ### Build zawodzi
+
 - Sprawdź błędy TypeScript: `npx astro check`
 - Zweryfikuj czy wszystkie zależności są zainstalowane
-- Sprawdź konfigurację Astro w `astro.config.mjs` 
+- Sprawdź konfigurację Astro w `astro.config.mjs`

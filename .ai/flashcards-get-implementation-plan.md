@@ -25,26 +25,27 @@ Endpoint GET `/api/flashcards` służy do pobierania wszystkich fiszek należąc
 
 ```typescript
 // Input validation
-FlashcardListQueryParams
+FlashcardListQueryParams;
 
 // Response DTOs
-FlashcardListResponse
-FlashcardDto
-ApiErrorResponse
+FlashcardListResponse;
+FlashcardDto;
+ApiErrorResponse;
 
 // Enum types
-FlashcardCreationType
+FlashcardCreationType;
 ```
 
 ## 4. Szczegóły odpowiedzi
 
 **Status 200 - Success**:
+
 ```json
 {
   "data": [
     {
       "id": "uuid",
-      "user_id": "uuid", 
+      "user_id": "uuid",
       "source_text_id": "uuid or null",
       "front_content": "string",
       "back_content": "string",
@@ -57,7 +58,7 @@ FlashcardCreationType
   ],
   "pagination": {
     "total": "number",
-    "limit": "number", 
+    "limit": "number",
     "offset": "number"
   }
 }
@@ -90,7 +91,9 @@ Client Request → API Route → Input Validation → Auth Check → FlashcardSe
 
 ```typescript
 // Przykład walidacji autoryzacji
-const { data: { user } } = await context.locals.supabase.auth.getUser();
+const {
+  data: { user },
+} = await context.locals.supabase.auth.getUser();
 if (!user) {
   return new Response(JSON.stringify({ message: "Unauthorized" }), { status: 401 });
 }
@@ -98,12 +101,12 @@ if (!user) {
 
 ## 7. Obsługa błędów
 
-| Błąd | Status | Opis | Przykład Response |
-|------|--------|------|-------------------|
-| Brak autoryzacji | 401 | Użytkownik nie jest zalogowany | `{"message": "Unauthorized", "code": "AUTH_REQUIRED"}` |
-| Nieprawidłowe parametry | 400 | Błędne query parameters | `{"message": "Invalid parameters", "code": "VALIDATION_ERROR", "details": {...}}` |
-| Błąd bazy danych | 500 | Problem z połączeniem/zapytaniem | `{"message": "Internal server error", "code": "DATABASE_ERROR"}` |
-| Nieprawidłowy enum | 400 | Błędna wartość creation_type | `{"message": "Invalid creation_type", "code": "INVALID_ENUM"}` |
+| Błąd                    | Status | Opis                             | Przykład Response                                                                 |
+| ----------------------- | ------ | -------------------------------- | --------------------------------------------------------------------------------- |
+| Brak autoryzacji        | 401    | Użytkownik nie jest zalogowany   | `{"message": "Unauthorized", "code": "AUTH_REQUIRED"}`                            |
+| Nieprawidłowe parametry | 400    | Błędne query parameters          | `{"message": "Invalid parameters", "code": "VALIDATION_ERROR", "details": {...}}` |
+| Błąd bazy danych        | 500    | Problem z połączeniem/zapytaniem | `{"message": "Internal server error", "code": "DATABASE_ERROR"}`                  |
+| Nieprawidłowy enum      | 400    | Błędna wartość creation_type     | `{"message": "Invalid creation_type", "code": "INVALID_ENUM"}`                    |
 
 ## 8. Rozważania dotyczące wydajności
 
@@ -111,46 +114,54 @@ if (!user) {
 - **Indeksy bazy danych**: Wykorzystanie istniejących indeksów na user_id, source_text_id, creation_type
 - **Sortowanie**: Optymalizacja dla domyślnego sortowania po created_at (desc)
 - **Caching**: Rozważenie cache'owania dla często używanych zapytań
-- **Query optimization**: Użycie select() z określonymi polami zamiast select('*')
+- **Query optimization**: Użycie select() z określonymi polami zamiast select('\*')
 
 ## 9. Etapy wdrożenia
 
 ### Krok 1: Przygotowanie walidacji
+
 - Utworzenie Zod schema dla FlashcardListQueryParams
 - Implementacja helper funkcji do parsowania query parameters
 
-### Krok 2: Implementacja FlashcardService 
+### Krok 2: Implementacja FlashcardService
+
 - Utworzenie/rozszerzenie FlashcardService w `src/lib/services/`
 - Implementacja metody `getFlashcards()` z obsługą filtrów i paginacji
 - Dodanie obsługi błędów i logowania
 
 ### Krok 3: Utworzenie API route
+
 - Utworzenie pliku `src/pages/api/flashcards.ts`
 - Implementacja GET handler
 - Dodanie middleware autoryzacji
 
 ### Krok 4: Implementacja logiki biznesowej
+
 - Walidacja parametrów wejściowych
 - Autoryzacja użytkownika
 - Delegacja do FlashcardService
 - Mapowanie odpowiedzi
 
 ### Krok 5: Obsługa błędów
+
 - Implementacja try-catch blocks
 - Dodanie szczegółowego error logging
 - Zwracanie odpowiednich HTTP status codes
 
 ### Krok 6: Testowanie
+
 - Unit testy dla FlashcardService
 - Integration testy dla API endpoint
 - E2E testy z różnymi scenariuszami
 
 ### Krok 7: Optymalizacja wydajności
+
 - Weryfikacja wykorzystania indeksów
 - Testowanie z dużymi zbiorami danych
 - Implementacja monitoring wydajności
 
 ### Krok 8: Dokumentacja i finalizacja
+
 - Aktualizacja dokumentacji API
 - Dodanie przykładów użycia
 - Code review i finalne testy
@@ -166,4 +177,4 @@ src/
 ├── lib/validation/
 │   └── flashcard.schema.ts              # Nowy plik - Zod schemas
 └── types.ts                             # Modyfikacja - dodanie brakujących typów
-``` 
+```

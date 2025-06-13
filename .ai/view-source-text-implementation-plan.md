@@ -1,9 +1,11 @@
 # API Endpoint Implementation Plan: Create a new source text
 
 ## 1. Przegląd punktu końcowego
+
 Endpoint umożliwia utworzenie nowego zasobu "source text" (tekstu źródłowego), który będzie podstawą do tworzenia fiszek. Zalogowany użytkownik może przesłać tekst źródłowy o długości 1000-10000 znaków, który zostanie zapisany w bazie danych i przypisany do jego konta.
 
 ## 2. Szczegóły żądania
+
 - **Metoda HTTP**: POST
 - **Struktura URL**: `/api/source-texts`
 - **Parametry**:
@@ -19,12 +21,14 @@ Endpoint umożliwia utworzenie nowego zasobu "source text" (tekstu źródłowego
   - `Authorization`: Bearer token JWT (dostarczany automatycznie przez Supabase)
 
 ## 3. Wykorzystywane typy
+
 - `CreateSourceTextCommand` - Model danych wejściowych z klienta
 - `SourceTextDto` - Model danych wyjściowych dla klienta
 - `SourceText` - Model encji w bazie danych
 - `ApiErrorResponse` - Model odpowiedzi z błędem
 
 ## 4. Szczegóły odpowiedzi
+
 - **Sukces (201 Created)**:
   ```json
   {
@@ -53,6 +57,7 @@ Endpoint umożliwia utworzenie nowego zasobu "source text" (tekstu źródłowego
   ```
 
 ## 5. Przepływ danych
+
 1. Żądanie przychodzi do endpointu `/api/source-texts` z metodą POST
 2. Middleware Astro weryfikuje token JWT i udostępnia klienta Supabase przez `context.locals.supabase`
 3. Dane wejściowe są walidowane przy użyciu Zod
@@ -61,8 +66,9 @@ Endpoint umożliwia utworzenie nowego zasobu "source text" (tekstu źródłowego
 6. Nowo utworzony rekord jest zwracany jako odpowiedź
 
 ## 6. Względy bezpieczeństwa
+
 - **Uwierzytelnianie**: JWT token dostarczany przez Supabase Auth
-- **Autoryzacja**: 
+- **Autoryzacja**:
   - Użytkownik musi być zalogowany
   - Row Level Security (RLS) na poziomie bazy danych zapewnia, że użytkownik ma dostęp tylko do własnych danych
 - **Walidacja danych**:
@@ -71,7 +77,8 @@ Endpoint umożliwia utworzenie nowego zasobu "source text" (tekstu źródłowego
   - Użycie Zod do walidacji typu i formatu danych
 
 ## 7. Obsługa błędów
-- **400 Bad Request**: 
+
+- **400 Bad Request**:
   - Brak wymaganego pola `content`
   - Tekst krótszy niż 1000 znaków
   - Tekst dłuższy niż 10000 znaków

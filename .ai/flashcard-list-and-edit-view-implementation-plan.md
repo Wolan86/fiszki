@@ -3,6 +3,7 @@
 ## 1. Przegląd
 
 Ten dokument opisuje implementację uproszczonego widoku listy fiszek:
+
 - **Widok listy fiszek** (`/fiszki`) - umożliwia przeglądanie wszystkich fiszek użytkownika z podstawowym wyszukiwaniem i inline edycją
 
 Widok jest kluczowy dla realizacji historyjek użytkownika dotyczących przeglądania i prostej edycji fiszek.
@@ -12,6 +13,7 @@ Widok jest kluczowy dla realizacji historyjek użytkownika dotyczących przeglą
 - **Widok listy fiszek**: `/fiszki`
 
 Routing będzie implementowany za pomocą Astro pages:
+
 - `src/pages/fiszki/index.astro` - strona listy fiszek
 
 ## 3. Struktura komponentów
@@ -19,7 +21,7 @@ Routing będzie implementowany za pomocą Astro pages:
 ```
 FlashcardListPage (Astro + React)
 ├── SimpleFlashcardSearch (React) - proste wyszukiwanie
-├── FlashcardGrid (React) - siatka fiszek  
+├── FlashcardGrid (React) - siatka fiszek
 │   └── FlashcardViewItem (React) - pojedyncza fiszka z inline edycją
 └── FlashcardPreviewModal (React) - opcjonalny podgląd
 ```
@@ -27,18 +29,20 @@ FlashcardListPage (Astro + React)
 ## 4. Szczegóły komponentów
 
 ### FlashcardListPage
+
 - **Opis komponentu**: Główny komponent strony listy fiszek z prostym interfejsem
 - **Główne elementy**: Container z headerem, wyszukiwaniem i siatką fiszek
 - **Obsługiwane interakcje**: ładowanie danych, wyszukiwanie, inline edycja
 - **Typy**: FlashcardDto[], SearchQuery
 - **Propsy**: brak (komponent strony)
 
-### SimpleFlashcardSearch  
+### SimpleFlashcardSearch
+
 - **Opis komponentu**: Proste pole wyszukiwania po treści fiszek
 - **Główne elementy**: Input z ikoną wyszukiwania, przycisk czyszczenia
 - **Obsługiwane interakcje**: wpisywanie tekstu, czyszczenie wyszukiwania
 - **Typy**: SearchQuery
-- **Propsy**: 
+- **Propsy**:
   ```typescript
   interface SimpleFlashcardSearchProps {
     searchQuery: string;
@@ -48,6 +52,7 @@ FlashcardListPage (Astro + React)
   ```
 
 ### FlashcardGrid
+
 - **Opis komponentu**: Siatka wyświetlająca fiszki w cards układzie
 - **Główne elementy**: Grid layout z fiszkami
 - **Obsługiwane interakcje**: edycja inline, przewracanie fiszek
@@ -63,6 +68,7 @@ FlashcardListPage (Astro + React)
   ```
 
 ### FlashcardViewItem
+
 - **Opis komponentu**: Pojedyncza fiszka z możliwością inline edycji (podobnie jak w kreatorze)
 - **Główne elementy**: Card z contentem, przyciski Edit/Delete, tryb edycji z textarea
 - **Obsługiwane interakcje**: przewracanie, edycja inline, zapisywanie, usuwanie
@@ -108,6 +114,7 @@ interface EditState {
 ## 6. Zarządzanie stanem
 
 ### Hook useFlashcardList (uproszczony)
+
 ```typescript
 interface UseFlashcardListState {
   flashcards: FlashcardDto[];
@@ -127,16 +134,19 @@ interface UseFlashcardListActions {
 ## 7. Integracja API
 
 ### Lista fiszek (GET /api/flashcards)
+
 - **Request**: Optional query parameter `?search=text` dla wyszukiwania
 - **Response**: FlashcardListResponse z wszystkimi fiszkami użytkownika
 - **Error handling**: 401 (redirect do logowania), 500 (wyświetl błąd)
 
-### Aktualizacja fiszki (PUT /api/flashcards/{id})  
+### Aktualizacja fiszki (PUT /api/flashcards/{id})
+
 - **Request**: UpdateFlashcardRequest w body (tylko front_content i back_content)
 - **Response**: Zaktualizowana FlashcardDto
 - **Error handling**: 400 (błąd walidacji), 404 (nie znaleziono), 401 (brak uprawnień)
 
 ### Usuwanie fiszki (DELETE /api/flashcards/{id})
+
 - **Request**: ID fiszki w URL
 - **Response**: 204 No Content
 - **Error handling**: 404 (nie znaleziono), 401 (brak uprawnień)
@@ -144,6 +154,7 @@ interface UseFlashcardListActions {
 ## 8. Interakcje użytkownika
 
 ### Widok listy fiszek:
+
 1. **Wyszukiwanie**: Wpisanie tekstu → filtrowanie listy fiszek po treści
 2. **Przeglądanie**: Kliknięcie fiszki → przewrócenie (przód/tył)
 3. **Edycja inline**: Przycisk "Edytuj" → tryb edycji z textarea → "Zapisz"/"Anuluj"
@@ -152,6 +163,7 @@ interface UseFlashcardListActions {
 ## 9. Implementacja inline edycji (jak w kreatorze)
 
 Edycja będzie działać podobnie jak w `FlashcardItem` z kreatora:
+
 - Po kliknięciu "Edytuj" fiszka przechodzi w tryb edycji
 - Pojawią się textarea dla front_content i back_content
 - Przyciski "Zapisz" i "Anuluj"
@@ -160,18 +172,21 @@ Edycja będzie działać podobnie jak w `FlashcardItem` z kreatora:
 ## 10. Kroki implementacji (uproszczone)
 
 ### Krok 1: Uproszczenie obecnych komponentów
+
 1. Usunięcie FlashcardFilters - zastąpienie prostym wyszukiwaniem
-2. Zastąpienie FlashcardTable prostym FlashcardGrid  
+2. Zastąpienie FlashcardTable prostym FlashcardGrid
 3. Usunięcie masowych operacji z useFlashcardList
 
 ### Krok 2: Implementacja FlashcardViewItem z inline edycją
+
 1. Stworzenie komponentu bazującego na FlashcardItem z kreatora
 2. Dodanie logiki edycji inline z textarea
 3. Integracja z API do zapisywania zmian
 
 ### Krok 3: Prostsze wyszukiwanie i UX
+
 1. SimpleFlashcardSearch z debounced input
 2. Loading states i error handling
 3. Responsywność i accessibility
 
-Taki uproszczony widok będzie o wiele bardziej praktyczny dla przeglądania i prostej edycji fiszek! 
+Taki uproszczony widok będzie o wiele bardziej praktyczny dla przeglądania i prostej edycji fiszek!

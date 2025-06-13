@@ -121,9 +121,15 @@
 
 /* Animacja paska postępu dla komponentu ProgressIndicator */
 @keyframes progress {
-  0% { width: 5%; }
-  50% { width: 70%; }
-  100% { width: 90%; }
+  0% {
+    width: 5%;
+  }
+  50% {
+    width: 70%;
+  }
+  100% {
+    width: 90%;
+  }
 }
 
 .animate-progress {
@@ -195,7 +201,7 @@
   .learning-page-container {
     min-height: calc(100vh - 160px);
   }
-  
+
   .session-content {
     min-height: 300px;
     padding: 1rem;
@@ -210,13 +216,13 @@
 
 /* Animacje dla smooth transitions */
 @keyframes fadeIn {
-  from { 
-    opacity: 0; 
-    transform: translateY(-10px); 
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
   }
-  to { 
-    opacity: 1; 
-    transform: translateY(0); 
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
@@ -225,8 +231,12 @@
 }
 
 @keyframes shimmer {
-  0% { transform: translateX(-100%); }
-  100% { transform: translateX(100%); }
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
 }
 
 @keyframes slideIn {

@@ -3,20 +3,23 @@
 ## 1. Tabele
 
 ### users
+
 Tabela zarządzana przez Supabase Auth.
+
 ```sql
 -- Tabela users jest obsługiwana automatycznie przez Supabase Auth
 -- Nie potrzebujemy dodatkowych pól niestandardowych w tej tabeli
 ```
 
 ### source_texts
+
 ```sql
 CREATE TABLE source_texts (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
     content TEXT NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL,
-    
+
     CONSTRAINT content_min_length CHECK (length(content) >= 1000),
     CONSTRAINT content_max_length CHECK (length(content) <= 10000)
 );
@@ -25,6 +28,7 @@ CREATE INDEX idx_source_texts_user_id ON source_texts(user_id);
 ```
 
 ### flashcards
+
 ```sql
 CREATE TYPE flashcard_creation_type AS ENUM ('ai_generated', 'ai_edited', 'manual');
 
@@ -39,7 +43,7 @@ CREATE TABLE flashcards (
     generation_time_ms INTEGER,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL,
-    
+
     CONSTRAINT non_empty_front CHECK (length(front_content) > 0),
     CONSTRAINT non_empty_back CHECK (length(back_content) > 0),
     CONSTRAINT valid_generation_time CHECK (
@@ -146,18 +150,21 @@ CREATE POLICY flashcards_delete_policy ON flashcards
 ## 6. Dodatkowe uwagi
 
 1. **Skalowalność**:
+
    - Indeksy na kolumnach `user_id` i `source_text_id` zapewnią szybkie wyszukiwanie związanych rekordów
    - Typ UUID dla kluczy podstawowych umożliwia rozproszoną generację kluczy bez konfliktów
 
 2. **Bezpieczeństwo**:
+
    - Row Level Security (RLS) zapewnia, że użytkownicy mają dostęp tylko do swoich danych
    - Ograniczenia CHECK zapewniają integralność danych
 
 3. **Implementacja**:
+
    - Losowy wybór fiszek bez powtórzeń będzie realizowany przez funkcję `get_random_flashcards`
    - W MVP nie przechowujemy odrzuconych fiszek, co jest realizowane przez domyślne `accepted = TRUE`
    - Monitorowanie czasu generowania fiszek przez AI jest możliwe dzięki polu `generation_time_ms`
 
 4. **Przyszłe rozszerzenia**:
    - Struktura pozwala na łatwe dodanie kolekcji fiszek w przyszłości
-   - Możliwe jest rozszerzenie o statusy "nauka" dla fiszek bez zmian w strukturze 
+   - Możliwe jest rozszerzenie o statusy "nauka" dla fiszek bez zmian w strukturze

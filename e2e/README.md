@@ -89,6 +89,7 @@ Tests are organized using Playwright's global setup/teardown and projects:
 - **Teardown**: `e2e/global.teardown.ts` - Cleans up all test data after test completion
 
 The global setup/teardown approach ensures:
+
 - Authentication happens once before all tests
 - Cleanup happens once after all tests complete
 - Better performance compared to per-test authentication
@@ -121,29 +122,33 @@ test("should create flashcard", async ({ page, cleanupTestData }) => {
 If tests are failing due to authentication issues, try the following:
 
 1. **Check Credentials**: Ensure test user credentials are correct in `.env.test` file or as environment variables:
+
    ```
    TEST_USER_EMAIL=test@example.com
    TEST_USER_PASSWORD=test123456
    ```
 
 2. **Delete Storage State**: Remove the stored authentication state and let the tests regenerate it:
+
    ```bash
    rm e2e/auth/storageState.json
    ```
 
 3. **Verify Login Page Selectors**: Ensure the login page selectors in `global.setup.ts` match your actual login form:
+
    ```typescript
    // These selectors must match what's in your app
-   await page.getByTestId('login-form').waitFor({ state: 'visible' });
-   await page.getByTestId('email-input').fill(testUser.email);
-   await page.getByTestId('password-input').fill(testUser.password);
-   await page.getByTestId('login-button').click();
+   await page.getByTestId("login-form").waitFor({ state: "visible" });
+   await page.getByTestId("email-input").fill(testUser.email);
+   await page.getByTestId("password-input").fill(testUser.password);
+   await page.getByTestId("login-button").click();
    ```
 
 4. **Check Redirect URLs**: Verify the redirect URL after login matches your app's flow:
+
    ```typescript
    // This should match where your app redirects after login
-   await page.waitForURL('/**/dashboard', { timeout: 10000 });
+   await page.waitForURL("/**/dashboard", { timeout: 10000 });
    ```
 
 5. **Debug Authentication Flow**: Run the authentication setup in debug mode:
@@ -156,21 +161,25 @@ If tests are failing due to authentication issues, try the following:
 If you encounter this error, it means Playwright can't find the storage state file. Here's how to fix it:
 
 1. **Create the auth directory**:
+
    ```bash
    mkdir -p e2e/auth
    ```
 
 2. **Create an empty state file**:
+
    ```bash
    echo '{"cookies":[],"origins":[]}' > e2e/auth/empty-state.json
    ```
 
 3. **Run the setup manually**:
+
    ```bash
    npx playwright test e2e/global.setup.ts
    ```
 
 4. **Check if the storage state file exists**:
+
    ```bash
    ls -la e2e/auth/storageState.json
    ```
@@ -194,11 +203,11 @@ For tests that don't require authentication, you can skip the authentication set
 
 ```typescript
 // In your test file
-test.describe('Public pages', () => {
+test.describe("Public pages", () => {
   test.use({ storageState: { cookies: [], origins: [] } });
-  
-  test('should display the public homepage', async ({ page }) => {
-    await page.goto('/');
+
+  test("should display the public homepage", async ({ page }) => {
+    await page.goto("/");
     // Your test code
   });
 });
@@ -212,4 +221,4 @@ If you're still having issues:
 2. Verify that your test user has not been locked out or deactivated
 3. Check for CORS or CSP issues that might be affecting the test environment
 4. Clear your browser cache and cookies before running tests
-5. Make sure the app is correctly running in test mode with proper API endpoints 
+5. Make sure the app is correctly running in test mode with proper API endpoints

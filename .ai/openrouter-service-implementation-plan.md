@@ -14,7 +14,7 @@ export class OpenRouterService {
   ) {
     // Validate API key
     if (!this.apiKey) {
-      throw new Error('OPENROUTER_API_KEY is required');
+      throw new Error("OPENROUTER_API_KEY is required");
     }
   }
 }
@@ -38,17 +38,17 @@ export interface OpenRouterOptions {
 }
 
 const DEFAULT_OPTIONS: OpenRouterOptions = {
-  defaultModel: 'openai/gpt-4o-mini',
-  baseUrl: 'https://openrouter.ai/api/v1',
+  defaultModel: "openai/gpt-4o-mini",
+  baseUrl: "https://openrouter.ai/api/v1",
   defaultParams: {
     temperature: 0.7,
     max_tokens: 1000,
     top_p: 1,
     frequency_penalty: 0,
-    presence_penalty: 0
+    presence_penalty: 0,
   },
   timeout: 60000,
-  retries: 3
+  retries: 3,
 };
 ```
 
@@ -87,7 +87,7 @@ Where the types are defined as:
 
 ```typescript
 export interface ChatMessage {
-  role: 'system' | 'user' | 'assistant';
+  role: "system" | "user" | "assistant";
   content: string;
 }
 
@@ -110,7 +110,7 @@ export interface ChatResponse {
 }
 
 export interface ResponseFormat {
-  type: 'json_schema';
+  type: "json_schema";
   json_schema: {
     name: string;
     strict: boolean;
@@ -160,25 +160,30 @@ private parseFlashcardResponse(
 The service will implement comprehensive error handling for the following scenarios:
 
 1. **Authentication Errors**:
+
    - Handle invalid or expired API keys
    - Implement automatic key validation at service initialization
 
 2. **Rate Limiting and Quota Management**:
+
    - Detect rate limit errors from API responses
    - Implement exponential backoff strategy
    - Provide clear error messages about quota exhaustion
 
 3. **Network Errors**:
+
    - Implement retry mechanism for transient network issues
    - Set appropriate timeouts for requests
    - Provide detailed error information for debugging
 
 4. **Validation Errors**:
+
    - Validate input parameters before making API requests
    - Handle malformed JSON responses
    - Provide helpful error messages for invalid inputs
 
 5. **Content Moderation**:
+
    - Handle content filtering rejections from the API
    - Provide alternative suggestion prompts when content is flagged
 
@@ -197,16 +202,19 @@ throw new Error(`OPENROUTER_NETWORK_ERROR: ${detailedMessage}`);
 ## 6. Security Considerations
 
 1. **API Key Management**:
+
    - Store API key in environment variables, never in code
    - Validate presence of API key at service initialization
    - Consider implementing API key rotation capabilities
 
 2. **Content Validation**:
+
    - Sanitize all user inputs before sending to API
    - Implement content filtering for sensitive information
    - Log potential security issues without exposing sensitive data
 
 3. **Rate Limiting**:
+
    - Implement client-side rate limiting to prevent abuse
    - Add monitoring for unusual usage patterns
 
@@ -259,46 +267,42 @@ In `openrouter.types.ts`, define all the interfaces and types needed for the ser
 Here's a concrete example of how the final implementation would look for generating flashcards:
 
 ```typescript
-import { OpenRouterService } from '../lib/services/openrouter.service';
+import { OpenRouterService } from "../lib/services/openrouter.service";
 
 // Initialize the service
 const openRouterService = new OpenRouterService();
 
 // Define a JSON schema for flashcard responses
-const flashcardSchema = openRouterService.createJsonSchema('flashcards', {
-  type: 'object',
+const flashcardSchema = openRouterService.createJsonSchema("flashcards", {
+  type: "object",
   properties: {
     flashcards: {
-      type: 'array',
+      type: "array",
       items: {
-        type: 'object',
+        type: "object",
         properties: {
-          front_content: { type: 'string' },
-          back_content: { type: 'string' }
+          front_content: { type: "string" },
+          back_content: { type: "string" },
         },
-        required: ['front_content', 'back_content']
-      }
-    }
+        required: ["front_content", "back_content"],
+      },
+    },
   },
-  required: ['flashcards']
+  required: ["flashcards"],
 });
 
 // Generate flashcards from text
 try {
-  const flashcards = await openRouterService.generateFlashcards(
-    'Text content to generate flashcards from...',
-    5,
-    {
-      model: 'anthropic/claude-3-haiku',
-      responseFormat: flashcardSchema,
-      temperature: 0.3
-    }
-  );
-  
+  const flashcards = await openRouterService.generateFlashcards("Text content to generate flashcards from...", 5, {
+    model: "anthropic/claude-3-haiku",
+    responseFormat: flashcardSchema,
+    temperature: 0.3,
+  });
+
   console.log(`Generated ${flashcards.length} flashcards`);
 } catch (error) {
-  console.error('Failed to generate flashcards:', error);
+  console.error("Failed to generate flashcards:", error);
 }
 ```
 
-This implementation plan provides a comprehensive roadmap for creating the OpenRouter service while maintaining consistency with the existing codebase architecture and coding practices. 
+This implementation plan provides a comprehensive roadmap for creating the OpenRouter service while maintaining consistency with the existing codebase architecture and coding practices.

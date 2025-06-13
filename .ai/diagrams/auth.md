@@ -89,7 +89,7 @@ sequenceDiagram
         Auth->>Auth: Wysyłanie emaila z linkiem
         Auth->>API: Potwierdzenie wysłania emaila
         API->>Przeglądarka: Informacja o wysłaniu emaila
-        
+
         Przeglądarka->>API: Otwarcie linku resetowania (token)
         API->>Auth: Weryfikacja tokenu resetowania
         alt Token nieważny lub wygasł
@@ -98,7 +98,7 @@ sequenceDiagram
         else Token ważny
             Auth->>API: Token poprawny
             API->>Przeglądarka: Strona zmiany hasła
-            
+
             Przeglądarka->>API: Nowe hasło + token
             API->>API: Walidacja złożoności hasła
             alt Hasło zbyt słabe

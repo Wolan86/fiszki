@@ -1,6 +1,7 @@
 # REST API Plan
 
 ## 1. Resources
+
 - **Users** - Managed by Supabase Auth
 - **Source Texts** - Text sources for flashcard generation (maps to `source_texts` table)
 - **Flashcards** - Learning cards created from source texts or manually (maps to `flashcards` table)
@@ -10,6 +11,7 @@
 ### 2.1 Source Texts
 
 #### Create a new source text
+
 - **Method**: POST
 - **Path**: `/api/source-texts`
 - **Description**: Creates a new source text and optionally generates flashcards from it
@@ -53,13 +55,14 @@
   ```
   **Note**: If `generate_flashcards` is false, the `flashcards` array will be empty and `generation_stats` will be null.
 - **Success Codes**: 201 Created
-- **Error Codes**: 
+- **Error Codes**:
   - 400 Bad Request (validation errors)
   - 401 Unauthorized
   - 422 Unprocessable Entity (AI generation failed, if flashcard generation was requested)
   - 503 Service Unavailable (AI service unavailable, if flashcard generation was requested)
 
 #### Get all source texts
+
 - **Method**: GET
 - **Path**: `/api/source-texts`
 - **Description**: Retrieves all source texts for the authenticated user
@@ -87,10 +90,11 @@
   }
   ```
 - **Success Codes**: 200 OK
-- **Error Codes**: 
+- **Error Codes**:
   - 401 Unauthorized
 
 #### Get a source text
+
 - **Method**: GET
 - **Path**: `/api/source-texts/{id}`
 - **Description**: Retrieves a specific source text
@@ -104,11 +108,12 @@
   }
   ```
 - **Success Codes**: 200 OK
-- **Error Codes**: 
+- **Error Codes**:
   - 401 Unauthorized
   - 404 Not Found
 
 #### Update a source text
+
 - **Method**: PUT
 - **Path**: `/api/source-texts/{id}`
 - **Description**: Updates a specific source text
@@ -128,24 +133,26 @@
   }
   ```
 - **Success Codes**: 200 OK
-- **Error Codes**: 
+- **Error Codes**:
   - 400 Bad Request (validation errors)
   - 401 Unauthorized
   - 404 Not Found
 
 #### Delete a source text
+
 - **Method**: DELETE
 - **Path**: `/api/source-texts/{id}`
 - **Description**: Deletes a specific source text
 - **Response**: No content
 - **Success Codes**: 204 No Content
-- **Error Codes**: 
+- **Error Codes**:
   - 401 Unauthorized
   - 404 Not Found
 
 ### 2.2 Flashcards
 
 #### Create a new flashcard
+
 - **Method**: POST
 - **Path**: `/api/flashcards`
 - **Description**: Creates a new flashcard manually
@@ -173,11 +180,12 @@
   }
   ```
 - **Success Codes**: 201 Created
-- **Error Codes**: 
+- **Error Codes**:
   - 400 Bad Request (validation errors)
   - 401 Unauthorized
 
 #### Get all flashcards
+
 - **Method**: GET
 - **Path**: `/api/flashcards`
 - **Description**: Retrieves all flashcards for the authenticated user
@@ -214,10 +222,11 @@
   }
   ```
 - **Success Codes**: 200 OK
-- **Error Codes**: 
+- **Error Codes**:
   - 401 Unauthorized
 
 #### Get flashcards for learning
+
 - **Method**: GET
 - **Path**: `/api/flashcards/learning`
 - **Description**: Retrieves flashcards in random order for learning
@@ -245,10 +254,11 @@
   }
   ```
 - **Success Codes**: 200 OK
-- **Error Codes**: 
+- **Error Codes**:
   - 401 Unauthorized
 
 #### Get a flashcard
+
 - **Method**: GET
 - **Path**: `/api/flashcards/{id}`
 - **Description**: Retrieves a specific flashcard
@@ -268,11 +278,12 @@
   }
   ```
 - **Success Codes**: 200 OK
-- **Error Codes**: 
+- **Error Codes**:
   - 401 Unauthorized
   - 404 Not Found
 
 #### Update a flashcard
+
 - **Method**: PUT
 - **Path**: `/api/flashcards/{id}`
 - **Description**: Updates a specific flashcard
@@ -300,22 +311,24 @@
   }
   ```
 - **Success Codes**: 200 OK
-- **Error Codes**: 
+- **Error Codes**:
   - 400 Bad Request (validation errors)
   - 401 Unauthorized
   - 404 Not Found
 
 #### Delete a flashcard
+
 - **Method**: DELETE
 - **Path**: `/api/flashcards/{id}`
 - **Description**: Deletes a specific flashcard
 - **Response**: No content
 - **Success Codes**: 204 No Content
-- **Error Codes**: 
+- **Error Codes**:
   - 401 Unauthorized
   - 404 Not Found
 
 #### Regenerate a flashcard
+
 - **Method**: POST
 - **Path**: `/api/flashcards/{id}/regenerate`
 - **Description**: Regenerates an existing flashcard using AI
@@ -335,7 +348,7 @@
   }
   ```
 - **Success Codes**: 200 OK
-- **Error Codes**: 
+- **Error Codes**:
   - 401 Unauthorized
   - 404 Not Found
   - 422 Unprocessable Entity (AI generation failed)
@@ -344,6 +357,7 @@
 ## 3. Authentication and Authorization
 
 ### Authentication
+
 - Supabase Auth will be used for authentication
 - JWT tokens will be used to authenticate API requests
 - Each request must include the JWT token in the `Authorization` header:
@@ -352,6 +366,7 @@
   ```
 
 ### Authorization
+
 - Row Level Security (RLS) in Supabase will ensure users can only access their own data
 - The API will enforce the same authorization rules before processing requests
 - All resources are private to the user who created them
@@ -359,6 +374,7 @@
 ## 4. Validation and Business Logic
 
 ### Source Texts
+
 - **Validation**:
   - Content must be between 1000 and 10000 characters
   - User must be authenticated
@@ -371,6 +387,7 @@
   - AI generation during source text creation should be atomic - if flashcard generation fails, the source text creation should still succeed
 
 ### Flashcards
+
 - **Validation**:
   - Front content must not be empty
   - Back content must not be empty
@@ -385,6 +402,7 @@
   - Flashcards in learning mode are randomly ordered and only include accepted flashcards
 
 ### AI Generation
+
 - **Validation**:
   - Source text content must be valid (1000-10000 characters)
   - User must be authenticated

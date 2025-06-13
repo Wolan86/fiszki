@@ -15,7 +15,7 @@ e2e/
 ├── page-objects/        # Page Object Models for all pages
 │   ├── BasePage.ts      # Base page with common methods
 │   ├── CreatorPage.ts   # Flashcard creator page
-│   └── FlashcardComponent.ts  # Flashcard component 
+│   └── FlashcardComponent.ts  # Flashcard component
 ├── tests/               # Test files
 │   └── flashcard-creator.spec.ts # Tests for flashcard creator
 ├── utils/               # Utilities for testing
@@ -47,6 +47,7 @@ Tests requiring authentication use a global setup to login once and reuse the au
 To set up test user credentials:
 
 1. Create a `.env.test` file with test user credentials:
+
 ```
 TEST_USER_EMAIL=test@example.com
 TEST_USER_PASSWORD=test123456
@@ -72,7 +73,7 @@ For stable element selection, we use `data-test-id` attributes:
 
 ```typescript
 // In Playwright test
-await page.getByTestId('generate-button').click();
+await page.getByTestId("generate-button").click();
 ```
 
 #### Test Case Structure
@@ -80,15 +81,15 @@ await page.getByTestId('generate-button').click();
 We follow the AAA (Arrange-Act-Assert) pattern:
 
 ```typescript
-test('should generate flashcards', async ({ page }) => {
+test("should generate flashcards", async ({ page }) => {
   // Arrange
   const creatorPage = new CreatorPage(page);
   const sampleText = generateSampleText(1000);
-  
+
   // Act
   await creatorPage.goto();
   await creatorPage.generateFlashcards(sampleText);
-  
+
   // Assert
   const flashcards = await creatorPage.getAllFlashcards();
   expect(flashcards.length).toBeGreaterThan(0);
@@ -111,4 +112,4 @@ Component tests will focus on testing individual components in isolation.
 4. **Minimize waits** - Use explicit waiting mechanisms instead of timeouts
 5. **Test real user flows** - Focus on testing complete user journeys
 6. **Keep the test data clear** - Use helper functions to generate test data
-7. **Handle authentication properly** - Use global setup for login to avoid repetitive login steps 
+7. **Handle authentication properly** - Use global setup for login to avoid repetitive login steps
