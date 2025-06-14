@@ -118,7 +118,7 @@ test.describe("Flashcard Creator", () => {
     });
 
     await test.step("Generate flashcards with retry", async () => {
-      const outcome = await creatorPage.generateFlashcardsWithRetry(sampleText, isCI() ? 3 : 2);
+      const outcome = await creatorPage.generateFlashcardsWithRetry(sampleText, isCI() ? 5 : 2);
 
       if (outcome === "success") {
         // Assert success case

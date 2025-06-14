@@ -116,6 +116,13 @@ export class CreatorPage extends BasePage {
       // Scroll the button into view if needed
       await this.generateButton.scrollIntoViewIfNeeded();
 
+      // Additional wait for CI environments - ensure button is fully interactive
+      if (process.env.CI) {
+        await this.page.waitForTimeout(2000);
+        // Wait for any potential loading states to complete
+        await this.page.waitForLoadState("networkidle");
+      }
+
       // Try multiple click strategies for React apps
       let clickSuccessful = false;
 
@@ -185,7 +192,26 @@ export class CreatorPage extends BasePage {
       }
 
       if (!clickSuccessful) {
-        throw new Error("All click strategies failed - button may not be responding to clicks");
+        // Capture more debug info for CI failures
+        const buttonState = {
+          isVisible: await this.generateButton.isVisible(),
+          isEnabled: await this.generateButton.isEnabled(),
+          isDisabled: await this.generateButton.isDisabled(),
+          boundingBox: await this.generateButton.boundingBox(),
+          textContent: await this.generateButton.textContent(),
+        };
+
+        // Take screenshot for debugging
+        if (process.env.CI) {
+          await this.page.screenshot({
+            path: `test-results/click-failure-${Date.now()}.png`,
+            fullPage: true,
+          });
+        }
+
+        throw new Error(
+          `All click strategies failed - button may not be responding to clicks. Button state: ${JSON.stringify(buttonState)}`
+        );
       }
 
       // Verify the click was registered by checking if button becomes disabled

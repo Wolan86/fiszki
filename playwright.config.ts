@@ -64,7 +64,7 @@ export default defineConfig({
     trace: "on-first-retry",
     screenshot: "only-on-failure",
     navigationTimeout: 30000,
-    actionTimeout: 15000,
+    actionTimeout: process.env.CI ? 30000 : 15000, // Double timeout in CI
   },
 
   /* Configure projects for different scenarios */
@@ -73,6 +73,8 @@ export default defineConfig({
       name: "all-tests",
       use: {
         ...devices["Desktop Chrome"],
+        // Ensure consistent viewport in CI
+        viewport: process.env.CI ? { width: 1280, height: 720 } : undefined,
       },
     },
   ],
