@@ -74,7 +74,7 @@ export default defineConfig({
       use: {
         ...devices["Desktop Chrome"],
         // Ensure consistent viewport in CI
-        viewport: process.env.CI ? { width: 1280, height: 720 } : undefined,
+        viewport: process.env.CI ? { width: 10920, height: 1080 } : undefined,
       },
     },
   ],
