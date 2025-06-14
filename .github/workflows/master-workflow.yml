@@ -108,6 +108,7 @@ jobs:
     name: E2E Tests (Playwright)
     runs-on: ubuntu-latest
     needs: [build, unit-tests]
+    environment: master workflow  # Add this if secrets are in an environment
 
     env:
       NODE_VERSION: "22.14.0"
