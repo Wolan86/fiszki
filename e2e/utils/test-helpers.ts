@@ -2,6 +2,8 @@
  * Test helpers for E2E tests
  */
 
+/* eslint-disable no-console */
+
 import fs from "fs";
 import path from "path";
 import type { Page } from "@playwright/test";
@@ -201,4 +203,108 @@ export async function loginAsTestUser(page: Page): Promise<void> {
   console.log(`[loginAsTestUser] Saved storage state with ${storageState.cookies.length} cookies`);
 
   console.log("[loginAsTestUser] Login verification successful");
+}
+
+/**
+ * Wait with exponential backoff for better reliability in CI environments
+ */
+export async function waitWithBackoff(
+  page: Page,
+  condition: () => Promise<boolean>,
+  maxAttempts = 5,
+  baseDelay = 1000
+): Promise<boolean> {
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    try {
+      const result = await condition();
+      if (result) return true;
+    } catch (error) {
+      console.warn(`Attempt ${attempt} failed:`, error);
+    }
+
+    if (attempt < maxAttempts) {
+      const delay = baseDelay * Math.pow(2, attempt - 1);
+      console.log(`Waiting ${delay}ms before retry...`);
+      await page.waitForTimeout(delay);
+    }
+  }
+
+  return false;
+}
+
+/**
+ * Debug page state for troubleshooting timeouts
+ */
+export async function debugPageState(page: Page, context: string): Promise<void> {
+  console.log(`\n=== DEBUG: ${context} ===`);
+  console.log("URL:", page.url());
+  console.log("Title:", await page.title());
+
+  // Check for common elements
+  const elements = [
+    "generate-button",
+    "flashcard-generation-progress",
+    "generated-flashcards-result",
+    "flashcard-generation-error",
+    "generation-error-message",
+  ];
+
+  for (const elementId of elements) {
+    try {
+      const locator = page.locator(`[data-testid="${elementId}"]`);
+      const isVisible = await locator.isVisible();
+      const count = await locator.count();
+      console.log(`${elementId}: visible=${isVisible}, count=${count}`);
+    } catch (error) {
+      console.log(`${elementId}: error checking - ${error}`);
+    }
+  }
+
+  // Check for any error messages in console
+  console.log("=== END DEBUG ===\n");
+}
+
+/**
+ * Check if running in CI environment
+ */
+export function isCI(): boolean {
+  return !!(process.env.CI || process.env.GITHUB_ACTIONS);
+}
+
+/**
+ * Get appropriate timeout based on environment
+ */
+export function getTimeout(baseTimeout: number): number {
+  return isCI() ? baseTimeout * 2 : baseTimeout;
+}
+
+/**
+ * Retry an operation with configurable attempts
+ */
+export async function retryOperation<T>(
+  operation: () => Promise<T>,
+  maxRetries = 3,
+  delayMs = 1000,
+  context = "operation"
+): Promise<T> {
+  let lastError: Error | undefined;
+
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      console.log(`${context} - attempt ${attempt}/${maxRetries}`);
+      return await operation();
+    } catch (error) {
+      lastError = error instanceof Error ? error : new Error(String(error));
+      console.warn(`${context} - attempt ${attempt} failed:`, lastError.message);
+
+      if (attempt < maxRetries) {
+        console.log(`Retrying in ${delayMs}ms...`);
+        await new Promise((resolve) => setTimeout(resolve, delayMs));
+      }
+    }
+  }
+
+  throw new Error(
+    `${context} failed after ${maxRetries} attempts. Last error: ${lastError?.message || "Unknown error"}`
+  );
 }

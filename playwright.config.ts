@@ -84,6 +84,12 @@ export default defineConfig({
     reuseExistingServer: !process.env.CI,
     env: {
       NODE_ENV: "test",
+      // Pass environment variables from .env.test to the dev server
+      OPENROUTER_API_KEY: process.env.OPENROUTER_API_KEY || "",
+      VITE_OPENROUTER_API_KEY: process.env.VITE_OPENROUTER_API_KEY || "",
+      // Pass other relevant environment variables
+      SUPABASE_URL: process.env.SUPABASE_URL || "",
+      SUPABASE_PUBLIC_KEY: process.env.SUPABASE_PUBLIC_KEY || "",
     },
   },
 });

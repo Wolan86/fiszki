@@ -175,10 +175,11 @@ describe("FlashcardViewItem", () => {
       expect(saveButton).toBeInTheDocument();
       expect(saveButton).toBeDisabled();
 
-      // Wait for save to complete
+      // Wait for save to complete and exit edit mode
       await waitFor(() => {
-        expect(onEditSpy).toHaveBeenCalledTimes(1);
+        expect(screen.queryByText("Zapisywanie...")).not.toBeInTheDocument();
       });
+      expect(onEditSpy).toHaveBeenCalledTimes(1);
     });
 
     it("should handle save errors gracefully", async () => {
@@ -190,13 +191,20 @@ describe("FlashcardViewItem", () => {
       // Act
       fireEvent.click(screen.getByText("Zapisz"));
 
+      // Wait for the promise to reject and state to update
+      await waitFor(async () => {
+        expect(onEditSpy).toHaveBeenCalledTimes(1);
+      });
+
       // Wait for error to be handled and button text to revert
-      const saveButton = await screen.findByText("Zapisz");
+      await waitFor(() => {
+        const saveButton = screen.getByText("Zapisz");
+        expect(saveButton).not.toBeDisabled();
+      });
 
       // Assert - should still be in edit mode
       expect(screen.getByDisplayValue("Test front content")).toBeInTheDocument();
-      expect(saveButton).toBeInTheDocument();
-      expect(saveButton).not.toBeDisabled();
+      expect(screen.getByText("Zapisz")).toBeInTheDocument();
     });
 
     it("should cancel edit mode when cancel is clicked", () => {

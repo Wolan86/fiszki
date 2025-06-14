@@ -55,6 +55,17 @@ export default defineConfig({
   /* Configure projects for major browsers */
   projects: [
     {
+      name: "flashcard-creator",
+      testMatch: "**/flashcard-creator.spec.ts",
+      use: {
+        ...devices["Desktop Chrome"],
+        storageState: storageStatePath,
+      },
+      timeout: 120000, // 2 minutes for creator tests (including generation time)
+      retries: process.env.CI ? 3 : 1, // More retries for creator tests
+    },
+
+    {
       name: "flashcard-basic-scenarios",
       testMatch: "**/flashcard-list-scenarios.spec.ts",
       use: {
@@ -117,6 +128,15 @@ export default defineConfig({
     url: "http://localhost:3000",
     reuseExistingServer: !process.env.CI,
     timeout: 120000,
+    env: {
+      NODE_ENV: "test",
+      // Pass environment variables from .env.test to the dev server
+      OPENROUTER_API_KEY: process.env.OPENROUTER_API_KEY || "",
+      VITE_OPENROUTER_API_KEY: process.env.VITE_OPENROUTER_API_KEY || "",
+      // Pass other relevant environment variables
+      SUPABASE_URL: process.env.SUPABASE_URL || "",
+      SUPABASE_PUBLIC_KEY: process.env.SUPABASE_PUBLIC_KEY || "",
+    },
   },
 
   /* Global setup and teardown */
@@ -124,8 +144,8 @@ export default defineConfig({
   globalTeardown: "./global.teardown.ts",
 
   /* Test timeout */
-  timeout: 30000,
+  timeout: process.env.CI ? 90000 : 30000, // Longer timeout in CI
   expect: {
-    timeout: 10000,
+    timeout: process.env.CI ? 15000 : 10000, // Longer expect timeout in CI
   },
 });
