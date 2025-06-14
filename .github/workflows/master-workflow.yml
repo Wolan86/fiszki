@@ -136,12 +136,20 @@ jobs:
 
       - name: Debug environment variables
         run: |
-          echo "Checking environment variables..."
-          echo "SUPABASE_URL: ${SUPABASE_URL:0:20}..."
-          echo "SUPABASE_PUBLIC_KEY: ${SUPABASE_PUBLIC_KEY:0:20}..."
-          echo "E2E_USERNAME_ID: $E2E_USERNAME_ID"
-          echo "E2E_USERNAME: $E2E_USERNAME"
-          echo "E2E_PASSWORD: ${E2E_PASSWORD:0:5}..."
+          echo "=== Repository Debug Info ==="
+          echo "Repository: ${{ github.repository }}"
+          echo "Event: ${{ github.event_name }}"
+          echo "Ref: ${{ github.ref }}"
+          echo "Actor: ${{ github.actor }}"
+          echo ""
+          echo "=== Secret Length Check ==="
+          echo "SUPABASE_URL length: ${#SUPABASE_URL}"
+          echo "SUPABASE_PUBLIC_KEY length: ${#SUPABASE_PUBLIC_KEY}"
+          echo "E2E_USERNAME_ID length: ${#E2E_USERNAME_ID}"
+          echo "E2E_USERNAME length: ${#E2E_USERNAME}"
+          echo "E2E_PASSWORD length: ${#E2E_PASSWORD}"
+          echo ""
+          echo "=== Environment Variables Preview ==="
 
       - name: Run E2E tests
         run: npm run test:e2e
