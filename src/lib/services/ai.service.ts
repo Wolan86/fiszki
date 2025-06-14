@@ -38,6 +38,7 @@ export async function generateFlashcardsFromText(text: string, count = 5): Promi
       generation_time_ms: generationTime,
     }));
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error("Error in AI flashcard generation:", error);
     throw new Error(`AI_SERVICE_UNAVAILABLE: ${error instanceof Error ? error.message : String(error)}`);
   }

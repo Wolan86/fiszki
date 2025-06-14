@@ -52,6 +52,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
     });
 
     // Log the response for debugging
+    // eslint-disable-next-line no-console
     console.log("Supabase signUp response:", {
       user: data.user
         ? {
@@ -66,6 +67,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
     });
 
     if (error) {
+      // eslint-disable-next-line no-console
       console.error("Supabase registration error:", error);
 
       // Handle specific error cases
@@ -124,6 +126,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
       { status: 201, headers: { "Content-Type": "application/json" } }
     );
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error("Error during registration:", error);
     return new Response(
       JSON.stringify({

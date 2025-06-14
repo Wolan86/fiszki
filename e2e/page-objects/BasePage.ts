@@ -53,6 +53,7 @@ export class BasePage {
 
       this.isAuthenticated = true;
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error("Failed to authenticate:", error);
       throw error;
     }
@@ -84,6 +85,7 @@ export class BasePage {
 
       this.isAuthenticated = false;
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error("Failed to logout:", error);
     }
   }

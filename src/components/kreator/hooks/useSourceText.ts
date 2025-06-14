@@ -42,51 +42,8 @@ export const useSourceText = ({
     [minWordCount, maxWordCount]
   );
 
-  // Efekt do aktualizacji licznika słów i walidacji przy zmianie contentu
-  useEffect(() => {
-    const count = countWords(content);
-    setWordCount(count);
-
-    const newErrors = validateContent(content, count);
-    setErrors(newErrors);
-    setIsValid(newErrors.length === 0 && count >= minWordCount && count <= maxWordCount);
-
-    // Autosave z lepszą logiką - tylko gdy nie generujemy fiszek
-    if (content !== lastSavedContent && content.trim() !== "" && !isGeneratingFlashcards && !isSaving) {
-      // Resetujemy poprzedni timer jeśli istnieje
-      if (saveTimerRef.current) {
-        clearTimeout(saveTimerRef.current);
-      }
-
-      // Ustawiamy nowy timer do autosave z opóźnieniem określonym w opcjach
-      saveTimerRef.current = setTimeout(() => {
-        if (content.trim() !== "" && content !== lastSavedContent && !isGeneratingFlashcards && !isSaving) {
-          handleSaveSourceText();
-        }
-      }, autosaveDelay);
-    }
-
-    // Cleanup – wykonuje się przy odmontowaniu lub gdy któryś z zależności się zmieni.
-    return () => {
-      if (saveTimerRef.current) {
-        clearTimeout(saveTimerRef.current);
-        saveTimerRef.current = null;
-      }
-    };
-  }, [
-    content,
-    lastSavedContent,
-    minWordCount,
-    maxWordCount,
-    autosaveDelay,
-    isGeneratingFlashcards,
-    isSaving,
-    countWords,
-    validateContent,
-  ]);
-
   // Funkcja do zapisywania tekstu źródłowego (bez generowania fiszek)
-  const handleSaveSourceText = async (): Promise<SourceTextDto | null> => {
+  const handleSaveSourceText = useCallback(async (): Promise<SourceTextDto | null> => {
     try {
       // Nie zapisujemy jeśli generujemy fiszki
       if (isGeneratingFlashcards) {
@@ -129,7 +86,60 @@ export const useSourceText = ({
     } finally {
       setIsSaving(false);
     }
-  };
+  }, [
+    content,
+    lastSavedContent,
+    isGeneratingFlashcards,
+    countWords,
+    validateContent,
+    setIsSaving,
+    setLastSaved,
+    setLastSavedContent,
+  ]);
+
+  // Efekt do aktualizacji licznika słów i walidacji przy zmianie contentu
+  useEffect(() => {
+    const count = countWords(content);
+    setWordCount(count);
+
+    const newErrors = validateContent(content, count);
+    setErrors(newErrors);
+    setIsValid(newErrors.length === 0 && count >= minWordCount && count <= maxWordCount);
+
+    // Autosave z lepszą logiką - tylko gdy nie generujemy fiszek
+    if (content !== lastSavedContent && content.trim() !== "" && !isGeneratingFlashcards && !isSaving) {
+      // Resetujemy poprzedni timer jeśli istnieje
+      if (saveTimerRef.current) {
+        clearTimeout(saveTimerRef.current);
+      }
+
+      // Ustawiamy nowy timer do autosave z opóźnieniem określonym w opcjach
+      saveTimerRef.current = setTimeout(() => {
+        if (content.trim() !== "" && content !== lastSavedContent && !isGeneratingFlashcards && !isSaving) {
+          handleSaveSourceText();
+        }
+      }, autosaveDelay);
+    }
+
+    // Cleanup – wykonuje się przy odmontowaniu lub gdy któryś z zależności się zmieni.
+    return () => {
+      if (saveTimerRef.current) {
+        clearTimeout(saveTimerRef.current);
+        saveTimerRef.current = null;
+      }
+    };
+  }, [
+    content,
+    lastSavedContent,
+    minWordCount,
+    maxWordCount,
+    autosaveDelay,
+    isGeneratingFlashcards,
+    isSaving,
+    countWords,
+    validateContent,
+    handleSaveSourceText,
+  ]);
 
   // Funkcja do zapisywania tekstu i generowania fiszek w jednym calu
   const saveSourceTextAndGenerateFlashcards = async (

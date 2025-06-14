@@ -65,12 +65,14 @@ const sampleFlashcards = [
  * Seeds test data for E2E tests
  */
 export async function seedTestData() {
+  // eslint-disable-next-line no-console
   console.log("Starting test data seeding...");
 
   // Create Supabase client
   const supabase = createClient(validatedEnv.supabaseUrl, validatedEnv.supabaseKey);
 
   try {
+    // eslint-disable-next-line no-console
     console.log(`Authenticating as test user: ${validatedEnv.testUserEmail}`);
 
     // Authenticate as the test user
@@ -80,10 +82,12 @@ export async function seedTestData() {
     });
 
     if (authError) {
+      // eslint-disable-next-line no-console
       console.error("Failed to authenticate test user:", authError);
       throw authError;
     }
 
+    // eslint-disable-next-line no-console
     console.log(`Creating sample flashcards for user: ${validatedEnv.testUserId}`);
 
     // Prepare flashcards for insertion
@@ -97,18 +101,22 @@ export async function seedTestData() {
     const { data, error: insertError } = await supabase.from("flashcards").insert(flashcardsToInsert).select("*");
 
     if (insertError) {
+      // eslint-disable-next-line no-console
       console.error("Error inserting flashcards:", insertError);
       throw insertError;
     }
 
+    // eslint-disable-next-line no-console
     console.log(`Successfully created ${data?.length || 0} sample flashcards`);
 
     // Sign out after seeding
     await supabase.auth.signOut();
 
+    // eslint-disable-next-line no-console
     console.log("Test data seeding completed successfully");
     return data;
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error("Error during test data seeding:", error);
     throw error;
   }
@@ -118,12 +126,14 @@ export async function seedTestData() {
  * Cleans up test data
  */
 export async function cleanupTestData() {
+  // eslint-disable-next-line no-console
   console.log("Starting test data cleanup...");
 
   // Create Supabase client
   const supabase = createClient(validatedEnv.supabaseUrl, validatedEnv.supabaseKey);
 
   try {
+    // eslint-disable-next-line no-console
     console.log(`Authenticating as test user: ${validatedEnv.testUserEmail}`);
 
     // Authenticate as the test user
@@ -133,10 +143,12 @@ export async function cleanupTestData() {
     });
 
     if (authError) {
+      // eslint-disable-next-line no-console
       console.error("Failed to authenticate test user:", authError);
       throw authError;
     }
 
+    // eslint-disable-next-line no-console
     console.log(`Cleaning up data for test user: ${validatedEnv.testUserId}`);
 
     // Delete flashcards created by test user
@@ -146,10 +158,12 @@ export async function cleanupTestData() {
       .eq("user_id", validatedEnv.testUserId);
 
     if (flashcardsError) {
+      // eslint-disable-next-line no-console
       console.error("Error deleting flashcards:", flashcardsError);
       throw flashcardsError;
     }
 
+    // eslint-disable-next-line no-console
     console.log(`Deleted ${flashcardsDeleted || 0} flashcards`);
 
     // Delete source texts created by test user
@@ -159,17 +173,21 @@ export async function cleanupTestData() {
       .eq("user_id", validatedEnv.testUserId);
 
     if (sourceTextsError) {
+      // eslint-disable-next-line no-console
       console.error("Error deleting source texts:", sourceTextsError);
       throw sourceTextsError;
     }
 
+    // eslint-disable-next-line no-console
     console.log(`Deleted ${sourceTextsDeleted || 0} source texts`);
 
     // Sign out after cleanup
     await supabase.auth.signOut();
 
+    // eslint-disable-next-line no-console
     console.log("Test data cleanup completed successfully");
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error("Error during test data cleanup:", error);
     throw error;
   }
@@ -178,6 +196,7 @@ export async function cleanupTestData() {
 // If this script is run directly, seed the data
 if (import.meta.url === `file://${process.argv[1]}`) {
   seedTestData().catch((error) => {
+    // eslint-disable-next-line no-console
     console.error("Failed to seed test data:", error);
     process.exit(1);
   });

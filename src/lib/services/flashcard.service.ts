@@ -225,7 +225,6 @@ export async function updateFlashcard(
     .single();
 
   if (error) {
-    console.error("Error updating flashcard:", error);
     throw new Error(`DATABASE_ERROR: ${error.message}`);
   }
 
@@ -249,59 +248,53 @@ export async function getFlashcards(
   queryParams: FlashcardListQueryParams,
   userId: string
 ): Promise<FlashcardListResponse> {
-  try {
-    // Start building the query
-    let query = supabase.from("flashcards").select("*", { count: "exact" }).eq("user_id", userId);
+  // Start building the query
+  let query = supabase.from("flashcards").select("*", { count: "exact" }).eq("user_id", userId);
 
-    // Apply filters
-    if (queryParams.source_text_id) {
-      query = query.eq("source_text_id", queryParams.source_text_id);
-    }
-
-    if (queryParams.creation_type) {
-      query = query.eq("creation_type", queryParams.creation_type);
-    }
-
-    if (queryParams.accepted !== undefined) {
-      query = query.eq("accepted", queryParams.accepted);
-    }
-
-    // Apply search filter (search in both front_content and back_content)
-    if (queryParams.search) {
-      query = query.or(`front_content.ilike.%${queryParams.search}%,back_content.ilike.%${queryParams.search}%`);
-    }
-
-    // Apply sorting
-    const sortField = queryParams.sort || "created_at";
-    const sortOrder = queryParams.order || "desc";
-    query = query.order(sortField, { ascending: sortOrder === "asc" });
-
-    // Apply pagination
-    const limit = queryParams.limit || 10;
-    const offset = queryParams.offset || 0;
-    query = query.range(offset, offset + limit - 1);
-
-    // Execute query
-    const { data, error, count } = await query;
-
-    if (error) {
-      console.error("Error fetching flashcards:", error);
-      throw new Error(`DATABASE_ERROR: ${error.message}`);
-    }
-
-    // Return response with data and pagination info
-    return {
-      data: data || [],
-      pagination: {
-        total: count || 0,
-        limit: limit,
-        offset: offset,
-      },
-    };
-  } catch (error) {
-    console.error("Error in getFlashcards:", error);
-    throw error;
+  // Apply filters
+  if (queryParams.source_text_id) {
+    query = query.eq("source_text_id", queryParams.source_text_id);
   }
+
+  if (queryParams.creation_type) {
+    query = query.eq("creation_type", queryParams.creation_type);
+  }
+
+  if (queryParams.accepted !== undefined) {
+    query = query.eq("accepted", queryParams.accepted);
+  }
+
+  // Apply search filter (search in both front_content and back_content)
+  if (queryParams.search) {
+    query = query.or(`front_content.ilike.%${queryParams.search}%,back_content.ilike.%${queryParams.search}%`);
+  }
+
+  // Apply sorting
+  const sortField = queryParams.sort || "created_at";
+  const sortOrder = queryParams.order || "desc";
+  query = query.order(sortField, { ascending: sortOrder === "asc" });
+
+  // Apply pagination
+  const limit = queryParams.limit || 10;
+  const offset = queryParams.offset || 0;
+  query = query.range(offset, offset + limit - 1);
+
+  // Execute query
+  const { data, error, count } = await query;
+
+  if (error) {
+    throw new Error(`DATABASE_ERROR: ${error.message}`);
+  }
+
+  // Return response with data and pagination info
+  return {
+    data: data || [],
+    pagination: {
+      total: count || 0,
+      limit: limit,
+      offset: offset,
+    },
+  };
 }
 
 /**
@@ -317,67 +310,60 @@ export async function getFlashcardsForLearning(
   queryParams: FlashcardLearningQueryParams,
   userId: string
 ): Promise<FlashcardLearningResponse> {
-  try {
-    // Validate source_text_id if provided - check if it belongs to the user
-    if (queryParams.source_text_id) {
-      const { data: sourceText, error: sourceTextError } = await supabase
-        .from("source_texts")
-        .select("id")
-        .eq("id", queryParams.source_text_id)
-        .eq("user_id", userId)
-        .single();
-
-      if (sourceTextError || !sourceText) {
-        throw new Error("SOURCE_TEXT_NOT_FOUND");
-      }
-    }
-
-    const limit = queryParams.limit || 10;
-
-    // Use the database function for random flashcards
-    const { data, error } = await supabase.rpc("get_random_flashcards", {
-      p_user_id: userId,
-      p_limit: limit,
-    });
-
-    if (error) {
-      console.error("Error fetching random flashcards:", error);
-      throw new Error(`DATABASE_ERROR: ${error.message}`);
-    }
-
-    let flashcards = data || [];
-
-    // Apply source_text_id filter if provided (client-side filtering since RPC doesn't support it)
-    if (queryParams.source_text_id) {
-      flashcards = flashcards.filter((flashcard) => flashcard.source_text_id === queryParams.source_text_id);
-    }
-
-    // Get total count of accepted flashcards for the user
-    let countQuery = supabase
-      .from("flashcards")
-      .select("*", { count: "exact", head: true })
+  // Validate source_text_id if provided - check if it belongs to the user
+  if (queryParams.source_text_id) {
+    const { data: sourceText, error: sourceTextError } = await supabase
+      .from("source_texts")
+      .select("id")
+      .eq("id", queryParams.source_text_id)
       .eq("user_id", userId)
-      .eq("accepted", true);
+      .single();
 
-    if (queryParams.source_text_id) {
-      countQuery = countQuery.eq("source_text_id", queryParams.source_text_id);
+    if (sourceTextError || !sourceText) {
+      throw new Error("SOURCE_TEXT_NOT_FOUND");
     }
-
-    const { count, error: countError } = await countQuery;
-
-    if (countError) {
-      console.error("Error counting flashcards:", countError);
-      throw new Error(`DATABASE_ERROR: ${countError.message}`);
-    }
-
-    return {
-      data: flashcards,
-      total: count || 0,
-    };
-  } catch (error) {
-    console.error("Error in getFlashcardsForLearning:", error);
-    throw error;
   }
+
+  const limit = queryParams.limit || 10;
+
+  // Use the database function for random flashcards
+  const { data, error } = await supabase.rpc("get_random_flashcards", {
+    p_user_id: userId,
+    p_limit: limit,
+  });
+
+  if (error) {
+    throw new Error(`DATABASE_ERROR: ${error.message}`);
+  }
+
+  let flashcards = data || [];
+
+  // Apply source_text_id filter if provided (client-side filtering since RPC doesn't support it)
+  if (queryParams.source_text_id) {
+    flashcards = flashcards.filter((flashcard) => flashcard.source_text_id === queryParams.source_text_id);
+  }
+
+  // Get total count of accepted flashcards for the user
+  let countQuery = supabase
+    .from("flashcards")
+    .select("*", { count: "exact", head: true })
+    .eq("user_id", userId)
+    .eq("accepted", true);
+
+  if (queryParams.source_text_id) {
+    countQuery = countQuery.eq("source_text_id", queryParams.source_text_id);
+  }
+
+  const { count, error: countError } = await countQuery;
+
+  if (countError) {
+    throw new Error(`DATABASE_ERROR: ${countError.message}`);
+  }
+
+  return {
+    data: flashcards,
+    total: count || 0,
+  };
 }
 
 /**
@@ -406,7 +392,6 @@ export async function deleteFlashcard(supabase: DbClient, flashcardId: string, u
   const { error } = await supabase.from("flashcards").delete().eq("id", flashcardId).eq("user_id", userId);
 
   if (error) {
-    console.error("Error deleting flashcard:", error);
     throw new Error(`DATABASE_ERROR: ${error.message}`);
   }
 }

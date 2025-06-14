@@ -28,6 +28,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
   });
 
   if (error) {
+    // eslint-disable-next-line no-console
     console.error("Login error:", error);
 
     // Handle specific error cases with user-friendly messages

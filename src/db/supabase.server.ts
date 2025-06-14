@@ -17,6 +17,7 @@ export function createClient(locals: APIContext["locals"]) {
   }
 
   // Fallback if middleware hasn't set up the client (shouldn't happen in production)
+  // eslint-disable-next-line no-console
   console.warn("Supabase client not found in locals, creating a new one");
 
   return createSupabaseClient<Database>(import.meta.env.PUBLIC_SUPABASE_URL, import.meta.env.PUBLIC_SUPABASE_ANON_KEY);

@@ -21,6 +21,7 @@ export const onRequest = defineMiddleware(async ({ locals, cookies, url, request
   // Debug
   const isApiRoute = url.pathname.startsWith("/api/");
   if (isApiRoute) {
+    // eslint-disable-next-line no-console
     console.log(`Auth Middleware for API route: ${url.pathname}`);
   }
 

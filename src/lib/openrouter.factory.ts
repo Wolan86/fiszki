@@ -44,8 +44,9 @@ export function getOpenRouterService(): OpenRouterService | null {
   if (!openRouterInstance) {
     try {
       openRouterInstance = createOpenRouterService();
-    } catch (error) {
-      console.error("Failed to initialize OpenRouter service:", error);
+    } catch {
+      // Service initialization failed - return null to indicate unavailability
+      // Error details are already wrapped in AIServiceUnavailableError
       return null;
     }
   }
